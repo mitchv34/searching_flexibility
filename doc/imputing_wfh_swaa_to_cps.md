@@ -38,13 +38,13 @@ This initial phase ensures your environment is ready and all necessary assets ar
   - **CPS Data:** Download IPUMS ACS data extract (e.g., `acs_data.csv.gz`) and place it in `data/raw/acs/`. Ensure it contains the necessary variables: 
     - `age`, `sex`, `educ`, `race`
     - `indnaics`, `occsoc`
-  - **Occupation Crosswalk:** 
+  - **Occupation Crosswalk:**
 
 ---
 
 ### **Phase 1: SWAA Data Preparation (Python)**
 
-**Goal:** To create a clean, filtered "training" dataset from the raw SWAA data.
+**Goal:** Create a clean, filtered "training" dataset from the raw SWAA data.
 
 - **1.1. Load Raw SWAA Data:**
   - In your Python script (`1_prepare_data.py`), load `WFHdata_June25.csv` into a pandas DataFrame.
