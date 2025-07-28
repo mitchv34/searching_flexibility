@@ -6,6 +6,9 @@ data/raw/
 ##  history folder (previous versions of project files)
 .history/
 
+## VsCode workspace storage
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
