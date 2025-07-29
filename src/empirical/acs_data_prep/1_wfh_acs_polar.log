@@ -1,0 +1,747 @@
+2025-07-28 17:03:26,688 - INFO - Script started.
+2025-07-28 17:03:26,700 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 17:03:26,701 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 17:05:12,001 - INFO - Data shape after reading: (40028565, 27)
+2025-07-28 17:05:12,807 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 27)
+2025-07-28 17:05:12,811 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 17:05:16,741 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 17:05:16,742 - INFO - Starting filter_acs_data function.
+2025-07-28 17:05:39,874 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 17:05:40,175 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 17:05:40,195 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 17:49:50,097 - INFO - Script started.
+2025-07-28 17:49:50,099 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 17:49:50,100 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 17:50:03,465 - INFO - Data shape after reading: (40028565, 27)
+2025-07-28 17:50:03,531 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 27)
+2025-07-28 17:50:03,533 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 17:50:04,860 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 17:50:04,862 - INFO - Starting filter_acs_data function.
+2025-07-28 17:50:05,935 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 17:50:05,979 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 17:50:05,982 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 17:50:06,896 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 17:50:07,303 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 17:50:07,309 - INFO - Starting modify_industry_codes function.
+2025-07-28 17:50:07,626 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 17:50:08,387 - INFO - Removed military industry codes.
+2025-07-28 17:50:08,413 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 17:50:08,418 - INFO - Starting modify_occupation_codes function.
+2025-07-28 17:50:08,929 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 17:50:09,925 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 17:50:09,975 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 17:50:10,918 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 17:50:11,533 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 30)
+2025-07-28 17:50:11,539 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 17:50:11,749 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 17:50:11,787 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 17:50:14,545 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 17:50:14,548 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 17:50:14,567 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 17:50:18,191 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 17:50:23,090 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 17:50:23,137 - INFO - Starting telework_index function.
+2025-07-28 17:50:23,138 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 17:56:09,492 - INFO - Script started.
+2025-07-28 17:56:09,493 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 17:56:09,494 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 17:56:23,738 - INFO - Data shape after reading: (40028565, 27)
+2025-07-28 17:56:23,756 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 27)
+2025-07-28 17:56:23,758 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 17:56:24,532 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 17:56:24,534 - INFO - Starting filter_acs_data function.
+2025-07-28 17:56:25,525 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 17:56:25,557 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 17:56:25,559 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 17:56:25,993 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 17:56:26,400 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 17:56:26,407 - INFO - Starting modify_industry_codes function.
+2025-07-28 17:56:26,882 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 17:56:27,734 - INFO - Removed military industry codes.
+2025-07-28 17:56:27,752 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 17:56:27,758 - INFO - Starting modify_occupation_codes function.
+2025-07-28 17:56:28,170 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 17:56:29,096 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 17:56:29,175 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 17:56:30,213 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 17:56:30,764 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 30)
+2025-07-28 17:56:30,770 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 17:56:30,976 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 17:56:31,009 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 17:56:33,584 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 17:56:33,587 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 17:56:33,603 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 17:56:36,639 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 17:56:41,388 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 17:56:41,395 - INFO - Starting telework_index function.
+2025-07-28 17:56:41,397 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 17:56:41,441 - INFO - Loaded and formatted telework classification data.
+2025-07-28 17:56:41,756 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 17:56:41,759 - INFO - Starting wfh_index function.
+2025-07-28 17:56:41,783 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 17:56:41,786 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137csv. Final data shape: (9322359, 22)
+2025-07-28 17:56:59,453 - INFO - Data saved successfully.
+2025-07-28 17:56:59,455 - INFO - Script finished successfully in 49.96 seconds.
+2025-07-28 19:06:15,522 - INFO - Script started.
+2025-07-28 19:06:15,535 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:06:15,537 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:06:29,451 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 19:06:29,810 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 19:06:29,811 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 19:06:31,073 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 19:06:31,075 - INFO - Starting filter_acs_data function.
+2025-07-28 19:06:32,168 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 19:06:32,236 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 19:06:32,241 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 19:06:33,239 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 19:06:33,641 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 19:06:33,805 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 19:06:33,847 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 19:06:33,853 - INFO - Starting modify_industry_codes function.
+2025-07-28 19:06:33,957 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 19:06:34,553 - INFO - Removed military industry codes.
+2025-07-28 19:06:34,604 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 19:06:34,609 - INFO - Starting modify_occupation_codes function.
+2025-07-28 19:06:35,431 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 19:06:36,471 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 19:06:36,538 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 19:06:37,454 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 19:06:38,123 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 19:06:38,130 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 19:06:38,393 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 19:06:38,424 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:06:41,149 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 19:06:41,153 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 19:06:41,171 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:06:44,836 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 19:06:49,712 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 19:06:49,719 - INFO - Starting telework_index function.
+2025-07-28 19:06:49,720 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 19:06:49,790 - INFO - Loaded and formatted telework classification data.
+2025-07-28 19:06:50,195 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 19:06:50,197 - INFO - Starting wfh_index function.
+2025-07-28 19:06:50,218 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 19:06:50,220 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 19:07:08,677 - INFO - Data saved successfully.
+2025-07-28 19:07:08,701 - INFO - Script finished successfully in 53.18 seconds.
+2025-07-28 19:08:32,071 - INFO - Script started.
+2025-07-28 19:08:32,073 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:08:32,075 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:08:46,795 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 19:08:46,813 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 19:08:46,815 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 19:08:47,561 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 19:08:47,563 - INFO - Starting filter_acs_data function.
+2025-07-28 19:08:48,614 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 19:08:48,648 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 19:08:48,650 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 19:08:49,043 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 19:08:49,433 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 19:08:49,670 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 19:08:49,707 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 19:08:49,713 - INFO - Starting modify_industry_codes function.
+2025-07-28 19:08:49,839 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 19:08:50,764 - INFO - Removed military industry codes.
+2025-07-28 19:08:50,814 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 19:08:50,820 - INFO - Starting modify_occupation_codes function.
+2025-07-28 19:08:51,441 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 19:08:52,583 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 19:08:52,650 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 19:08:53,705 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 19:08:54,422 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 19:08:54,429 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 19:08:54,750 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 19:08:54,773 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:08:57,335 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 19:08:57,340 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 19:08:57,358 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:09:00,443 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 19:09:05,165 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 19:09:05,172 - INFO - Starting telework_index function.
+2025-07-28 19:09:05,173 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 19:09:05,207 - INFO - Loaded and formatted telework classification data.
+2025-07-28 19:09:05,535 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 19:09:05,538 - INFO - Starting wfh_index function.
+2025-07-28 19:09:05,559 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 19:09:05,560 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 19:09:23,243 - INFO - Data saved successfully.
+2025-07-28 19:09:23,247 - INFO - Script finished successfully in 51.18 seconds.
+2025-07-28 19:09:23,518 - INFO - Script started.
+2025-07-28 19:09:23,519 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:09:23,521 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:09:37,474 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 19:09:37,493 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 19:09:37,494 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 19:09:38,264 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 19:09:38,266 - INFO - Starting filter_acs_data function.
+2025-07-28 19:09:39,399 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 19:09:39,432 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 19:09:39,434 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 19:09:39,927 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 19:09:40,390 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 19:09:40,542 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 19:09:40,573 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 19:09:40,582 - INFO - Starting modify_industry_codes function.
+2025-07-28 19:09:40,693 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 19:09:41,894 - INFO - Removed military industry codes.
+2025-07-28 19:09:41,939 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 19:09:41,945 - INFO - Starting modify_occupation_codes function.
+2025-07-28 19:09:42,460 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 19:09:43,513 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 19:09:43,591 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 19:09:44,734 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 19:09:45,379 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 19:09:45,386 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 19:09:45,675 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 19:09:45,704 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:09:48,265 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 19:09:48,269 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 19:09:48,281 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:09:51,270 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 19:09:56,093 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 19:09:56,101 - INFO - Starting telework_index function.
+2025-07-28 19:09:56,101 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 19:09:56,131 - INFO - Loaded and formatted telework classification data.
+2025-07-28 19:09:56,473 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 19:09:56,476 - INFO - Starting wfh_index function.
+2025-07-28 19:09:56,496 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 19:09:56,498 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 19:10:14,565 - INFO - Data saved successfully.
+2025-07-28 19:10:14,568 - INFO - Script finished successfully in 51.05 seconds.
+2025-07-28 19:10:41,657 - INFO - Script started.
+2025-07-28 19:10:41,659 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:10:41,660 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:10:54,874 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 19:10:54,895 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 19:10:54,896 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 19:10:55,640 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 19:10:55,642 - INFO - Starting filter_acs_data function.
+2025-07-28 19:10:56,670 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 19:10:56,711 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 19:10:56,713 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 19:10:57,181 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 19:10:57,604 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 19:10:57,791 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 19:10:57,821 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 19:10:57,828 - INFO - Starting modify_industry_codes function.
+2025-07-28 19:10:57,903 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 19:10:59,089 - INFO - Removed military industry codes.
+2025-07-28 19:10:59,143 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 19:10:59,149 - INFO - Starting modify_occupation_codes function.
+2025-07-28 19:10:59,726 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 19:11:00,818 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 19:11:00,887 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 19:11:01,991 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 19:11:02,658 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 19:11:02,665 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 19:11:02,925 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 19:11:02,947 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:11:05,623 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 19:11:05,627 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 19:11:05,647 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:11:08,608 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 19:11:13,443 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 19:11:13,451 - INFO - Starting telework_index function.
+2025-07-28 19:11:13,452 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 19:11:13,492 - INFO - Loaded and formatted telework classification data.
+2025-07-28 19:11:13,822 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 19:11:13,824 - INFO - Starting wfh_index function.
+2025-07-28 19:11:13,845 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 19:11:13,847 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 19:11:32,413 - INFO - Data saved successfully.
+2025-07-28 19:11:32,415 - INFO - Script finished successfully in 50.76 seconds.
+2025-07-28 19:11:57,430 - INFO - Script started.
+2025-07-28 19:11:57,432 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:11:57,433 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:12:10,464 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 19:12:10,485 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 19:12:10,486 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 19:12:11,235 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 19:12:11,237 - INFO - Starting filter_acs_data function.
+2025-07-28 19:12:12,260 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 19:12:12,298 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 19:12:12,300 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 19:12:12,802 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 19:12:13,220 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 19:12:13,424 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 19:12:13,459 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 19:12:13,466 - INFO - Starting modify_industry_codes function.
+2025-07-28 19:12:13,706 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 19:12:14,616 - INFO - Removed military industry codes.
+2025-07-28 19:12:14,682 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 19:12:14,688 - INFO - Starting modify_occupation_codes function.
+2025-07-28 19:12:15,250 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 19:12:16,297 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 19:12:16,377 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 19:12:17,511 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 19:12:18,163 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 19:12:18,170 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 19:12:18,451 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 19:12:18,473 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:12:21,086 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 19:12:21,089 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 19:12:21,099 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:12:24,133 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 19:12:28,986 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 19:12:28,994 - INFO - Starting telework_index function.
+2025-07-28 19:12:28,995 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 19:12:29,037 - INFO - Loaded and formatted telework classification data.
+2025-07-28 19:12:29,434 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 19:12:29,436 - INFO - Starting wfh_index function.
+2025-07-28 19:12:29,457 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 19:12:29,459 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 19:12:47,042 - INFO - Data saved successfully.
+2025-07-28 19:12:47,043 - INFO - Script finished successfully in 49.61 seconds.
+2025-07-28 19:14:55,196 - INFO - Script started.
+2025-07-28 19:14:55,197 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:14:55,198 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:15:07,867 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 19:15:07,887 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 19:15:07,889 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 19:15:08,622 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 19:15:08,623 - INFO - Starting filter_acs_data function.
+2025-07-28 19:15:09,639 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 19:15:09,672 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 19:15:09,674 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 19:15:10,208 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 19:15:10,633 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 19:15:10,806 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 19:15:10,881 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 19:15:10,918 - INFO - Starting modify_industry_codes function.
+2025-07-28 19:15:11,046 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 19:15:12,396 - INFO - Removed military industry codes.
+2025-07-28 19:15:12,453 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 19:15:12,459 - INFO - Starting modify_occupation_codes function.
+2025-07-28 19:15:12,856 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 19:15:13,795 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 19:15:13,869 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 19:15:14,991 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 19:15:15,653 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 19:15:15,659 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 19:15:15,918 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 19:15:15,948 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:15:18,471 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 19:15:18,475 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 19:15:18,491 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:15:21,349 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 19:15:26,211 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 19:15:26,218 - INFO - Starting telework_index function.
+2025-07-28 19:15:26,219 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 19:15:26,251 - INFO - Loaded and formatted telework classification data.
+2025-07-28 19:15:26,621 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 19:15:26,624 - INFO - Starting wfh_index function.
+2025-07-28 19:15:26,644 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 19:15:26,647 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 19:15:44,405 - INFO - Data saved successfully.
+2025-07-28 19:15:44,407 - INFO - Script finished successfully in 49.21 seconds.
+2025-07-28 19:18:49,333 - INFO - Script started.
+2025-07-28 19:18:49,335 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:18:49,336 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:19:02,554 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 19:19:02,631 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 19:19:02,632 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 19:19:03,723 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 19:19:03,726 - INFO - Starting filter_acs_data function.
+2025-07-28 19:19:04,753 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 19:19:04,797 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 19:19:04,800 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 19:19:05,777 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 19:19:06,160 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 19:19:06,323 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 19:19:06,355 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 19:19:06,361 - INFO - Starting modify_industry_codes function.
+2025-07-28 19:19:06,581 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 19:19:07,230 - INFO - Removed military industry codes.
+2025-07-28 19:19:07,260 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 19:19:07,265 - INFO - Starting modify_occupation_codes function.
+2025-07-28 19:19:07,850 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 19:19:08,930 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 19:19:08,987 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 19:19:09,968 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 19:19:10,564 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 19:19:10,570 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 19:19:10,841 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 19:19:10,870 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:19:13,570 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 19:19:13,574 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 19:19:13,587 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:19:17,239 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 19:19:22,093 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 19:19:22,102 - INFO - Starting telework_index function.
+2025-07-28 19:19:22,103 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 19:19:22,150 - INFO - Loaded and formatted telework classification data.
+2025-07-28 19:19:22,628 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 19:19:22,631 - INFO - Starting wfh_index function.
+2025-07-28 19:19:22,651 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 19:19:22,653 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 19:19:40,468 - INFO - Data saved successfully.
+2025-07-28 19:19:40,470 - INFO - Script finished successfully in 51.14 seconds.
+2025-07-28 19:22:25,893 - INFO - Script started.
+2025-07-28 19:22:25,895 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:22:25,896 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 19:22:40,455 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 19:22:40,476 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 19:22:40,477 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 19:22:41,215 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 19:22:41,217 - INFO - Starting filter_acs_data function.
+2025-07-28 19:22:42,260 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 19:22:42,294 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 19:22:42,296 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 19:22:42,644 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 19:22:43,087 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 19:22:43,221 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 19:22:43,246 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 19:22:43,253 - INFO - Starting modify_industry_codes function.
+2025-07-28 19:22:43,406 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 19:22:44,260 - INFO - Removed military industry codes.
+2025-07-28 19:22:44,318 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 19:22:44,324 - INFO - Starting modify_occupation_codes function.
+2025-07-28 19:22:44,820 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 19:22:45,810 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 19:22:45,872 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 19:22:46,951 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 19:22:47,611 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 19:22:47,618 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 19:22:47,863 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 19:22:47,902 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:22:50,541 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 19:22:50,545 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 19:22:50,565 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 19:22:53,613 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 19:22:58,607 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 19:22:58,614 - INFO - Starting telework_index function.
+2025-07-28 19:22:58,616 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 19:22:58,656 - INFO - Loaded and formatted telework classification data.
+2025-07-28 19:22:59,045 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 19:22:59,046 - INFO - Starting wfh_index function.
+2025-07-28 19:22:59,069 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 19:22:59,071 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 19:23:16,711 - INFO - Data saved successfully.
+2025-07-28 19:23:16,713 - INFO - Script finished successfully in 50.82 seconds.
+2025-07-28 20:25:45,954 - INFO - Script started.
+2025-07-28 20:25:45,957 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:25:45,958 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:25:59,362 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 20:25:59,429 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 20:25:59,431 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 20:26:00,516 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 20:26:00,517 - INFO - Starting filter_acs_data function.
+2025-07-28 20:26:01,516 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 20:26:01,564 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 20:26:01,567 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 20:26:02,559 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 20:26:03,048 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 20:26:03,201 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 20:26:03,232 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 20:26:03,238 - INFO - Starting modify_industry_codes function.
+2025-07-28 20:26:03,360 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 20:26:04,015 - INFO - Removed military industry codes.
+2025-07-28 20:26:04,053 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 20:26:04,058 - INFO - Starting modify_occupation_codes function.
+2025-07-28 20:26:04,759 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 20:26:05,778 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 20:26:05,844 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 20:26:06,813 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 20:26:07,423 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 20:26:07,430 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 20:26:07,634 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 20:26:07,669 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:26:10,335 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 20:26:10,338 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 20:26:10,361 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:26:14,065 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 20:26:18,987 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 20:26:18,994 - INFO - Starting telework_index function.
+2025-07-28 20:26:18,996 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 20:26:19,040 - INFO - Loaded and formatted telework classification data.
+2025-07-28 20:26:19,457 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 20:26:19,459 - INFO - Starting wfh_index function.
+2025-07-28 20:26:19,480 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 20:26:19,495 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 20:26:37,637 - INFO - Data saved successfully.
+2025-07-28 20:26:37,639 - INFO - Script finished successfully in 51.68 seconds.
+2025-07-28 20:28:04,466 - INFO - Script started.
+2025-07-28 20:28:04,467 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:28:04,468 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:28:20,422 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 20:28:20,441 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 20:28:20,442 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 20:28:21,213 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 20:28:21,215 - INFO - Starting filter_acs_data function.
+2025-07-28 20:28:22,261 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 20:28:22,297 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 20:28:22,299 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 20:28:22,700 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 20:28:23,082 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 20:28:23,248 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 20:28:23,278 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 20:28:23,286 - INFO - Starting modify_industry_codes function.
+2025-07-28 20:28:23,410 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 20:28:24,351 - INFO - Removed military industry codes.
+2025-07-28 20:28:24,430 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 20:28:24,436 - INFO - Starting modify_occupation_codes function.
+2025-07-28 20:28:24,964 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 20:28:26,009 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 20:28:26,070 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 20:28:27,083 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 20:28:27,790 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 20:28:27,799 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 20:28:28,069 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 20:28:28,098 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:28:30,688 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 20:28:30,692 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 20:28:30,697 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:28:33,731 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 20:28:38,515 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 20:28:38,522 - INFO - Starting telework_index function.
+2025-07-28 20:28:38,524 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 20:28:38,565 - INFO - Loaded and formatted telework classification data.
+2025-07-28 20:28:38,901 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 20:28:38,904 - INFO - Starting wfh_index function.
+2025-07-28 20:28:38,925 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 20:28:38,947 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 20:28:56,207 - INFO - Data saved successfully.
+2025-07-28 20:28:56,208 - INFO - Script finished successfully in 51.74 seconds.
+2025-07-28 20:29:00,854 - INFO - Script started.
+2025-07-28 20:29:00,856 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:29:00,857 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:29:13,662 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 20:29:13,682 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 20:29:13,684 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 20:29:14,439 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 20:29:14,441 - INFO - Starting filter_acs_data function.
+2025-07-28 20:29:15,457 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 20:29:15,497 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 20:29:15,499 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 20:29:15,822 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 20:29:16,232 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 20:29:16,401 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 20:29:16,432 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 20:29:16,439 - INFO - Starting modify_industry_codes function.
+2025-07-28 20:29:16,602 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 20:29:17,536 - INFO - Removed military industry codes.
+2025-07-28 20:29:17,581 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 20:29:17,587 - INFO - Starting modify_occupation_codes function.
+2025-07-28 20:29:18,103 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 20:29:19,169 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 20:29:19,241 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 20:29:20,331 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 20:29:20,998 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 20:29:21,007 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 20:29:21,254 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 20:29:21,284 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:29:23,917 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 20:29:23,922 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 20:29:23,938 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:29:26,842 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 20:29:31,748 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 20:29:31,756 - INFO - Starting telework_index function.
+2025-07-28 20:29:31,758 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 20:29:31,802 - INFO - Loaded and formatted telework classification data.
+2025-07-28 20:29:32,187 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 20:29:32,189 - INFO - Starting wfh_index function.
+2025-07-28 20:29:32,210 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 20:29:32,212 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 20:29:49,372 - INFO - Data saved successfully.
+2025-07-28 20:29:49,373 - INFO - Script finished successfully in 48.52 seconds.
+2025-07-28 20:30:18,700 - INFO - Script started.
+2025-07-28 20:30:18,701 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:30:18,703 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:30:31,915 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 20:30:31,935 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 20:30:31,937 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 20:30:32,697 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 20:30:32,699 - INFO - Starting filter_acs_data function.
+2025-07-28 20:30:33,735 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 20:30:33,770 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 20:30:33,773 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 20:30:34,220 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 20:30:34,679 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 20:30:34,876 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 20:30:34,913 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 20:30:34,920 - INFO - Starting modify_industry_codes function.
+2025-07-28 20:30:35,115 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 20:30:36,141 - INFO - Removed military industry codes.
+2025-07-28 20:30:36,203 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 20:30:36,208 - INFO - Starting modify_occupation_codes function.
+2025-07-28 20:30:36,742 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 20:30:37,845 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 20:30:37,910 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 20:30:39,026 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 20:30:39,628 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 20:30:39,635 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 20:30:39,923 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 20:30:39,948 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:30:42,509 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 20:30:42,512 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 20:30:42,526 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:30:45,488 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 20:30:50,355 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 20:30:50,363 - INFO - Starting telework_index function.
+2025-07-28 20:30:50,364 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 20:30:50,404 - INFO - Loaded and formatted telework classification data.
+2025-07-28 20:30:50,812 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 20:30:50,814 - INFO - Starting wfh_index function.
+2025-07-28 20:30:50,835 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 20:30:50,837 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 20:31:08,451 - INFO - Data saved successfully.
+2025-07-28 20:31:08,453 - INFO - Script finished successfully in 49.75 seconds.
+2025-07-28 20:31:37,252 - INFO - Script started.
+2025-07-28 20:31:37,254 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:31:37,255 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:31:50,015 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 20:31:50,033 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 20:31:50,035 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 20:31:50,798 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 20:31:50,799 - INFO - Starting filter_acs_data function.
+2025-07-28 20:31:51,808 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 20:31:51,842 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 20:31:51,843 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 20:31:52,291 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 20:31:52,707 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 20:31:52,897 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 20:31:52,928 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 20:31:52,935 - INFO - Starting modify_industry_codes function.
+2025-07-28 20:31:53,378 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 20:31:54,383 - INFO - Removed military industry codes.
+2025-07-28 20:31:54,425 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 20:31:54,430 - INFO - Starting modify_occupation_codes function.
+2025-07-28 20:31:54,803 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 20:31:55,745 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 20:31:55,826 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 20:31:56,928 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 20:31:57,548 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 20:31:57,555 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 20:31:57,841 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 20:31:57,869 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:32:00,488 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 20:32:00,492 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 20:32:00,512 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:32:03,495 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 20:32:08,385 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 20:32:08,393 - INFO - Starting telework_index function.
+2025-07-28 20:32:08,394 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 20:32:08,424 - INFO - Loaded and formatted telework classification data.
+2025-07-28 20:32:08,833 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 20:32:08,836 - INFO - Starting wfh_index function.
+2025-07-28 20:32:08,857 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 20:32:08,859 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 23)
+2025-07-28 20:32:26,329 - INFO - Data saved successfully.
+2025-07-28 20:32:26,330 - INFO - Script finished successfully in 49.08 seconds.
+2025-07-28 20:40:10,805 - INFO - Script started.
+2025-07-28 20:40:10,807 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:40:10,809 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 20:40:24,445 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 20:40:24,463 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 20:40:24,465 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 20:40:25,710 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 20:40:25,714 - INFO - Starting filter_acs_data function.
+2025-07-28 20:40:26,716 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 20:40:26,756 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 20:40:26,758 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 20:40:27,778 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 20:40:28,273 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 20:40:28,314 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 20:40:28,335 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 20:40:28,342 - INFO - Starting modify_industry_codes function.
+2025-07-28 20:40:28,420 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 20:40:28,967 - INFO - Removed military industry codes.
+2025-07-28 20:40:28,998 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 20:40:29,004 - INFO - Starting modify_occupation_codes function.
+2025-07-28 20:40:29,600 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 20:40:30,625 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 20:40:30,678 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 20:40:31,608 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 20:40:32,137 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 32)
+2025-07-28 20:40:32,145 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 20:40:32,411 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 20:40:32,439 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:40:35,170 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 20:41:13,278 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 20:41:32,908 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 20:45:23,967 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 21:32:12,028 - INFO - Script started.
+2025-07-28 21:32:12,029 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 21:32:12,030 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 21:32:26,299 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 21:32:26,366 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 21:32:26,380 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 21:32:27,362 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 21:32:27,989 - INFO - \u2713 Created unique_person_id for 34,885,869 observations
+2025-07-28 21:32:31,319 - INFO - \u2713 Unique identifier verified: 34,885,869 unique IDs for 34,885,869 observations
+2025-07-28 21:32:31,321 - INFO - Starting filter_acs_data function.
+2025-07-28 21:32:32,089 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 21:32:32,129 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 21:32:32,132 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 21:32:33,013 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 21:32:33,589 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 21:32:33,730 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 21:32:33,762 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 21:32:33,768 - INFO - Starting modify_industry_codes function.
+2025-07-28 21:32:33,856 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 21:32:34,432 - INFO - Removed military industry codes.
+2025-07-28 21:32:34,471 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 21:32:34,477 - INFO - Starting modify_occupation_codes function.
+2025-07-28 21:32:34,767 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 21:32:35,535 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 21:32:35,590 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 21:32:36,379 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 21:32:37,042 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 33)
+2025-07-28 21:32:37,049 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 21:32:37,333 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 21:32:37,381 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 21:32:40,117 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 21:32:40,121 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 21:32:40,126 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 21:32:43,464 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 21:32:48,352 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 21:32:48,360 - INFO - Starting telework_index function.
+2025-07-28 21:32:48,362 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 21:32:48,400 - INFO - Loaded and formatted telework classification data.
+2025-07-28 21:32:48,776 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 21:32:48,777 - INFO - Starting wfh_index function.
+2025-07-28 21:32:48,800 - INFO - WFH index calculated based on TRANWORK column.
+2025-07-28 21:32:48,801 - INFO - Saving data to v:\high_tech_ind\WFH\searching_flexibility\data\processed\acs\usa_00137.csv. Final data shape: (9322359, 24)
+2025-07-28 21:33:07,326 - INFO - Data saved successfully.
+2025-07-28 21:33:07,328 - INFO - Script finished successfully in 55.30 seconds.
+2025-07-28 21:34:20,286 - INFO - Script started.
+2025-07-28 21:34:20,289 - INFO - Processing file usa_00137.csv.gz from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 21:34:20,291 - INFO - Reading ACS data from v:\high_tech_ind\WFH\searching_flexibility\data\raw\acs\usa_00137.csv.gz
+2025-07-28 21:34:33,676 - INFO - Data shape after reading: (40028565, 29)
+2025-07-28 21:34:33,743 - INFO - Filtered data to min_year 2013. Shape is now: (34885869, 29)
+2025-07-28 21:34:33,744 - INFO - Creating SOC aggregator from file: v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\soc_structure_2018.xlsx
+2025-07-28 21:34:35,149 - INFO - SOC aggregator created with 862 rows.
+2025-07-28 21:35:13,407 - INFO - \u2713 Created unique_person_id for 34,885,869 observations
+2025-07-28 21:35:36,822 - INFO - \u2713 Unique identifier verified: 34,885,869 unique IDs for 34,885,869 observations
+2025-07-28 21:35:43,432 - INFO - Starting filter_acs_data function.
+2025-07-28 21:35:43,895 - INFO - Filtered by UHRSWORK > 35. Rows reduced from 34885869 to 12860874.
+2025-07-28 21:35:43,910 - INFO - Calculated hourly wage and stored in 'WAGE' column.
+2025-07-28 21:35:43,913 - INFO - Dropped columns 'INCWAGE' and 'UHRSWORK'.
+2025-07-28 21:35:44,601 - INFO - Filtered by WAGE > 5. Rows reduced from 12860874 to 11513770.
+2025-07-28 21:35:44,807 - INFO - Filtered by CLASSWKR in ['2']. Rows reduced from 11513770 to 10994939.
+2025-07-28 21:35:44,865 - INFO - Removed rows with HISPAN==9 (missing). Rows reduced from 10994939 to 10994939.
+2025-07-28 21:35:44,885 - INFO - Converted HISPAN to binary indicator (0=not Hispanic, 1=Hispanic).
+2025-07-28 21:35:51,407 - INFO - Starting modify_industry_codes function.
+2025-07-28 21:35:51,466 - INFO - Removed rows with INDNAICS=='0'. Rows reduced from 10994939 to 10994939.
+2025-07-28 21:35:51,757 - INFO - Removed military industry codes.
+2025-07-28 21:35:51,770 - INFO - Removed unemployed codes (INDNAICS=='999920').
+2025-07-28 21:35:51,772 - INFO - Starting modify_occupation_codes function.
+2025-07-28 21:35:51,868 - INFO - Formatted OCCSOC to standard 'XX-XXXX' format.
+2025-07-28 21:35:52,275 - INFO - Removed rows with more than 2 X/Y characters. Rows reduced from 10892377 to 10618774.
+2025-07-28 21:35:52,325 - INFO - Replaced X and Y in occupation codes with 0.
+2025-07-28 21:35:53,319 - INFO - Dropped rows with unclassified OCCSOC. Rows reduced from 10618774 to 9322359.
+2025-07-28 21:35:53,614 - INFO - modify_occupation_codes complete. Data shape is now: (9322359, 33)
+2025-07-28 21:35:53,621 - INFO - Starting aggregate_puma_to_cbsa function.
+2025-07-28 21:35:53,710 - INFO - Formatted and combined STATEFIP and PUMA into state_puma.
+2025-07-28 21:35:53,732 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 21:35:56,525 - INFO - Aggregated state_puma to CBSA codes.
+2025-07-28 21:35:56,528 - INFO - Starting add_state_and_censusdiv function.
+2025-07-28 21:35:56,538 - INFO - Read PUMA crosswalk from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\puma_to_cbsa.csv with 3369 rows.
+2025-07-28 21:36:00,438 - INFO - Read state census divisions from v:\high_tech_ind\WFH\searching_flexibility\data\aux_and_croswalks\state_census_divisions.csv with 51 rows.
+2025-07-28 21:36:05,445 - INFO - Added state_fips, state_name, and censusdiv columns.
+2025-07-28 21:36:05,454 - INFO - Starting telework_index function.
+2025-07-28 21:36:05,455 - INFO - Using my_index method. Loading telework index from v:\high_tech_ind\WFH\searching_flexibility\data\results\wfh_estimates.csv.
+2025-07-28 21:36:05,495 - INFO - Loaded and formatted telework classification data.
+2025-07-28 21:36:05,891 - INFO - Assigned telework indices to detailed, broad, and minor occupation codes.
+2025-07-28 21:36:05,893 - INFO - Starting wfh_index function.
+2025-07-28 21:36:05,914 - INFO - WFH index calculated based on TRANWORK column.

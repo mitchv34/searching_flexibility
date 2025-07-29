@@ -1,0 +1,799 @@
+
+. 
+. display "{hline 80}"
+--------------------------------------------------------------------------------
+
+. display "WFH IMPUTATION - ECONOMETRIC MODELING & IMPUTATION"
+WFH IMPUTATION - ECONOMETRIC MODELING & IMPUTATION
+
+. display "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. /*
+> ==============================================================================
+> PHASE 3.1: IMPORT PREPARED SWAA DATA
+> ==============================================================================
+> */
+. 
+. display ""
+
+
+. display "PHASE 3.1: IMPORTING PREPARED SWAA DATA"
+PHASE 3.1: IMPORTING PREPARED SWAA DATA
+
+. display "{hline 50}"
+--------------------------------------------------
+
+. 
+. // Import the prepared SWAA training data
+. // Note: The filename corresponds to SWAA_OUTPUT_FILE in the Python script
+. import delimited "data/processed/swaa_prepared_for_stata.csv", clear
+(encoding automatically selected: ISO-8859-1)
+(10 vars, 66,888 obs)
+
+. 
+. // Display basic information about the SWAA data
+. describe
+
+Contains data
+ Observations:        66,888                  
+    Variables:            10                  
+------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------
+wfh_share       float   %9.0g                 
+cratio100       float   %9.0g                 
+occupation_cl~n byte    %8.0g                 
+work_industry   byte    %8.0g                 
+education_s     byte    %8.0g                 
+agebin          byte    %8.0g                 
+gender          byte    %8.0g                 
+race_ethnicit~s byte    %8.0g                 
+censusdivision  byte    %8.0g                 
+year            int     %8.0g                 
+------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. summarize
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+   wfh_share |     66,888    .3100738    .3903778          0          1
+   cratio100 |     66,888      .00022    .0002037   2.71e-06   .0016752
+occupation~n |     66,888    7.185743    2.389653          1         12
+work_indus~y |     66,888    8.401477    4.139235          1         18
+ education_s |     66,888    3.475511    1.081901          1          5
+-------------+---------------------------------------------------------
+      agebin |     66,888    3.701112    1.042525          2          5
+      gender |     66,888    1.520437    .4995859          1          2
+race_ethni~s |     66,888    3.272754    1.115538          1          4
+censusdivi~n |     66,888    5.266401    2.527969          1          9
+        year |     66,888    2024.213    .4093034       2024       2025
+
+. 
+. // Check the dependent variable
+. display ""
+
+
+. display "Dependent Variable Summary:"
+Dependent Variable Summary:
+
+. summarize wfh_share, detail
+
+                          wfh_share
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs              66,888
+25%            0              0       Sum of wgt.      66,888
+
+50%            0                      Mean           .3100738
+                        Largest       Std. dev.      .3903778
+75%           .6              1
+90%            1              1       Variance       .1523948
+95%            1              1       Skewness       .8358724
+99%            1              1       Kurtosis       2.087208
+
+. 
+. // Check for any issues with the WFH share variable
+. count if wfh_share < 0
+  0
+
+. count if wfh_share > 1
+  0
+
+. count if missing(wfh_share)
+  0
+
+. 
+. /*
+> ==============================================================================
+> PHASE 3.2: ESTIMATE THE FRACTIONAL LOGIT MODEL
+> ==============================================================================
+> */
+. 
+. display ""
+
+
+. display "PHASE 3.2: ESTIMATING FRACTIONAL LOGIT MODEL"
+PHASE 3.2: ESTIMATING FRACTIONAL LOGIT MODEL
+
+. display "{hline 50}"
+--------------------------------------------------
+
+. 
+. // Check which predictor variables are available
+. describe occupation_clean work_industry education_s agebin gender race_ethnicity_s censusdivision
+
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------
+occupation_cl~n byte    %8.0g                 
+work_industry   byte    %8.0g                 
+education_s     byte    %8.0g                 
+agebin          byte    %8.0g                 
+gender          byte    %8.0g                 
+race_ethnicit~s byte    %8.0g                 
+censusdivision  byte    %8.0g                 
+
+. 
+. // Estimate the fractional logit model with population weights
+. display "Estimating fractional logit model..."
+Estimating fractional logit model...
+
+. 
+. // Basic model - adjust based on available variables
+. capture {
+
+. 
+. // If full model fails, try simplified version
+. if _rc != 0 {
+.     display "Full model failed, trying simplified version..."
+.     
+.     // Check which variables actually exist and have variation
+.     foreach var of varlist occupation_clean work_industry education_s agebin gender race_ethnicity_s censusdivision {
+  2.         capture confirm variable `var'
+  3.         if _rc == 0 {
+  4.             display "Variable `var' exists"
+  5.             tab `var', missing
+  6.         }
+  7.         else {
+  8.             display "Variable `var' not found"
+  9.         }
+ 10.     }
+.     
+.     // Simplified model with core variables
+.     fracreg logit wfh_share ///
+>         i.occupation_clean ///
+>         i.education_s ///
+>         i.gender ///
+>         [pweight=cratio100], vce(robust)
+. }
+
+. 
+. // Store the model results
+. estimates store wfh_model
+
+. 
+. // Display model results
+. display ""
+
+
+. display "Model Estimation Results:"
+Model Estimation Results:
+
+. estimates replay wfh_model
+
+------------------------------------------------------------------------------------------------------------------------
+Model wfh_model
+------------------------------------------------------------------------------------------------------------------------
+
+Fractional logistic regression                         Number of obs =  66,888
+                                                       Wald chi2(47) = 4113.71
+                                                       Prob > chi2   =  0.0000
+Log pseudolikelihood = -8.0536791                      Pseudo R2     =  0.0707
+
+----------------------------------------------------------------------------------
+                 |               Robust
+       wfh_share | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+occupation_clean |
+              2  |  -.4855419   .1346031    -3.61   0.000    -.7493592   -.2217247
+              3  |   .1922941   .1579077     1.22   0.223    -.1171994    .5017875
+              4  |  -.5115242   .1302949    -3.93   0.000    -.7668974    -.256151
+              5  |   .0166983   .1172927     0.14   0.887    -.2131911    .2465878
+              6  |  -.0917789   .1181885    -0.78   0.437    -.3234241    .1398664
+              7  |  -.5265493    .125257    -4.20   0.000    -.7720486     -.28105
+              8  |  -.1881227    .117504    -1.60   0.109    -.4184264     .042181
+              9  |   .1344469   .1217323     1.10   0.269     -.104144    .3730377
+             10  |  -.3111637   .1189928    -2.61   0.009    -.5443852   -.0779421
+             11  |  -.5246806   .1347678    -3.89   0.000    -.7888206   -.2605407
+             12  |  -.2125802   .1866348    -1.14   0.255    -.5783777    .1532172
+                 |
+   work_industry |
+              2  |   .8282611   .1198554     6.91   0.000     .5933488    1.063173
+              3  |     .69392    .105508     6.58   0.000     .4871282    .9007119
+              4  |  -.0131161   .1144081    -0.11   0.909    -.2373518    .2111196
+              5  |  -.4814429   .1098596    -4.38   0.000    -.6967639    -.266122
+              6  |  -.0334415    .105864    -0.32   0.752    -.2409311    .1740482
+              7  |  -.8223663   .1155703    -7.12   0.000     -1.04888   -.5958527
+              8  |   .8189214   .1096237     7.47   0.000     .6040629     1.03378
+              9  |  -.3309335    .108516    -3.05   0.002     -.543621   -.1182461
+             10  |   .0700267   .1867212     0.38   0.708    -.2959401    .4359935
+             11  |   .6512261   .1051471     6.19   0.000     .4451415    .8573107
+             12  |   .3754472   .1203646     3.12   0.002      .139537    .6113574
+             13  |  -.5715969   .1113654    -5.13   0.000    -.7898691   -.3533247
+             14  |  -.5052882   .1184532    -4.27   0.000    -.7374522   -.2731242
+             15  |   .3755392    .134943     2.78   0.005     .1110558    .6400226
+             16  |   .3102138   .1274056     2.43   0.015     .0605033    .5599242
+             17  |  -.1218552   .1103374    -1.10   0.269    -.3381125    .0944021
+             18  |  -.0687713   .1634192    -0.42   0.674     -.389067    .2515245
+                 |
+     education_s |
+              2  |   .0711979   .1281312     0.56   0.578    -.1799347    .3223305
+              3  |    .161792    .127323     1.27   0.204    -.0877565    .4113405
+              4  |   .4505507   .1271176     3.54   0.000     .2014047    .6996966
+              5  |   .5201402   .1284264     4.05   0.000     .2684291    .7718513
+                 |
+          agebin |
+              3  |   .1601572   .0363908     4.40   0.000     .0888325    .2314819
+              4  |   .1555498    .036106     4.31   0.000     .0847834    .2263162
+              5  |   .1378069   .0356772     3.86   0.000     .0678808    .2077329
+                 |
+        2.gender |  -.1468365   .0229817    -6.39   0.000    -.1918798   -.1017932
+                 |
+race_ethnicity_s |
+              2  |  -.2224722   .0422478    -5.27   0.000    -.3052763   -.1396681
+              3  |  -.1058988   .0445129    -2.38   0.017    -.1931426   -.0186551
+              4  |  -.2971705   .0319587    -9.30   0.000    -.3598084   -.2345327
+                 |
+  censusdivision |
+              2  |   .0384537   .0587798     0.65   0.513    -.0767525    .1536599
+              3  |   .0123854   .0591107     0.21   0.834    -.1034694    .1282402
+              4  |  -.0896492   .0705366    -1.27   0.204    -.2278983    .0485999
+              5  |   .0794978   .0570248     1.39   0.163    -.0322687    .1912643
+              6  |  -.1140829   .0694279    -1.64   0.100    -.2501592    .0219933
+              7  |   .0418931   .0609023     0.69   0.492    -.0774732    .1612594
+              8  |   .1961609   .0638084     3.07   0.002     .0710987    .3212231
+              9  |   .1753814   .0586769     2.99   0.003     .0603769     .290386
+                 |
+           _cons |  -.9465896    .203743    -4.65   0.000    -1.345918   -.5472607
+----------------------------------------------------------------------------------
+
+. 
+. // Save model estimates
+. estimates save "output/wfh_model_estimates", replace
+file output/wfh_model_estimates.ster saved
+
+. 
+. /*
+> ==============================================================================
+> PHASE 3.3: IMPORT HARMONIZED CPS DATA
+> ==============================================================================
+> */
+. 
+. display ""
+
+
+. display "PHASE 3.3: IMPORTING HARMONIZED CPS DATA"
+PHASE 3.3: IMPORTING HARMONIZED CPS DATA
+
+. display "{hline 50}"
+--------------------------------------------------
+
+. 
+. // Clear memory and import CPS prediction data
+. // Note: The filename corresponds to CPS_OUTPUT_FILE in the Python script
+. clear
+
+. import delimited "data/processed/cps_prepared_for_stata.csv", clear
+(encoding automatically selected: ISO-8859-1)
+(8 vars, 6,294,387 obs)
+
+. 
+. // Display basic information about the CPS data
+. describe
+
+Contains data
+ Observations:     6,294,387                  
+    Variables:             8                  
+------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------
+unique_person~d str17   %17s                  
+occupation_cl~n byte    %8.0g                 
+work_industry   byte    %8.0g                 
+education_s     byte    %8.0g                 
+agebin          byte    %8.0g                 
+gender          byte    %8.0g                 
+race_ethnicit~s byte    %8.0g                 
+censusdivision  byte    %8.0g                 
+------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. summarize
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+unique_per~d |          0
+occupation~n |  6,294,387    6.856538    2.318141          2         11
+work_indus~y |  6,294,387     9.46229      4.5842          1         18
+ education_s |  6,294,387    3.142803    1.093678          1          5
+      agebin |  6,294,387    3.836002    1.204498          1          6
+-------------+---------------------------------------------------------
+      gender |  6,294,387    1.465104    .4987808          1          2
+race_ethni~s |  6,294,387    2.856483    .3505991          2          3
+censusdivi~n |  6,294,387    5.082828    2.345076          1          9
+
+. 
+. // Check sample size
+. display "CPS sample size: " _N
+CPS sample size: 6294387
+
+. 
+. // Verify unique identifier exists and is unique
+. capture confirm string variable unique_person_id
+
+. if _rc == 0 {
+.     display "✓ Found unique_person_id variable"
+✓ Found unique_person_id variable
+.     
+.     // Check for uniqueness
+.     duplicates report unique_person_id
+
+Duplicates in terms of unique_person_id
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |      6294387             0
+--------------------------------------
+.     local dups = r(N) - r(unique_N)
+.     
+.     if `dups' == 0 {
+.         display "✓ unique_person_id is properly unique"
+.     }
+.     else {
+.         display "⚠ WARNING: `dups' duplicate unique_person_id values found"
+⚠ WARNING: . duplicate unique_person_id values found
+.     }
+. }
+
+. else {
+.     display "✗ ERROR: unique_person_id variable not found!"
+.     display "Cannot proceed without unique identifier for merging back to original data"
+.     exit 1
+. }
+
+. 
+. /*
+> ==============================================================================
+> PHASE 3.4: GENERATE PREDICTIONS
+> ==============================================================================
+> */
+. 
+. display ""
+
+
+. display "PHASE 3.4: GENERATING PREDICTIONS"
+PHASE 3.4: GENERATING PREDICTIONS
+
+. display "{hline 50}"
+--------------------------------------------------
+
+. 
+. // Restore the model
+. estimates restore wfh_model
+(results wfh_model are active now)
+
+. 
+. // Generate predictions
+. display "Generating WFH share predictions..."
+Generating WFH share predictions...
+
+. predict alpha
+(option cm assumed)
+
+. 
+. // Check predictions
+. display ""
+
+
+. display "Prediction Summary:"
+Prediction Summary:
+
+. summarize alpha, detail
+
+                Conditional mean of wfh_share
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .1063902       .0585782
+ 5%     .1323745       .0598351
+10%     .1541254       .0598351       Obs           6,294,387
+25%      .203159       .0639681       Sum of wgt.   6,294,387
+
+50%     .2701467                      Mean           .3021965
+                        Largest       Std. dev.      .1304108
+75%     .3856345       .6871176
+90%     .5140194       .6871176       Variance        .017007
+95%     .5562962       .6871176       Skewness       .6670198
+99%      .605726       .6871176       Kurtosis        2.49982
+
+. 
+. // Validate predictions are in valid range [0,1]
+. count if alpha < 0
+  0
+
+. count if alpha > 1
+  0
+
+. count if missing(alpha)
+  0
+
+. 
+. // Display distribution of predictions
+. display ""
+
+
+. display "Distribution of Predicted WFH Shares:"
+Distribution of Predicted WFH Shares:
+
+. histogram alpha, frequency title("Distribution of Predicted WFH Shares") ///
+>     xlabel(0(0.1)1) ylabel(, format(%9.0fc))
+(bin=67, start=.05857823, width=.00938118)
+
+. 
+. /*
+> ==============================================================================
+> PHASE 3.5: SAVE THE FINAL IMPUTED DATASET
+> ==============================================================================
+> */
+. 
+. display ""
+
+
+. display "PHASE 3.5: SAVING FINAL IMPUTED DATASET"
+PHASE 3.5: SAVING FINAL IMPUTED DATASET
+
+. display "{hline 50}"
+--------------------------------------------------
+
+. 
+. // Compress to optimize file size
+. compress
+  (0 bytes saved)
+
+. 
+. // Add labels for clarity
+. label variable alpha "Predicted WFH Share (Imputed from SWAA)"
+
+. label variable unique_person_id "Unique Person Identifier (SAMPLE_SERIAL_PERNUM)"
+
+. 
+. // Display final dataset information
+. describe
+
+Contains data
+ Observations:     6,294,387                  
+    Variables:             9                  
+------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------
+unique_person~d str17   %17s                  Unique Person Identifier (SAMPLE_SERIAL_PERNUM)
+occupation_cl~n byte    %8.0g                 
+work_industry   byte    %8.0g                 
+education_s     byte    %8.0g                 
+agebin          byte    %8.0g                 
+gender          byte    %8.0g                 
+race_ethnicit~s byte    %8.0g                 
+censusdivision  byte    %8.0g                 
+alpha           float   %9.0g                 Predicted WFH Share (Imputed from SWAA)
+------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. summarize alpha
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       alpha |  6,294,387    .3021965    .1304108   .0585782   .6871176
+
+. 
+. // Verify we still have the unique identifier
+. display ""
+
+
+. display "Final dataset verification:"
+Final dataset verification:
+
+. display "- Total observations: " _N
+- Total observations: 6294387
+
+. display "- Unique person IDs: " 
+- Unique person IDs: 
+
+. quietly duplicates report unique_person_id
+
+. display r(unique_N)
+.
+
+. 
+. // Save as Stata data file with unique identifier preserved
+. save "output/cps_with_imputed_wfh.dta", replace
+(file output/cps_with_imputed_wfh.dta not found)
+file output/cps_with_imputed_wfh.dta saved
+
+. 
+. // Also save as CSV for broader compatibility
+. export delimited "output/cps_with_imputed_wfh.csv", replace
+(file output/cps_with_imputed_wfh.csv not found)
+file output/cps_with_imputed_wfh.csv saved
+
+. 
+. display ""
+
+
+. display "Final dataset saved successfully!"
+Final dataset saved successfully!
+
+. display "Stata file: output/cps_with_imputed_wfh.dta"
+Stata file: output/cps_with_imputed_wfh.dta
+
+. display "CSV file: output/cps_with_imputed_wfh.csv"
+CSV file: output/cps_with_imputed_wfh.csv
+
+. display "Both files contain unique_person_id for merging back to original ACS data"
+Both files contain unique_person_id for merging back to original ACS data
+
+. 
+. /*
+> ==============================================================================
+> PHASE 4: VALIDATION AND SANITY CHECKS
+> ==============================================================================
+> */
+. 
+. display ""
+
+
+. display "PHASE 4: VALIDATION AND SANITY CHECKS"
+PHASE 4: VALIDATION AND SANITY CHECKS
+
+. display "{hline 50}"
+--------------------------------------------------
+
+. 
+. /*
+> PHASE 4.1: SUMMARIZE THE PREDICTIONS
+> */
+. 
+. display ""
+
+
+. display "4.1 PREDICTION SUMMARY:"
+4.1 PREDICTION SUMMARY:
+
+. display "{hline 30}"
+------------------------------
+
+. 
+. summarize alpha, detail
+
+           Predicted WFH Share (Imputed from SWAA)
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .1063902       .0585782
+ 5%     .1323745       .0598351
+10%     .1541254       .0598351       Obs           6,294,387
+25%      .203159       .0639681       Sum of wgt.   6,294,387
+
+50%     .2701467                      Mean           .3021965
+                        Largest       Std. dev.      .1304108
+75%     .3856345       .6871176
+90%     .5140194       .6871176       Variance        .017007
+95%     .5562962       .6871176       Skewness       .6670198
+99%      .605726       .6871176       Kurtosis        2.49982
+
+. 
+. // Check for valid range
+. local min_alpha = r(min)
+
+. local max_alpha = r(max)
+
+. local mean_alpha = r(mean)
+
+. local median_alpha = r(p50)
+
+. 
+. display ""
+
+
+. display "Validation Checks:"
+Validation Checks:
+
+. display "- Minimum value: " %6.4f `min_alpha' " (should be >= 0)"
+- Minimum value: 0.0586 (should be >= 0)
+
+. display "- Maximum value: " %6.4f `max_alpha' " (should be <= 1)"
+- Maximum value: 0.6871 (should be <= 1)
+
+. display "- Mean value: " %6.4f `mean_alpha'
+- Mean value: 0.3022
+
+. display "- Median value: " %6.4f `median_alpha'
+- Median value: 0.2701
+
+. 
+. if `min_alpha' < 0 {
+.     display "WARNING: Predictions below 0 detected!"
+. }
+
+. if `max_alpha' > 1 {
+.     display "WARNING: Predictions above 1 detected!"
+. }
+
+. 
+. /*
+> PHASE 4.2: COMPARE GROUP AVERAGES
+> */
+. 
+. display ""
+
+
+. display "4.2 GROUP AVERAGES COMPARISON:"
+4.2 GROUP AVERAGES COMPARISON:
+
+. display "{hline 45}"
+---------------------------------------------
+
+. 
+. // Calculate average alpha by occupation category
+. capture {
+
+. 
+. // Calculate average alpha by industry
+. capture {
+
+. 
+. // Calculate average alpha by education
+. capture {
+
+. 
+. // Calculate average alpha by gender
+. capture {
+
+. 
+. /*
+> PHASE 4.3: SPOT-CHECK INDIVIDUAL PREDICTIONS
+> */
+. 
+. display ""
+
+
+. display "4.3 SPOT-CHECK INDIVIDUAL PREDICTIONS:"
+4.3 SPOT-CHECK INDIVIDUAL PREDICTIONS:
+
+. display "{hline 40}"
+----------------------------------------
+
+. 
+. // Display some high and low predictions for manual inspection
+. display ""
+
+
+. display "Highest WFH Share Predictions (Top 10):"
+Highest WFH Share Predictions (Top 10):
+
+. gsort -alpha
+
+. list occupation_clean work_industry education_s gender alpha in 1/10, clean
+
+       occupa~n   work_i~y   educat~s   gender      alpha  
+  1.          9          2          5        1   .6871176  
+  2.          9          2          5        1   .6871176  
+  3.          9          2          5        1   .6871176  
+  4.          9          2          5        1   .6871176  
+  5.          9          2          5        1   .6871176  
+  6.          9          2          5        1   .6871176  
+  7.          9          2          5        1   .6871176  
+  8.          9          2          5        1   .6871176  
+  9.          9          2          5        1   .6871176  
+ 10.          9          2          5        1   .6871176  
+
+. 
+. display ""
+
+
+. display "Lowest WFH Share Predictions (Bottom 10):"
+Lowest WFH Share Predictions (Bottom 10):
+
+. gsort alpha
+
+. list occupation_clean work_industry education_s gender alpha in 1/10, clean
+
+       occupa~n   work_i~y   educat~s   gender      alpha  
+  1.         11          7          1        2   .0585782  
+  2.          7          7          1        2   .0598351  
+  3.          7          7          1        2   .0598351  
+  4.          7          7          2        2   .0639681  
+  5.          7          7          2        2   .0639681  
+  6.          7          7          1        2   .0650818  
+  7.          7          7          1        2   .0650818  
+  8.          7          7          1        2   .0652335  
+  9.          7          7          1        2   .0652335  
+ 10.          7          7          1        2   .0652335  
+
+. 
+. /*
+> FINAL SUMMARY
+> */
+. 
+. display ""
+
+
+. display "{hline 80}"
+--------------------------------------------------------------------------------
+
+. display "WFH IMPUTATION COMPLETE"
+WFH IMPUTATION COMPLETE
+
+. display "{hline 80}"
+--------------------------------------------------------------------------------
+
+. display ""
+
+
+. display "Summary:"
+Summary:
+
+. display "- Model estimated on SWAA data"
+- Model estimated on SWAA data
+
+. display "- Predictions generated for CPS data"
+- Predictions generated for CPS data
+
+. display "- Final dataset: output/cps_with_imputed_wfh.dta"
+- Final dataset: output/cps_with_imputed_wfh.dta
+
+. display "- Sample size: " _N
+- Sample size: 6294387
+
+. display "- Mean WFH share: " %6.4f `mean_alpha'
+- Mean WFH share: 0.3022
+
+. display "- Unique identifier preserved for merging: unique_person_id"
+- Unique identifier preserved for merging: unique_person_id
+
+. display ""
+
+
+. display "Files created:"
+Files created:
+
+. display "- output/wfh_model_estimates.ster (model estimates)"
+- output/wfh_model_estimates.ster (model estimates)
+
+. display "- output/cps_with_imputed_wfh.dta (main output with unique_person_id)"
+- output/cps_with_imputed_wfh.dta (main output with unique_person_id)
+
+. display "- output/cps_with_imputed_wfh.csv (CSV version with unique_person_id)"
+- output/cps_with_imputed_wfh.csv (CSV version with unique_person_id)
+
+. display "- output/wfh_imputation_log.log (this log)"
+- output/wfh_imputation_log.log (this log)
+
+. display ""
+
+
+. display "NOTE: Use unique_person_id to merge imputed WFH shares back to original ACS data"
+NOTE: Use unique_person_id to merge imputed WFH shares back to original ACS data
+
+. 
+. // Close log
+. capture log close
