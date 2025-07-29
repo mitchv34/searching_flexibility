@@ -113,6 +113,7 @@ logit is_remote_any ///
     i.gender ///
     i.race_ethnicity_s ///
     i.censusdivision ///
+    i.year ///
     [pweight=cratio100]
 
 // Store the estimates
@@ -141,6 +142,7 @@ logit is_full_remote ///
     i.gender ///
     i.race_ethnicity_s ///
     i.censusdivision ///
+    i.year ///
     if wfh_share > 0 ///
     [pweight=cratio100]
 
@@ -174,6 +176,7 @@ fracreg logit wfh_share ///
     i.gender ///
     i.race_ethnicity_s ///
     i.censusdivision ///
+    i.year ///
     if wfh_share > 0 & wfh_share < 1 ///
     [pweight=cratio100]
 	
