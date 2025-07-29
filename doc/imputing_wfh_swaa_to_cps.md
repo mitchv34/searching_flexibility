@@ -29,7 +29,8 @@ searching_flexibility/
 │       │   └── 01_wfh_acs_polar.py          # ACS preprocessing (Phase 0)
 │       └── imputing_wfh_swaa_to_cps/
 │           ├── 1_prepare_data.py            # Phase 1-2: Data preparation
-│           ├── 2_run_model.do               # Phase 3: Stata modeling
+│           ├── 2_run_model.do               # Phase 3: Standard Stata modeling
+│           ├── 3_run_three_part_model.do    # Phase 3: Advanced three-part model
 │           ├── run_master.py                # Master coordination script
 │           └── test.py                      # Testing script for functions
 ├── output/                                  # Final results
@@ -87,10 +88,16 @@ See [`acs_processing_polar.md`](acs_processing_polar.md) for detailed instructio
 python src/empirical/imputing_wfh_swaa_to_cps/1_prepare_data.py
 ```
 
-#### Step 3: Econometric Modeling (Stata)
+#### Step 3A: Standard Econometric Modeling (Stata)
 ```stata
 cd "v:\high_tech_ind\WFH\searching_flexibility"
 do "src/empirical/imputing_wfh_swaa_to_cps/2_run_model.do"
+```
+
+#### Step 3B: Three-Part Model (Recommended)
+```stata
+cd "v:\high_tech_ind\WFH\searching_flexibility"
+do "src/empirical/imputing_wfh_swaa_to_cps/3_run_three_part_model.do"
 ```
 
 ## **Data File Configuration**
@@ -127,6 +134,61 @@ DEFAULT_END_DATE = None      # End date in YYYYMM format (None = no end limit)
 - `output/wfh_imputation_log.log` - Detailed Stata log file
 
 The key output variable is `alpha` in the final dataset, representing the predicted WFH share (0-1) for each individual.
+
+---
+
+## **Alternative Approach: Three-Part Model**
+
+### **Motivation**
+
+The standard fractional logit model can struggle with the bimodal nature of WFH data, which often has substantial mass points at 0 (fully in-person) and 1 (fully remote), with hybrid workers distributed in between. The three-part model addresses this by explicitly modeling each component of the distribution.
+
+### **Three-Part Model Structure**
+
+**Model 1 (Hurdle):** `P(wfh_share > 0)` - Probability of any remote work
+- Estimated on full sample using logit
+- Separates fully in-person workers from all others
+
+**Model 2 (Top Corner):** `P(wfh_share = 1 | wfh_share > 0)` - Probability of full remote work
+- Estimated on subsample with any remote work using logit  
+- Separates fully remote from hybrid workers
+
+**Model 3 (Interior):** `E[wfh_share | 0 < wfh_share < 1]` - Expected hybrid share
+- Estimated on subsample of hybrid workers using fractional logit
+- Predicts continuous values for hybrid arrangements
+
+### **Implementation**
+
+The three-part model is implemented in `3_run_three_part_model.do` and follows this process:
+
+**Phase A: Estimation on SWAA Data**
+1. Create binary dependent variables (`is_remote_any`, `is_full_remote`)
+2. Estimate three separate models on appropriate subsamples
+3. Save all model estimates
+
+**Phase B: Prediction on ACS Data**
+1. Generate predictions from all three models
+2. Use probabilistic simulation to assign final values:
+   - Random draw determines if worker clears "in-person hurdle"
+   - Second random draw determines if non-in-person worker is fully remote or hybrid
+   - Hybrid workers receive predicted continuous values
+
+### **Expected Output Files**
+
+When using the three-part model approach:
+
+#### Intermediate Files
+- Same as standard approach
+
+#### Final Outputs  
+- `output/cps_with_imputed_wfh_three_part.dta` - **Main output**: ACS data with three-part model imputed WFH shares
+- `output/cps_with_imputed_wfh_three_part.csv` - CSV version of main output
+- `output/wfh_model_hurdle.ster` - Saved hurdle model estimates
+- `output/wfh_model_top_corner.ster` - Saved top corner model estimates  
+- `output/wfh_model_interior.ster` - Saved interior model estimates
+- `output/wfh_three_part_model_log.log` - Detailed log file
+
+The key output variable is still `alpha_final`, but it now better represents the trimodal distribution with appropriate mass points at 0 and 1.
 
 ---
 
