@@ -400,8 +400,8 @@ save "output/cps_with_imputed_wfh_three_part.dta", replace
 display "✓ Saved: output/cps_with_imputed_wfh_three_part.dta"
 
 // Save in CSV format  
-export delimited "output/cps_with_imputed_wfh_three_part.csv", replace
-display "✓ Saved: output/cps_with_imputed_wfh_three_part.csv"
+// export delimited "output/cps_with_imputed_wfh_three_part.csv", replace
+// display "✓ Saved: output/cps_with_imputed_wfh_three_part.csv"
 
 // Save the model estimates
 estimates restore model_hurdle
@@ -531,3 +531,14 @@ display "99th percentile: " %6.3f r(r7)
 display ""
 display "DISTRIBUTION PLOTS COMPLETED"
 display "✓ All plots saved to output/ directory"
+
+display ""
+display "{hline 80}"
+display "THREE-PART MODEL ANALYSIS COMPLETE"
+display "{hline 80}"
+
+display ""
+display "NEXT STEPS:"
+display "• Run 4_validate_calibrate_model.do to perform validation and calibration"
+display "• This will create a calibrated version that matches CPS aggregate WFH patterns"
+display "• See output/wfh_three_part_model_log.log for detailed results"
