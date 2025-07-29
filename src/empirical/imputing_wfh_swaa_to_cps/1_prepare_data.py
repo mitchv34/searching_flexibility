@@ -68,7 +68,7 @@ CPS_OUTPUT_FILE = "cps_prepared_for_stata.csv"
 
 # Global date filter variables - modify these to change the time window
 # Note: Year will be extracted from YYYYMM format for filtering to match ACS data
-DEFAULT_START_DATE = 202407  # Start date in YYYYMM format (July 2024 -> filter by year 2024)
+DEFAULT_START_DATE = 202001  # Start date in YYYYMM format (January 2020 -> filter by year 2020)
 DEFAULT_END_DATE = None      # End date in YYYYMM format (None = no end limit)
 
 print(f"Project root: {PROJECT_ROOT}")
@@ -702,9 +702,19 @@ def harmonize_cps_variables(df):
     except Exception as e:
         print_warning(f"Failed to create 'censusdivision': {e}")
 
+    # Year: Use YEAR column from ACS data
+    try:
+        if 'YEAR' in df.columns:
+            df_harmonized['year'] = df['YEAR'].astype(int)
+            print_success(f"Successfully harmonized 'year' from YEAR")
+        else:
+            print_warning(f"Failed to create 'year': YEAR column not found")
+    except Exception as e:
+        print_warning(f"Failed to create 'year': {e}")
+
     # Final check of harmonized variables
     harmonized_vars = ['work_industry', 'occupation_clean', 'agebin', 'education_s', 
-                    'gender', 'race_ethnicity_s', 'censusdivision']
+                    'gender', 'race_ethnicity_s', 'censusdivision', 'year']
     created_vars = [var for var in harmonized_vars if var in df_harmonized.columns]
     
     print_info(f"Harmonization completed. Created {len(created_vars)} of {len(harmonized_vars)} variables.")
@@ -729,7 +739,8 @@ def prepare_cps_for_prediction(df):
         'agebin',
         'gender',
         'race_ethnicity_s',
-        'censusdivision'
+        'censusdivision',
+        'year'                 # Include year for temporal matching
     ]
     
     # Check which variables exist
@@ -789,13 +800,13 @@ def main():
     print_header("\nPHASE 1: SWAA DATA PREPARATION")
     print_header("-" * 40)
     
+    swaa_model_df = None
     try:
         # Load and process SWAA data
         swaa_df = load_swaa_data()
         swaa_df = filter_swaa_sample(swaa_df, start_date=DEFAULT_START_DATE, end_date=DEFAULT_END_DATE)
         swaa_df = create_dependent_variable(swaa_df)
         swaa_model_df = prepare_swaa_for_modeling(swaa_df)
-        export_swaa_data(swaa_model_df)
         
         print_success("Phase 1 completed successfully!")
         
@@ -807,6 +818,7 @@ def main():
     print_header("\nPHASE 2: CPS DATA PREPARATION & HARMONIZATION")
     print_header("-" * 50)
     
+    cps_pred_df = None
     try:
         # Load and process CPS data
         cps_df = load_cps_data()
@@ -816,12 +828,80 @@ def main():
         
         cps_harmonized = harmonize_cps_variables(cps_df)
         cps_pred_df = prepare_cps_for_prediction(cps_harmonized)
-        export_cps_data(cps_pred_df)
         
         print_success("Phase 2 completed successfully!")
         
     except Exception as e:
         print_error(f"Phase 2 failed: {e}")
+    
+    # Phase 3: Year Alignment - Ensure both datasets have the same years
+    print_header("\nPHASE 3: YEAR ALIGNMENT")
+    print_header("-" * 30)
+    
+    if swaa_model_df is not None and cps_pred_df is not None:
+        try:
+            # Check if both datasets have year columns
+            swaa_has_year = 'year' in swaa_model_df.columns and swaa_model_df['year'].notna().any()
+            cps_has_year = 'year' in cps_pred_df.columns and cps_pred_df['year'].notna().any()
+            
+            if swaa_has_year and cps_has_year:
+                # Get year ranges for both datasets
+                swaa_years = set(swaa_model_df['year'].dropna().astype(int))
+                cps_years = set(cps_pred_df['year'].dropna().astype(int))
+                
+                print_info(f"SWAA years: {sorted(swaa_years)}")
+                print_info(f"CPS years: {sorted(cps_years)}")
+                
+                # Find common years
+                common_years = swaa_years.intersection(cps_years)
+                
+                if common_years:
+                    print_info(f"Common years found: {sorted(common_years)}")
+                    
+                    # Filter both datasets to common years
+                    swaa_initial_size = len(swaa_model_df)
+                    cps_initial_size = len(cps_pred_df)
+                    
+                    swaa_model_df = swaa_model_df[swaa_model_df['year'].isin(common_years)]
+                    cps_pred_df = cps_pred_df[cps_pred_df['year'].isin(common_years)]
+                    
+                    swaa_final_size = len(swaa_model_df)
+                    cps_final_size = len(cps_pred_df)
+                    
+                    print_success(f"SWAA filtered: {swaa_final_size:,} rows (removed {swaa_initial_size - swaa_final_size:,})")
+                    print_success(f"CPS filtered: {cps_final_size:,} rows (removed {cps_initial_size - cps_final_size:,})")
+                    print_success(f"Both datasets now contain years: {sorted(common_years)}")
+                    
+                else:
+                    print_warning("No common years found between SWAA and CPS datasets!")
+                    print_warning("Proceeding with original datasets...")
+                    
+            elif not swaa_has_year:
+                print_warning("SWAA dataset missing 'year' column - skipping year alignment")
+            elif not cps_has_year:
+                print_warning("CPS dataset missing 'year' column - skipping year alignment")
+            else:
+                print_warning("Both datasets missing 'year' columns - skipping year alignment")
+                
+        except Exception as e:
+            print_error(f"Year alignment failed: {e}")
+            print_warning("Proceeding with original datasets...")
+    
+    # Export final datasets
+    print_header("\nEXPORTING FINAL DATASETS")
+    print_header("-" * 30)
+    
+    if swaa_model_df is not None:
+        try:
+            export_swaa_data(swaa_model_df)
+        except Exception as e:
+            print_error(f"Failed to export SWAA data: {e}")
+    
+    if cps_pred_df is not None:
+        try:
+            export_cps_data(cps_pred_df)
+        except Exception as e:
+            print_error(f"Failed to export CPS data: {e}")
     
     print_info("\nData preparation complete!")
     print_info(f"Processed files saved to: {DATA_PROCESSED}")
