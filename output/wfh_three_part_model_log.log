@@ -573,15 +573,15 @@ PHASE A COMPLETED: All three models estimated and saved
 . 
 . /*
 > ==============================================================================
-> PHASE B: IMPUTATION ON PREDICTION DATA (CPS/ACS)
+> PHASE B: IMPUTATION ON PREDICTION DATA (ACS)
 > ==============================================================================
 > */
 . 
 . display ""
 
 
-. display "PHASE B: IMPUTATION ON PREDICTION DATA (CPS/ACS)"
-PHASE B: IMPUTATION ON PREDICTION DATA (CPS/ACS)
+. display "PHASE B: IMPUTATION ON PREDICTION DATA (ACS)"
+PHASE B: IMPUTATION ON PREDICTION DATA (ACS)
 
 . display "{hline 50}"
 --------------------------------------------------
@@ -589,21 +589,21 @@ PHASE B: IMPUTATION ON PREDICTION DATA (CPS/ACS)
 . 
 . /*
 > ==============================================================================
-> STEP 5: LOAD CPS DATA AND GENERATE PREDICTIONS FROM ALL THREE MODELS
+> STEP 5: LOAD ACS DATA AND GENERATE PREDICTIONS FROM ALL THREE MODELS
 > ==============================================================================
 > */
 . 
 . display ""
 
 
-. display "STEP 5: Loading CPS/ACS data and generating predictions..."
-STEP 5: Loading CPS/ACS data and generating predictions...
+. display "STEP 5: Loading ACS data and generating predictions..."
+STEP 5: Loading ACS data and generating predictions...
 
 . 
-. // Load CPS/ACS data
+. // Load ACS data
 . clear
 
-. import delimited "data/processed/cps_prepared_for_stata.csv", clear
+. import delimited "data/processed/acs_prepared_for_stata.csv", clear
 (encoding automatically selected: ISO-8859-1)
 (10 vars, 2,045,735 obs)
 
@@ -1000,16 +1000,16 @@ SAVING FINAL IMPUTED DATASET...
 
 . 
 . // Save in Stata format
-. save "output/cps_with_imputed_wfh_three_part.dta", replace
-file output/cps_with_imputed_wfh_three_part.dta saved
+. save "output/acs_with_imputed_wfh_three_part.dta", replace
+file output/acs_with_imputed_wfh_three_part.dta saved
 
-. display "✓ Saved: output/cps_with_imputed_wfh_three_part.dta"
-✓ Saved: output/cps_with_imputed_wfh_three_part.dta
+. display "✓ Saved: output/acs_with_imputed_wfh_three_part.dta"
+✓ Saved: output/acs_with_imputed_wfh_three_part.dta
 
 . 
 . // Save in CSV format  
-. // export delimited "output/cps_with_imputed_wfh_three_part.csv", replace
-. // display "✓ Saved: output/cps_with_imputed_wfh_three_part.csv"
+. // export delimited "output/acs_with_imputed_wfh_three_part.csv", replace
+. // display "✓ Saved: output/acs_with_imputed_wfh_three_part.csv"
 . 
 . // Save the model estimates
 . estimates restore model_hurdle
@@ -1086,11 +1086,11 @@ SUMMARY OF RESULTS:
 . display "OUTPUT FILES CREATED:"
 OUTPUT FILES CREATED:
 
-. display "• output/cps_with_imputed_wfh_three_part.dta (main output)"
-• output/cps_with_imputed_wfh_three_part.dta (main output)
+. display "• output/acs_with_imputed_wfh_three_part.dta (main output)"
+• output/acs_with_imputed_wfh_three_part.dta (main output)
 
-. display "• output/cps_with_imputed_wfh_three_part.csv (CSV version)"
-• output/cps_with_imputed_wfh_three_part.csv (CSV version)
+. display "• output/acs_with_imputed_wfh_three_part.csv (CSV version)"
+• output/acs_with_imputed_wfh_three_part.csv (CSV version)
 
 . display "• output/wfh_model_hurdle.ster (hurdle model estimates)"
 • output/wfh_model_hurdle.ster (hurdle model estimates)
