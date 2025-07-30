@@ -370,3 +370,108 @@ capture log close
 // Display completion message
 display ""
 display "Analysis complete! Check the log file for detailed results."
+
+/*
+==============================================================================
+WORK ARRANGEMENT STATISTICS - FRACTIONAL LOGIT MODEL
+==============================================================================
+*/
+
+display ""
+display "WORK ARRANGEMENT STATISTICS - FRACTIONAL LOGIT MODEL"
+display "{hline 60}"
+
+// Calculate work arrangement categories
+gen work_arrangement = "Fully In-Person" if alpha == 0
+replace work_arrangement = "Hybrid" if alpha > 0 & alpha < 1
+replace work_arrangement = "Fully Remote" if alpha == 1
+
+// Basic distribution (weighted)
+display ""
+display "WORK ARRANGEMENT DISTRIBUTION (WEIGHTED):"
+display "{hline 40}"
+
+// Check if weights exist for prediction data
+capture confirm variable perwt
+if _rc == 0 {
+    local weight_opt "[pweight=perwt]"
+    display "Using person weights (perwt) for statistics"
+} 
+else {
+    local weight_opt ""
+    display "No weights available for prediction data - using unweighted statistics"
+}
+
+// Weighted counts and percentages
+quietly count `weight_opt' if alpha == 0
+local fully_inperson = r(N)
+quietly count `weight_opt'
+local total_weighted = r(N)
+local pct_inperson = (`fully_inperson' / `total_weighted') * 100
+
+quietly count `weight_opt' if alpha > 0 & alpha < 1
+local hybrid = r(N)
+local pct_hybrid = (`hybrid' / `total_weighted') * 100
+
+quietly count `weight_opt' if alpha == 1
+local fully_remote = r(N)
+local pct_remote = (`fully_remote' / `total_weighted') * 100
+
+display "• Fully In-Person: " %12.0fc `fully_inperson' " (" %5.2f `pct_inperson' "%)"
+display "• Hybrid: " %19.0fc `hybrid' " (" %5.2f `pct_hybrid' "%)"
+display "• Fully Remote: " %15.0fc `fully_remote' " (" %5.2f `pct_remote' "%)"
+
+// Among remote workers (hybrid + fully remote)
+local total_remote = `hybrid' + `fully_remote'
+if `total_remote' > 0 {
+    local pct_hybrid_among_remote = (`hybrid' / `total_remote') * 100
+    local pct_fullremote_among_remote = (`fully_remote' / `total_remote') * 100
+    
+    display ""
+    display "AMONG REMOTE WORKERS (Hybrid + Fully Remote):"
+    display "{hline 45}"
+    display "• Hybrid: " %19.0fc `hybrid' " (" %5.2f `pct_hybrid_among_remote' "% of remote workers)"
+    display "• Fully Remote: " %15.0fc `fully_remote' " (" %5.2f `pct_fullremote_among_remote' "% of remote workers)"
+}
+
+// Remote work hours (assuming 40-hour work week) - weighted averages
+display ""
+display "REMOTE WORK HOURS (Assuming 40-hour work week, weighted):"
+display "{hline 60}"
+
+// Calculate average remote hours
+gen remote_hours = alpha * 40
+
+quietly summarize remote_hours `weight_opt', meanonly
+local avg_remote_hours_all = r(mean)
+
+quietly summarize remote_hours `weight_opt' if alpha > 0, meanonly
+local avg_remote_hours_remote = r(mean)
+
+quietly summarize remote_hours `weight_opt' if alpha > 0 & alpha < 1, meanonly
+local avg_remote_hours_hybrid = r(mean)
+
+display "• Economy-wide average: " %6.2f `avg_remote_hours_all' " hours/week"
+display "• Among remote workers: " %6.2f `avg_remote_hours_remote' " hours/week"
+display "• Among hybrid workers: " %6.2f `avg_remote_hours_hybrid' " hours/week"
+display "• Among fully remote: 40.00 hours/week"
+
+// Percentage of time worked remotely
+display ""
+display "PERCENTAGE OF TIME WORKED REMOTELY (WEIGHTED):"
+display "{hline 50}"
+
+local pct_time_remote_all = `avg_remote_hours_all' / 40 * 100
+local pct_time_remote_remote = `avg_remote_hours_remote' / 40 * 100
+local pct_time_remote_hybrid = `avg_remote_hours_hybrid' / 40 * 100
+
+display "• Economy-wide: " %6.2f `pct_time_remote_all' "%"
+display "• Among remote workers: " %6.2f `pct_time_remote_remote' "%"
+display "• Among hybrid workers: " %6.2f `pct_time_remote_hybrid' "%"
+display "• Among fully remote: 100.00%"
+
+// Clean up temporary variables
+drop work_arrangement remote_hours
+
+display ""
+display "✓ Work arrangement statistics completed"

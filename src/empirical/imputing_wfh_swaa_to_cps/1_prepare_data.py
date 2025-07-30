@@ -712,9 +712,19 @@ def harmonize_cps_variables(df):
     except Exception as e:
         print_warning(f"Failed to create 'year': {e}")
 
+    # WFH: Use WFH column from ACS data (lowercase for consistency)
+    try:
+        if 'WFH' in df.columns:
+            df_harmonized['wfh'] = df['WFH'].astype(int)
+            print_success(f"Successfully harmonized 'wfh' from WFH")
+        else:
+            print_warning(f"Failed to create 'wfh': WFH column not found")
+    except Exception as e:
+        print_warning(f"Failed to create 'wfh': {e}")
+
     # Final check of harmonized variables
     harmonized_vars = ['work_industry', 'occupation_clean', 'agebin', 'education_s', 
-                    'gender', 'race_ethnicity_s', 'censusdivision', 'year']
+                    'gender', 'race_ethnicity_s', 'censusdivision', 'year', 'wfh']
     created_vars = [var for var in harmonized_vars if var in df_harmonized.columns]
     
     print_info(f"Harmonization completed. Created {len(created_vars)} of {len(harmonized_vars)} variables.")
@@ -740,7 +750,8 @@ def prepare_cps_for_prediction(df):
         'gender',
         'race_ethnicity_s',
         'censusdivision',
-        'year'                 # Include year for temporal matching
+        'year',                # Include year for temporal matching
+        'wfh'                  # Include WFH for statistical analysis
     ]
     
     # Check which variables exist

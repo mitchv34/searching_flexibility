@@ -11,7 +11,7 @@ This Stata script implements an advanced three-part model for WFH imputation:
 This approach better captures the mass points at 0 and 1 in the WFH distribution
 compared to standard fractional logit models.
 
-Following the methodology outlined in doc/imputing_wfh_swaa_to_cps.md
+Following the methodology outlined in doc/imputing_wfh_swaa_to_acs.md
 ACS preprocessing documented in doc/acs_processing_polar.md
 
 Author: Generated for WFH Imputation Project
@@ -198,26 +198,26 @@ display "- model_interior: E[wfh_share | 0 < wfh_share < 1]"
 
 /*
 ==============================================================================
-PHASE B: IMPUTATION ON PREDICTION DATA (CPS/ACS)
+PHASE B: IMPUTATION ON PREDICTION DATA (ACS)
 ==============================================================================
 */
 
 display ""
-display "PHASE B: IMPUTATION ON PREDICTION DATA (CPS/ACS)"
+display "PHASE B: IMPUTATION ON PREDICTION DATA (ACS)"
 display "{hline 50}"
 
 /*
 ==============================================================================
-STEP 5: LOAD CPS DATA AND GENERATE PREDICTIONS FROM ALL THREE MODELS
+STEP 5: LOAD ACS DATA AND GENERATE PREDICTIONS FROM ALL THREE MODELS
 ==============================================================================
 */
 
 display ""
-display "STEP 5: Loading CPS/ACS data and generating predictions..."
+display "STEP 5: Loading ACS data and generating predictions..."
 
-// Load CPS/ACS data
+// Load ACS data
 clear
-import delimited "data/processed/cps_prepared_for_stata.csv", clear
+import delimited "data/processed/acs_prepared_for_stata.csv", clear
 
 // Display basic info about prediction dataset
 display ""
@@ -396,12 +396,12 @@ format imputation_date %td
 label variable imputation_date "Date of imputation"
 
 // Save in Stata format
-save "output/cps_with_imputed_wfh_three_part.dta", replace
-display "✓ Saved: output/cps_with_imputed_wfh_three_part.dta"
+save "output/acs_with_imputed_wfh_three_part.dta", replace
+display "✓ Saved: output/acs_with_imputed_wfh_three_part.dta"
 
 // Save in CSV format  
-// export delimited "output/cps_with_imputed_wfh_three_part.csv", replace
-// display "✓ Saved: output/cps_with_imputed_wfh_three_part.csv"
+// export delimited "output/acs_with_imputed_wfh_three_part.csv", replace
+// display "✓ Saved: output/acs_with_imputed_wfh_three_part.csv"
 
 // Save the model estimates
 estimates restore model_hurdle
@@ -436,8 +436,8 @@ display "• Hybrid workers (0 < alpha < 1): " `hybrid' " (" %4.1f `hybrid'/_N*1
 
 display ""
 display "OUTPUT FILES CREATED:"
-display "• output/cps_with_imputed_wfh_three_part.dta (main output)"
-display "• output/cps_with_imputed_wfh_three_part.csv (CSV version)"
+display "• output/acs_with_imputed_wfh_three_part.dta (main output)"
+display "• output/acs_with_imputed_wfh_three_part.csv (CSV version)"
 display "• output/wfh_model_hurdle.ster (hurdle model estimates)"
 display "• output/wfh_model_top_corner.ster (top corner model estimates)"
 display "• output/wfh_model_interior.ster (interior model estimates)"
@@ -540,5 +540,347 @@ display "{hline 80}"
 display ""
 display "NEXT STEPS:"
 display "• Run 4_validate_calibrate_model.do to perform validation and calibration"
-display "• This will create a calibrated version that matches CPS aggregate WFH patterns"
+display "• This will create a calibrated version that matches ACS aggregate WFH patterns"
 display "• See output/wfh_three_part_model_log.log for detailed results"
+
+/*
+==============================================================================
+WORK ARRANGEMENT STATISTICS - TRAINING DATA (SWAA) - WEIGHTED
+==============================================================================
+*/
+
+display ""
+display "WORK ARRANGEMENT STATISTICS - TRAINING DATA (SWAA) - WEIGHTED"
+display "{hline 65}"
+
+// Temporarily reload SWAA training data to calculate statistics
+preserve
+clear
+import delimited "data/processed/swaa_prepared_for_stata.csv", clear
+
+// Calculate work arrangement categories for training data
+gen work_arrangement_train = "Fully In-Person" if wfh_share == 0
+replace work_arrangement_train = "Hybrid" if wfh_share > 0 & wfh_share < 1
+replace work_arrangement_train = "Fully Remote" if wfh_share == 1
+
+// Basic distribution (weighted with SWAA weights)
+display ""
+display "WORK ARRANGEMENT DISTRIBUTION IN TRAINING DATA (WEIGHTED):"
+display "{hline 60}"
+
+// Use SWAA weights
+display "Using SWAA survey weights (cratio100) for training data statistics"
+
+// Weighted counts and percentages using summarize
+quietly summarize cratio100 if wfh_share == 0
+local fully_inperson_train = r(sum)
+quietly summarize cratio100
+local total_weighted_train = r(sum)
+local pct_inperson_train = (`fully_inperson_train' / `total_weighted_train') * 100
+
+quietly summarize cratio100 if wfh_share > 0 & wfh_share < 1
+local hybrid_train = r(sum)
+local pct_hybrid_train = (`hybrid_train' / `total_weighted_train') * 100
+
+quietly summarize cratio100 if wfh_share == 1
+local fully_remote_train = r(sum)
+local pct_remote_train = (`fully_remote_train' / `total_weighted_train') * 100
+
+display "• Fully In-Person: " %12.0fc `fully_inperson_train' " (" %5.2f `pct_inperson_train' "%)"
+display "• Hybrid: " %19.0fc `hybrid_train' " (" %5.2f `pct_hybrid_train' "%)"
+display "• Fully Remote: " %15.0fc `fully_remote_train' " (" %5.2f `pct_remote_train' "%)"
+
+// Among remote workers (hybrid + fully remote)
+local total_remote_train = `hybrid_train' + `fully_remote_train'
+if `total_remote_train' > 0 {
+    local pct_hybrid_remote_train = (`hybrid_train' / `total_remote_train') * 100
+    local pct_full_remote_train = (`fully_remote_train' / `total_remote_train') * 100
+    
+    display ""
+    display "AMONG REMOTE WORKERS IN TRAINING DATA:"
+    display "{hline 40}"
+    display "• Hybrid: " %19.0fc `hybrid_train' " (" %5.2f `pct_hybrid_remote_train' "% of remote workers)"
+    display "• Fully Remote: " %15.0fc `fully_remote_train' " (" %5.2f `pct_full_remote_train' "% of remote workers)"
+}
+
+// Remote work hours (assuming 40-hour work week) - weighted
+display ""
+display "REMOTE WORK HOURS IN TRAINING DATA (40-hour work week, weighted):"
+display "{hline 65}"
+
+// Calculate average remote hours
+gen remote_hours_train = wfh_share * 40
+
+// Use mean command with weights for proper weighted statistics
+quietly mean remote_hours_train [pweight=cratio100]
+local avg_remote_hours_all_train = _b[remote_hours_train]
+
+quietly mean remote_hours_train [pweight=cratio100] if wfh_share > 0
+local avg_remote_hours_remote_train = _b[remote_hours_train]
+
+quietly mean remote_hours_train [pweight=cratio100] if wfh_share > 0 & wfh_share < 1
+local avg_remote_hours_hybrid_train = _b[remote_hours_train]
+
+display "• Economy-wide average: " %6.2f `avg_remote_hours_all_train' " hours/week"
+display "• Among remote workers: " %6.2f `avg_remote_hours_remote_train' " hours/week"
+display "• Among hybrid workers: " %6.2f `avg_remote_hours_hybrid_train' " hours/week"
+display "• Among fully remote: 40.00 hours/week"
+
+// Percentage of time worked remotely
+display ""
+display "PERCENTAGE OF TIME WORKED REMOTELY IN TRAINING DATA (WEIGHTED):"
+display "{hline 65}"
+
+local pct_time_remote_all_train = `avg_remote_hours_all_train' / 40 * 100
+local pct_time_remote_remote_train = `avg_remote_hours_remote_train' / 40 * 100
+local pct_time_remote_hybrid_train = `avg_remote_hours_hybrid_train' / 40 * 100
+
+display "• Economy-wide: " %6.2f `pct_time_remote_all_train' "%"
+display "• Among remote workers: " %6.2f `pct_time_remote_remote_train' "%"
+display "• Among hybrid workers: " %6.2f `pct_time_remote_hybrid_train' "%"
+display "• Among fully remote: 100.00%"
+
+// Save training data statistics for comparison chart
+tempfile training_stats
+
+// Use collapse instead of contract for weighted statistics
+
+gen weight_count = cratio100  // Create a variable to sum
+collapse (sum) count_train=weight_count, by(work_arrangement_train)
+
+// Calculate percentages
+quietly summarize count_train
+local total = r(sum)
+gen pct_train = (count_train / `total') * 100
+
+rename work_arrangement_train wfh_category
+save `training_stats'
+
+restore
+
+display ""
+display "✓ Training data work arrangement statistics completed"
+
+/*
+==============================================================================
+WORK ARRANGEMENT STATISTICS - THREE-PART MODEL IMPUTED DATA - WEIGHTED
+==============================================================================
+*/
+
+display ""
+display "WORK ARRANGEMENT STATISTICS - THREE-PART MODEL IMPUTED DATA - WEIGHTED"
+display "{hline 75}"
+
+// Calculate work arrangement categories
+gen work_arrangement = "Fully In-Person" if alpha_final == 0
+replace work_arrangement = "Hybrid" if alpha_final > 0 & alpha_final < 1
+replace work_arrangement = "Fully Remote" if alpha_final == 1
+
+// Check if weights exist for ACS data
+capture confirm variable perwt
+if _rc == 0 {
+    display "Using ACS person weights (perwt) for imputed data statistics"
+    
+    // Weighted counts using summarize
+    quietly summarize perwt if alpha_final == 0
+    local fully_inperson = r(sum)
+    quietly summarize perwt
+    local total_weighted = r(sum)
+    local pct_inperson = (`fully_inperson' / `total_weighted') * 100
+
+    quietly summarize perwt if alpha_final > 0 & alpha_final < 1
+    local hybrid = r(sum)
+    local pct_hybrid = (`hybrid' / `total_weighted') * 100
+
+    quietly summarize perwt if alpha_final == 1
+    local fully_remote = r(sum)
+    local pct_remote = (`fully_remote' / `total_weighted') * 100
+    
+    local weight_opt "[pweight=perwt]"
+} 
+else {
+    display "No weights available for ACS data - using unweighted statistics"
+    
+    // Unweighted counts
+    count if alpha_final == 0
+    local fully_inperson = r(N)
+    local total_weighted = _N
+    local pct_inperson = (`fully_inperson' / `total_weighted') * 100
+
+    count if alpha_final > 0 & alpha_final < 1
+    local hybrid = r(N)
+    local pct_hybrid = (`hybrid' / `total_weighted') * 100
+
+    count if alpha_final == 1
+    local fully_remote = r(N)
+    local pct_remote = (`fully_remote' / `total_weighted') * 100
+    
+    local weight_opt ""
+}
+
+display "• Fully In-Person: " %12.0fc `fully_inperson' " (" %5.2f `pct_inperson' "%)"
+display "• Hybrid: " %19.0fc `hybrid' " (" %5.2f `pct_hybrid' "%)"
+display "• Fully Remote: " %15.0fc `fully_remote' " (" %5.2f `pct_remote' "%)"
+
+
+// Among remote workers (hybrid + fully remote)
+local total_remote = `hybrid' + `fully_remote'
+if `total_remote' > 0 {
+    local pct_hybrid_remote = (`hybrid' / `total_remote') * 100
+    local pct_full_remote = (`fully_remote' / `total_remote') * 100
+    
+    display ""
+    display "AMONG REMOTE WORKERS (Hybrid + Fully Remote):"
+    display "{hline 45}"
+    display "• Hybrid: " %19.0fc `hybrid' " (" %5.2f `pct_hybrid_remote' "% of remote workers)"
+    display "• Fully Remote: " %15.0fc `fully_remote' " (" %5.2f `pct_full_remote' "% of remote workers)"
+}
+
+// Remote work hours (assuming 40-hour work week) - weighted
+display ""
+display "REMOTE WORK HOURS (Assuming 40-hour work week, weighted):"
+display "{hline 60}"
+
+// Calculate average remote hours
+gen remote_hours = alpha_final * 40
+
+if "`weight_opt'" != "" {
+    quietly mean remote_hours [pweight=perwt]
+    local avg_remote_hours_all = _b[remote_hours]
+
+    quietly mean remote_hours [pweight=perwt] if alpha_final > 0
+    local avg_remote_hours_remote = _b[remote_hours]
+
+    quietly mean remote_hours [pweight=perwt] if alpha_final > 0 & alpha_final < 1
+    local avg_remote_hours_hybrid = _b[remote_hours]
+} 
+else {
+    quietly mean remote_hours
+    local avg_remote_hours_all = _b[remote_hours]
+
+    quietly mean remote_hours if alpha_final > 0
+    local avg_remote_hours_remote = _b[remote_hours]
+
+    quietly mean remote_hours if alpha_final > 0 & alpha_final < 1
+    local avg_remote_hours_hybrid = _b[remote_hours]
+}
+
+display "• Economy-wide average: " %6.2f `avg_remote_hours_all' " hours/week"
+display "• Among remote workers: " %6.2f `avg_remote_hours_remote' " hours/week"
+display "• Among hybrid workers: " %6.2f `avg_remote_hours_hybrid' " hours/week"
+display "• Among fully remote: 40.00 hours/week"
+
+// Percentage of time worked remotely
+display ""
+display "PERCENTAGE OF TIME WORKED REMOTELY (WEIGHTED):"
+display "{hline 50}"
+
+local pct_time_remote_all = `avg_remote_hours_all' / 40 * 100
+local pct_time_remote_remote = `avg_remote_hours_remote' / 40 * 100
+local pct_time_remote_hybrid = `avg_remote_hours_hybrid' / 40 * 100
+
+display "• Economy-wide: " %6.2f `pct_time_remote_all' "%"
+display "• Among remote workers: " %6.2f `pct_time_remote_remote' "%"
+display "• Among hybrid workers: " %6.2f `pct_time_remote_hybrid' "%"
+
+
+// Clean up temporary variables
+drop work_arrangement remote_hours
+
+display ""
+display "✓ Three-part model work arrangement statistics completed"
+
+// Create comparison bar chart with both training and imputed data
+display ""
+display "CREATING COMPARISON BAR CHART..."
+display "{hline 40}"
+
+// Calculate ACS percentages for comparison
+preserve
+gen work_arrangement = "Fully In-Person" if alpha_final == 0
+replace work_arrangement = "Hybrid" if alpha_final > 0 & alpha_final < 1
+replace work_arrangement = "Fully Remote" if alpha_final == 1
+
+if "`weight_opt'" != "" {
+    // Use collapse for weighted ACS data
+    gen weight_count = perwt
+    collapse (sum) count_imputed=weight_count, by(work_arrangement)
+    
+    // Calculate percentages
+    quietly summarize count_imputed
+    local total = r(sum)
+    gen pct_imputed = (count_imputed / `total') * 100
+} 
+else {
+    // Use contract for unweighted ACS data
+    contract work_arrangement, freq(count_imputed) percent(pct_imputed)
+}
+rename work_arrangement wfh_category
+
+// Merge with training data statistics
+merge 1:1 wfh_category using `training_stats', nogenerate
+
+// Handle missing values (fill with 0 if category doesn't exist in one dataset)
+replace pct_train = 0 if missing(pct_train)
+replace pct_imputed = 0 if missing(pct_imputed)
+
+// Create the comparison bar chart
+graph bar pct_train pct_imputed, over(wfh_category, sort(pct_imputed) descending) ///
+    title("Work Arrangement Distribution: Training vs. Imputed Data") ///
+    subtitle("Weighted estimates using survey weights") ///
+    ytitle("Percentage of Workers") ///
+    ylabel(0(10)100) ///
+    legend(label(1 "SWAA Training Data") label(2 "ACS Imputed Data") ///
+           position(6) cols(2)) ///
+    bar(1, color(navy)) bar(2, color(maroon)) ///
+    blabel(bar, format(%4.1f) position(outside)) ///
+    note("Training data weighted with SWAA weights; Imputed data weighted with ACS weights (if available)") ///
+    scheme(s1color)
+    
+graph export "output/wfh_categories_comparison_bar.png", replace width(1000) height(700)
+display "✓ Saved: output/wfh_categories_comparison_bar.png"
+
+// Display comparison table
+display ""
+display "TRAINING VS. IMPUTED DATA COMPARISON TABLE:"
+display "{hline 50}"
+list wfh_category pct_train pct_imputed, clean noobs separator(0)
+
+restore
+
+// Original single dataset bar chart (also fix this section)
+gen wfh_category = "Fully In-Person" if alpha_final == 0
+replace wfh_category = "Hybrid" if alpha_final > 0 & alpha_final < 1
+replace wfh_category = "Fully Remote" if alpha_final == 1
+
+preserve
+if "`weight_opt'" != "" {
+    // Use collapse for weighted data
+    gen weight_count = perwt
+    collapse (sum) count=weight_count, by(wfh_category)
+    
+    // Calculate percentages
+    quietly summarize count
+    local total = r(sum)
+    gen pct = (count / `total') * 100
+} 
+else {
+    // Use contract for unweighted data
+    contract wfh_category, freq(count) percent(pct)
+}
+
+sort count
+graph bar pct, over(wfh_category, sort(count) descending) ///
+    title("Work Arrangement Distribution (Three-Part Model)") ///
+    ytitle("Percentage of Workers") ///
+    ylabel(0(10)100) ///
+    blabel(bar, format(%4.1f)) ///
+    note("Based on imputed WFH shares from three-part model") ///
+    scheme(s1color)
+    
+graph export "output/wfh_categories_bar.png", replace width(800) height(600)
+display "✓ Saved: output/wfh_categories_bar.png"
+restore
+
+// Clean up temporary variables
+drop wfh_category

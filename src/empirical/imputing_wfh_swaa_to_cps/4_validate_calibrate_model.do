@@ -4,13 +4,13 @@ WFH IMPUTATION PROJECT - VALIDATION AND CALIBRATION
 ==============================================================================
 
 This Stata script performs validation and calibration of the three-part model
-WFH imputation using the CPS WFH indicator as ground truth.
+WFH imputation using the ACS WFH indicator as ground truth.
 
 This script should be run AFTER the main three-part model imputation has been
 completed and the results have been saved.
 
 Prerequisites:
-- output/cps_with_imputed_wfh_three_part.dta must exist
+- output/acs_with_imputed_wfh_three_part.dta must exist
 - The dataset must contain: alpha_final, p_remote_any, p_full_remote_cond, 
   alpha_hybrid_pred, and wfh variables
 
@@ -48,7 +48,7 @@ display "Loading imputed dataset for validation..."
 display "{hline 45}"
 
 // Load the dataset with imputed WFH shares
-use "output/cps_with_imputed_wfh_three_part.dta", clear
+use "output/acs_with_imputed_wfh_three_part.dta", clear
 
 // Display basic info about the dataset
 display ""
@@ -77,13 +77,13 @@ display "✓ All required variables found"
 
 /*
 ==============================================================================
-VALIDATION AND CALIBRATION USING CPS WFH INDICATOR
+VALIDATION AND CALIBRATION USING ACS WFH INDICATOR
 ==============================================================================
 */
 
 display ""
 display "{hline 80}"
-display "VALIDATION AND CALIBRATION USING CPS WFH INDICATOR"
+display "VALIDATION AND CALIBRATION USING ACS WFH INDICATOR"
 display "{hline 80}"
 
 // Check if WFH validation variable exists
@@ -107,8 +107,8 @@ if _rc == 0 {
         display "VALIDATION STEP 1: Comparing Mean Imputed Alpha by Actual WFH Status"
         display "{hline 70}"
         
-        // Summary table (updated for Stata 17+ syntax)
-        table wfh, statistic(mean alpha_final) statistic(count alpha_final) nformat(%6.4f)
+        // Summary table - use tabstat for compatibility
+        tabstat alpha_final, by(wfh) statistics(mean count) nototal
         
         // Statistical test
         display ""
@@ -129,7 +129,7 @@ if _rc == 0 {
                (kdensity alpha_final if wfh==1, legend(label(2 "Did WFH (wfh=1)"))), ///
                title("Distribution of Imputed WFH Share by Actual WFH Status", size(medium)) ///
                xtitle("Imputed WFH Share (alpha_final)") ytitle("Density") ///
-               note("Source: CPS data with 3-part model imputation") ///
+               note("Source: ACS data with 3-part model imputation") ///
                scheme(s1color)
                
         graph export "output/validation_alpha_by_wfh_status.png", replace width(800) height(600)
@@ -145,13 +145,6 @@ if _rc == 0 {
         display "VALIDATION STEP 3: ROC Analysis of Hurdle Model's Predictive Power"
         display "{hline 65}"
         
-        /* ORIGINAL ROC ANALYSIS - COMMENTED OUT DUE TO PERFORMANCE WITH LARGE DATASET
-        // ROC analysis (simplified for large dataset - no graph)
-        display "Performing ROC analysis on full dataset... "
-        roctab wfh p_remote_any, summary
-        display "✓ Finished ROC analysis on full dataset"
-        */
-        
         // ROC analysis using sample (faster alternative)
         display "Performing ROC analysis using 10% sample (faster for large dataset)..."
         preserve
@@ -166,14 +159,14 @@ if _rc == 0 {
         display ""
         display "Creating ROC curve graph using 10% random sample..."
         preserve
-            // Use 10% random sample for graphing (still ~200k observations)
+            // Use 10% random sample for graphing
             sample 10
             display "Sample size for ROC graph: " _N " observations"
             
             // Create ROC graph using logistic regression
             quietly logistic wfh p_remote_any
             lroc, title("ROC Curve: Predicting Actual WFH from Model Probabilities") ///
-                  subtitle("Based on 10% random sample of CPS data") ///
+                  subtitle("Based on 10% random sample of ACS data") ///
                   note("Sample-based analysis for computational efficiency") ///
                   scheme(s1color)
         
@@ -181,11 +174,11 @@ if _rc == 0 {
             display "✓ Saved: output/validation_roc_curve.png"
         restore
         
-        // Alternative: Use roctab with graph on sample if you prefer
+        // Alternative: Use roctab with graph on sample
         display ""
         display "Creating additional ROC analysis with graph using sample..."
         preserve
-            sample 5  // Use 5% sample (~100k observations) for roctab graph
+            sample 5  // Use 5% sample for roctab graph
             display "Sample size for roctab graph: " _N " observations"
             
             roctab wfh p_remote_any, graph ///
@@ -201,17 +194,17 @@ if _rc == 0 {
         
         /*
         ==============================================================================
-        CALIBRATION STEP 1: CALCULATE TARGET PROPORTION FROM CPS
+        CALIBRATION STEP 1: CALCULATE TARGET PROPORTION FROM ACS
         ==============================================================================
         */
         
         display ""
-        display "CALIBRATION STEP 1: Calculating Target Proportion from CPS WFH Indicator"
+        display "CALIBRATION STEP 1: Calculating Target Proportion from ACS WFH Indicator"
         display "{hline 70}"
         
         quietly summarize wfh
         local target_p_remote_any = r(mean)
-        display "Target proportion for any remote work (from CPS): " %6.4f `target_p_remote_any'
+        display "Target proportion for any remote work (from ACS): " %6.4f `target_p_remote_any'
         
         /*
         ==============================================================================
@@ -254,7 +247,7 @@ if _rc == 0 {
         
         // Initialize the calibrated variable
         gen alpha_final_calibrated = .
-        label variable alpha_final_calibrated "Final Imputed WFH Share (Calibrated to CPS)"
+        label variable alpha_final_calibrated "Final Imputed WFH Share (Calibrated to ACS)"
         
         // Stage 1 (Calibrated): Assign in-person based on the new cutoff
         replace alpha_final_calibrated = 0 if p_remote_any <= `p_cutoff_value'
@@ -300,17 +293,30 @@ if _rc == 0 {
         // Correlation between original and calibrated
         corr alpha_final alpha_final_calibrated
         
-        // Distribution comparison by WFH status (updated for Stata 17+ syntax)
+        // Distribution comparison by WFH status
         display ""
         display "Mean alpha by WFH status - Original vs Calibrated:"
-        table wfh, statistic(mean alpha_final) statistic(mean alpha_final_calibrated) nformat(%6.4f)
+        display "WFH Status | Original Mean | Calibrated Mean"
+        display "{hline 40}"
+        
+        quietly summarize alpha_final if wfh == 0
+        local orig_mean_0 = r(mean)
+        quietly summarize alpha_final_calibrated if wfh == 0
+        local calib_mean_0 = r(mean)
+        display "WFH = 0    |    " %8.4f `orig_mean_0' "   |     " %8.4f `calib_mean_0'
+        
+        quietly summarize alpha_final if wfh == 1
+        local orig_mean_1 = r(mean)
+        quietly summarize alpha_final_calibrated if wfh == 1
+        local calib_mean_1 = r(mean)
+        display "WFH = 1    |    " %8.4f `orig_mean_1' "   |     " %8.4f `calib_mean_1'
         
         // Create comparison plot
         twoway (kdensity alpha_final, legend(label(1 "Original Imputation"))) ///
                (kdensity alpha_final_calibrated, legend(label(2 "Calibrated Imputation"))), ///
                title("Comparison of Original vs Calibrated Imputations", size(medium)) ///
                xtitle("Imputed WFH Share") ytitle("Density") ///
-               note("Calibrated version matches CPS aggregate WFH share") ///
+               note("Calibrated version matches ACS aggregate WFH share") ///
                scheme(s1color)
                
         graph export "output/comparison_original_vs_calibrated.png", replace width(800) height(600)
@@ -429,17 +435,17 @@ if _rc == 0 {
         label variable validation_performed "Whether WFH validation was performed"
         
         gen target_wfh_share = `target_p_remote_any'
-        label variable target_wfh_share "Target WFH share from CPS validation data"
+        label variable target_wfh_share "Target WFH share from ACS validation data"
         
         gen calibration_cutoff = `p_cutoff_value'
         label variable calibration_cutoff "Cutoff value used for calibration"
         
         // Save updated dataset
-        save "output/cps_with_imputed_wfh_validated.dta", replace
-        display "✓ Saved: output/cps_with_imputed_wfh_validated.dta"
+        save "output/acs_with_imputed_wfh_validated.dta", replace
+        display "✓ Saved: output/acs_with_imputed_wfh_validated.dta"
         
-        export delimited "output/cps_with_imputed_wfh_validated.csv", replace
-        display "✓ Saved: output/cps_with_imputed_wfh_validated.csv"
+        export delimited "output/acs_with_imputed_wfh_validated.csv", replace
+        display "✓ Saved: output/acs_with_imputed_wfh_validated.csv"
         
         /*
         ==============================================================================
@@ -459,14 +465,6 @@ if _rc == 0 {
         local p_value = r(p)
         display "• Mean difference in imputed alpha (WFH=1 vs WFH=0): " %6.4f `mean_diff'
         display "• P-value for difference: " %6.4f `p_value'
-        
-        /* ORIGINAL AUC CALCULATION - COMMENTED OUT DUE TO PERFORMANCE WITH LARGE DATASET
-        quietly roctab wfh p_remote_any
-        local auc = r(area)
-        display "• ROC Area Under Curve (AUC): " %6.4f `auc'
-        */
-        
-        // Use sample-based AUC calculated earlier
         display "• ROC Area Under Curve (AUC - from 10% sample): " %6.4f `auc_sample'
         
         display ""
@@ -475,7 +473,7 @@ if _rc == 0 {
         count if alpha_final > 0
         local original_any_remote = r(N) / _N
         display "• Original any-remote share: " %6.4f `original_any_remote'
-        display "• Target any-remote share (CPS): " %6.4f `target_p_remote_any'
+        display "• Target any-remote share (ACS): " %6.4f `target_p_remote_any'
         display "• Calibrated any-remote share: " %6.4f `calibrated_share'
         display "• Calibration accuracy: " %6.4f (1 - abs(`calibrated_share' - `target_p_remote_any'))
         
@@ -483,12 +481,12 @@ if _rc == 0 {
         display "CLASSIFICATION PERFORMANCE:"
         display "• Original model accuracy: " %6.4f `accuracy'
         display "• Calibrated model accuracy: " %6.4f `accuracy_c'
-        display "• Original model AUC: " %6.4f `auc'
+        display "• Original model AUC: " %6.4f `auc_sample'
         
         display ""
         display "OUTPUT FILES WITH VALIDATION:"
-        display "• output/cps_with_imputed_wfh_validated.dta (main output with validation)"
-        display "• output/cps_with_imputed_wfh_validated.csv (CSV version)"
+        display "• output/acs_with_imputed_wfh_validated.dta (main output with validation)"
+        display "• output/acs_with_imputed_wfh_validated.csv (CSV version)"
         display "• output/validation_alpha_by_wfh_status.png (distribution comparison)"
         display "• output/validation_roc_curve.png (ROC analysis)"
         display "• output/comparison_original_vs_calibrated.png (calibration comparison)"
@@ -505,6 +503,220 @@ else {
     display "Skipping validation and calibration steps"
     display "This is expected if validation data is not available"
 }
+
+/*
+==============================================================================
+WORK ARRANGEMENT STATISTICS - ORIGINAL VS CALIBRATED IMPUTATION - WEIGHTED
+==============================================================================
+*/
+
+display ""
+display "WORK ARRANGEMENT STATISTICS - ORIGINAL VS CALIBRATED IMPUTATION - WEIGHTED"
+display "{hline 80}"
+
+// Check if weights exist for ACS data
+capture confirm variable perwt
+if _rc == 0 {
+    local weight_opt "perwt"
+    display "Using ACS person weights (perwt) for validation statistics"
+}
+else {
+    local weight_opt ""
+    display "No weights available for ACS data - using unweighted statistics"
+}
+
+// Original imputation statistics (weighted)
+display ""
+display "ORIGINAL IMPUTATION STATISTICS (WEIGHTED):"
+display "{hline 45}"
+
+if "`weight_opt'" != "" {
+    // Weighted counts using summarize
+    quietly summarize `weight_opt' if alpha_final == 0
+    local orig_inperson = r(sum)
+    quietly summarize `weight_opt'
+    local total_weighted = r(sum)
+    local orig_pct_inperson = (`orig_inperson' / `total_weighted') * 100
+
+    quietly summarize `weight_opt' if alpha_final > 0 & alpha_final < 1
+    local orig_hybrid = r(sum)
+    local orig_pct_hybrid = (`orig_hybrid' / `total_weighted') * 100
+
+    quietly summarize `weight_opt' if alpha_final == 1
+    local orig_remote = r(sum)
+    local orig_pct_remote = (`orig_remote' / `total_weighted') * 100
+}
+else {
+    // Unweighted counts
+    count if alpha_final == 0
+    local orig_inperson = r(N)
+    local total_weighted = _N
+    local orig_pct_inperson = (`orig_inperson' / `total_weighted') * 100
+
+    count if alpha_final > 0 & alpha_final < 1
+    local orig_hybrid = r(N)
+    local orig_pct_hybrid = (`orig_hybrid' / `total_weighted') * 100
+
+    count if alpha_final == 1
+    local orig_remote = r(N)
+    local orig_pct_remote = (`orig_remote' / `total_weighted') * 100
+}
+
+display "• Fully In-Person: " %12.0fc `orig_inperson' " (" %5.2f `orig_pct_inperson' "%)"
+display "• Hybrid: " %19.0fc `orig_hybrid' " (" %5.2f `orig_pct_hybrid' "%)"
+display "• Fully Remote: " %15.0fc `orig_remote' " (" %5.2f `orig_pct_remote' "%)"
+
+local orig_total_remote = `orig_hybrid' + `orig_remote'
+if `orig_total_remote' > 0 {
+    local orig_pct_hybrid_remote = (`orig_hybrid' / `orig_total_remote') * 100
+    local orig_pct_full_remote = (`orig_remote' / `orig_total_remote') * 100
+    
+    display "Among remote workers:"
+    display "  - Hybrid: " %5.2f `orig_pct_hybrid_remote' "% | Fully Remote: " %5.2f `orig_pct_full_remote' "%"
+}
+
+// Calibrated imputation statistics (weighted)
+display ""
+display "CALIBRATED IMPUTATION STATISTICS (WEIGHTED):"
+display "{hline 47}"
+
+if "`weight_opt'" != "" {
+    quietly summarize `weight_opt' if alpha_final_calibrated == 0
+    local calib_inperson = r(sum)
+    local calib_pct_inperson = (`calib_inperson' / `total_weighted') * 100
+
+    quietly summarize `weight_opt' if alpha_final_calibrated > 0 & alpha_final_calibrated < 1
+    local calib_hybrid = r(sum)
+    local calib_pct_hybrid = (`calib_hybrid' / `total_weighted') * 100
+
+    quietly summarize `weight_opt' if alpha_final_calibrated == 1
+    local calib_remote = r(sum)
+    local calib_pct_remote = (`calib_remote' / `total_weighted') * 100
+}
+else {
+    count if alpha_final_calibrated == 0
+    local calib_inperson = r(N)
+    local calib_pct_inperson = (`calib_inperson' / `total_weighted') * 100
+
+    count if alpha_final_calibrated > 0 & alpha_final_calibrated < 1
+    local calib_hybrid = r(N)
+    local calib_pct_hybrid = (`calib_hybrid' / `total_weighted') * 100
+
+    count if alpha_final_calibrated == 1
+    local calib_remote = r(N)
+    local calib_pct_remote = (`calib_remote' / `total_weighted') * 100
+}
+
+display "• Fully In-Person: " %12.0fc `calib_inperson' " (" %5.2f `calib_pct_inperson' "%)"
+display "• Hybrid: " %19.0fc `calib_hybrid' " (" %5.2f `calib_pct_hybrid' "%)"
+display "• Fully Remote: " %15.0fc `calib_remote' " (" %5.2f `calib_pct_remote' "%)"
+
+local calib_total_remote = `calib_hybrid' + `calib_remote'
+if `calib_total_remote' > 0 {
+    local calib_pct_hybrid_remote = (`calib_hybrid' / `calib_total_remote') * 100
+    local calib_pct_full_remote = (`calib_remote' / `calib_total_remote') * 100
+    
+    display "Among remote workers:"
+    display "  - Hybrid: " %5.2f `calib_pct_hybrid_remote' "% | Fully Remote: " %5.2f `calib_pct_full_remote' "%"
+}
+
+// Remote work hours comparison (weighted)
+display ""
+display "REMOTE WORK HOURS COMPARISON (40-hour work week, weighted):"
+display "{hline 65}"
+
+// Original hours
+gen orig_remote_hours = alpha_final * 40
+gen calib_remote_hours = alpha_final_calibrated * 40
+
+if "`weight_opt'" != "" {
+    quietly mean orig_remote_hours [pweight=`weight_opt']
+    local orig_avg_all = _b[orig_remote_hours]
+    quietly mean orig_remote_hours [pweight=`weight_opt'] if alpha_final > 0
+    local orig_avg_remote = _b[orig_remote_hours]
+    quietly mean orig_remote_hours [pweight=`weight_opt'] if alpha_final > 0 & alpha_final < 1
+    local orig_avg_hybrid = _b[orig_remote_hours]
+
+    // Calibrated hours
+    quietly mean calib_remote_hours [pweight=`weight_opt']
+    local calib_avg_all = _b[calib_remote_hours]
+    quietly mean calib_remote_hours [pweight=`weight_opt'] if alpha_final_calibrated > 0
+    local calib_avg_remote = _b[calib_remote_hours]
+    quietly mean calib_remote_hours [pweight=`weight_opt'] if alpha_final_calibrated > 0 & alpha_final_calibrated < 1
+    local calib_avg_hybrid = _b[calib_remote_hours]
+}
+else {
+    quietly mean orig_remote_hours
+    local orig_avg_all = _b[orig_remote_hours]
+    quietly mean orig_remote_hours if alpha_final > 0
+    local orig_avg_remote = _b[orig_remote_hours]
+    quietly mean orig_remote_hours if alpha_final > 0 & alpha_final < 1
+    local orig_avg_hybrid = _b[orig_remote_hours]
+
+    // Calibrated hours
+    quietly mean calib_remote_hours
+    local calib_avg_all = _b[calib_remote_hours]
+    quietly mean calib_remote_hours if alpha_final_calibrated > 0
+    local calib_avg_remote = _b[calib_remote_hours]
+    quietly mean calib_remote_hours if alpha_final_calibrated > 0 & alpha_final_calibrated < 1
+    local calib_avg_hybrid = _b[calib_remote_hours]
+}
+
+display "                          Original    Calibrated    Difference"
+display "Economy-wide average:     " %8.2f `orig_avg_all' "     " %8.2f `calib_avg_all' "     " %8.2f (`calib_avg_all' - `orig_avg_all')
+display "Among remote workers:     " %8.2f `orig_avg_remote' "     " %8.2f `calib_avg_remote' "     " %8.2f (`calib_avg_remote' - `orig_avg_remote')
+display "Among hybrid workers:     " %8.2f `orig_avg_hybrid' "     " %8.2f `calib_avg_hybrid' "     " %8.2f (`calib_avg_hybrid' - `orig_avg_hybrid')
+
+// Percentage of time worked remotely (weighted)
+display ""
+display "PERCENTAGE OF TIME WORKED REMOTELY (WEIGHTED):"
+display "{hline 50}"
+
+local orig_pct_all = `orig_avg_all' / 40 * 100
+local orig_pct_remote = `orig_avg_remote' / 40 * 100
+local orig_pct_hybrid = `orig_avg_hybrid' / 40 * 100
+
+local calib_pct_all = `calib_avg_all' / 40 * 100
+local calib_pct_remote = `calib_avg_remote' / 40 * 100
+local calib_pct_hybrid = `calib_avg_hybrid' / 40 * 100
+
+display "                          Original    Calibrated    Difference"
+display "Economy-wide:             " %7.2f `orig_pct_all' "%     " %7.2f `calib_pct_all' "%     " %7.2f (`calib_pct_all' - `orig_pct_all') "%"
+display "Among remote workers:     " %7.2f `orig_pct_remote' "%     " %7.2f `calib_pct_remote' "%     " %7.2f (`calib_pct_remote' - `orig_pct_remote') "%"
+display "Among hybrid workers:     " %7.2f `orig_pct_hybrid' "%     " %7.2f `calib_pct_hybrid' "%     " %7.2f (`calib_pct_hybrid' - `orig_pct_hybrid') "%"
+
+// ACS Validation Statistics (weighted)
+display ""
+display "ACS VALIDATION REFERENCE (WEIGHTED):"
+display "{hline 35}"
+
+if "`weight_opt'" != "" {
+    quietly summarize `weight_opt' if wfh == 1
+    local acs_remote_count = r(sum)
+    local acs_remote_pct = (`acs_remote_count' / `total_weighted') * 100
+
+    quietly summarize `weight_opt' if wfh == 0
+    local acs_inperson_count = r(sum)
+    local acs_inperson_pct = (`acs_inperson_count' / `total_weighted') * 100
+}
+else {
+    count if wfh == 1
+    local acs_remote_count = r(N)
+    local acs_remote_pct = (`acs_remote_count' / `total_weighted') * 100
+
+    count if wfh == 0
+    local acs_inperson_count = r(N)
+    local acs_inperson_pct = (`acs_inperson_count' / `total_weighted') * 100
+}
+
+display "• ACS Any Remote Work: " %12.0fc `acs_remote_count' " (" %5.2f `acs_remote_pct' "%)"
+display "• ACS Fully In-Person: " %12.0fc `acs_inperson_count' " (" %5.2f `acs_inperson_pct' "%)"
+
+// Clean up temporary variables
+drop orig_remote_hours calib_remote_hours
+
+display ""
+display "✓ Comparative work arrangement statistics completed (using weights where available)"
 
 // Close log file
 capture log close _all
