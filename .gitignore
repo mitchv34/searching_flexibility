@@ -5,6 +5,9 @@
 ## Raw data files (too large)
 data/raw/
 
+## Intermediate processed data files
+data/processed/
+
 ##  history folder (previous versions of project files)
 .history/
 
