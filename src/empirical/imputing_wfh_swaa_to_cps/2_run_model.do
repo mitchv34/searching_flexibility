@@ -16,19 +16,29 @@ Date: July 2025
 ==============================================================================
 */
 
+* Set global paths
+* global project_root "/Users/mitchv34/Work/searching_flexibility/"
+global project_root "/project/high_tech_ind/WFH/searching_flexibility/"
+global data_path "$project_root/data"
+global code_path "$project_root/src"
+global output_path "$project_root/output"
+
 clear all
 set more off
 set linesize 120
 
-// Set working directory to project root
-cd "v:\high_tech_ind\WFH\searching_flexibility"
+// Change to project directory
+cd "$project_root"
+
+// Change to project directory
+cd "$project_root"
 
 // Create output directory if it doesn't exist
-capture mkdir "output"
+capture mkdir "$output_path"
 
 // Create log file
 capture log close _all
-capture log using "output/wfh_imputation_log.log", replace
+capture log using "$output_path/wfh_imputation_log.log", replace
 
 display "{hline 80}"
 display "WFH IMPUTATION - ECONOMETRIC MODELING & IMPUTATION"
@@ -46,7 +56,7 @@ display "{hline 50}"
 
 // Import the prepared SWAA training data
 // Note: The filename corresponds to SWAA_OUTPUT_FILE in the Python script
-import delimited "data/processed/swaa_prepared_for_stata.csv", clear
+import delimited "$data_path/processed/swaa_prepared_for_stata.csv", clear
 
 // Display basic information about the SWAA data
 describe
@@ -124,7 +134,7 @@ display "Model Estimation Results:"
 estimates replay wfh_model
 
 // Save model estimates
-estimates save "output/wfh_model_estimates", replace
+estimates save "$output_path/wfh_model_estimates", replace
 
 /*
 ==============================================================================
@@ -139,7 +149,7 @@ display "{hline 50}"
 // Clear memory and import ACS prediction data
 // Note: The filename corresponds to ACS_OUTPUT_FILE in the Python script
 clear
-import delimited "data/processed/acs_prepared_for_stata.csv", clear
+import delimited "$data_path/processed/acs_prepared_for_stata.csv", clear
 
 // Display basic information about the ACS data
 describe
@@ -233,15 +243,15 @@ quietly duplicates report unique_person_id
 display r(unique_N)
 
 // Save as Stata data file with unique identifier preserved
-save "output/acs_with_imputed_wfh.dta", replace
+save "$output_path/acs_with_imputed_wfh.dta", replace
 
 // Also save as CSV for broader compatibility
-export delimited "output/acs_with_imputed_wfh.csv", replace
+export delimited "$output_path/acs_with_imputed_wfh.csv", replace
 
 display ""
 display "Final dataset saved successfully!"
-display "Stata file: output/acs_with_imputed_wfh.dta"
-display "CSV file: output/acs_with_imputed_wfh.csv"
+display "Stata file: $output_path/acs_with_imputed_wfh.dta"
+display "CSV file: $output_path/acs_with_imputed_wfh.csv"
 display "Both files contain unique_person_id for merging back to original ACS data"
 
 /*
@@ -356,10 +366,10 @@ display "- Mean WFH share: " %6.4f `mean_alpha'
 display "- Unique identifier preserved for merging: unique_person_id"
 display ""
 display "Files created:"
-display "- output/wfh_model_estimates.ster (model estimates)"
-display "- output/acs_with_imputed_wfh.dta (main output with unique_person_id)"
-display "- output/acs_with_imputed_wfh.csv (CSV version with unique_person_id)"
-display "- output/wfh_imputation_log.log (this log)"
+display "- $output_path/wfh_model_estimates.ster (model estimates)"
+display "- $output_path/acs_with_imputed_wfh.dta (main output with unique_person_id)"
+display "- $output_path/acs_with_imputed_wfh.csv (CSV version with unique_person_id)"
+display "- $output_path/wfh_imputation_log.log (this log)"
 display ""
 display "NOTE: Use unique_person_id to merge imputed WFH shares back to original ACS data"
 display "ACS preprocessing documented in doc/acs_processing_polar.md"

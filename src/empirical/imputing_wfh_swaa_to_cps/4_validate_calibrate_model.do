@@ -24,7 +24,12 @@ set more off
 set linesize 120
 
 // Set working directory to project root
-cd "v:\high_tech_ind\WFH\searching_flexibility"
+* global project_root "/Users/mitchv34/Work/searching_flexibility/"
+global project_root "/project/high_tech_ind/WFH/searching_flexibility/"
+global data_path "$project_root/data"
+global code_path "$project_root/src"
+global output_path "$project_root/output"
+
 
 // Create output directory if it doesn't exist
 capture mkdir "output"
