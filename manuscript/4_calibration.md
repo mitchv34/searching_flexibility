@@ -14,7 +14,6 @@ We adopt specific functional forms for the production and worker cost functions 
     The parameter $c_0 > 0$ scales the overall disutility, and the curvature parameter $\chi > 0$ ensures that the marginal disutility of in-office time is increasing, a standard feature that helps ensure well-behaved interior solutions for $\alpha$.
 
 {{< include "4_calibration_cobb_douglas_g_function.md" >}}
-{{< include "4_calibration_quasilinear_g_function.md" >}}
 
 {{< include "4_calibration_1_matching_cobb_douglas.md" >}}
 #### Calibration

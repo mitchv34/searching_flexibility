@@ -460,6 +460,7 @@ forms for the production and worker cost functions to derive an
 analytical solution for the optimal work arrangement, \(\alpha^*\).
 
 \begin{itemize}
+\tightlist
 \item
   \textbf{In-Office Cost Function:} The worker's disutility from
   in-office work is assumed to be a convex function of the time spent in
@@ -469,39 +470,80 @@ analytical solution for the optimal work arrangement, \(\alpha^*\).
   \(\chi > 0\) ensures that the marginal disutility of in-office time is
   increasing, a standard feature that helps ensure well-behaved interior
   solutions for \(\alpha\).
-\item
-  \textbf{Production Function:} The baseline productivity, \(A(h)\), is
-  assumed to be linear in worker skill, while the relative productivity
-  of remote work, \(g(h, \psi)\), is specified as a semi-logarithmic
-  function to capture complementarities with diminishing returns.
-  \[A(h) = A_1 h\] \[g(h, \psi) = \psi_0 h^\phi \psi^\nu\] Here, \(A_1\)
-  is a general productivity scalar. In the remote productivity function,
-  \(\psi_{0}\) acts as a scaling factor or baseline efficiency. The
-  parameters \(\phi\) and \(\nu\) are the elasticities of remote
-  productivity with respect to worker skill (\(h\)) and firm efficiency
-  (\(\psi\)), respectively. This multiplicative form naturally embeds a
-  complementarity between skill and firm efficiency, meaning the
-  marginal productivity of a worker's skill in a remote setting is
-  higher at a firm with greater remote efficiency, and vice-versa.
-\item
-  \textbf{Production Function:} The baseline productivity, \(A(h)\), is
-  assumed to be linear in worker skill, while the relative productivity
-  of remote work, \(g(h, \psi)\), is specified as a semi-logarithmic
-  function to capture complementarities with diminishing returns.
-  \[A(h) = A_1 h\] \[g(h, \psi) = \nu\psi - \psi_0 + \phi\log(h)\] Here,
-  \(A_1\) is a general productivity scalar, \(\nu\) scales the impact of
-  firm efficiency, \(\psi_0\) is a baseline friction for remote work,
-  and \(\phi\) governs the skill-remote complementarity.
 \end{itemize}
 
-\textbf{Matching and Vacancy Costs:} The matching process and the cost
-of creating jobs are specified as follows: - \textbf{Matching Function:}
-We assume a standard Cobb-Douglas matching function, which exhibits
-constant returns to scale. \[
-M(L, V) = \gamma_{0} L^{\gamma_{1}} V^{1-\gamma_{1}}
-\] where \(\gamma_0 > 0\) is matching efficiency and
-\(\gamma_1 \in (0,1)\) is the elasticity of matches with respect to
-unemployment.
+\textbf{Production Function:} The baseline productivity, \(A(h)\), is
+assumed to be linear in worker skill: \[A(h) = A_1 h\]The relative
+productivity of remote work, \(g(h, \psi)\), is specified using a power
+function to capture the interaction between worker and firm
+characteristics in determining remote output:
+\[g(h, \psi) = \psi_0 h^\phi \psi^\nu\]Here, \(A_1\) is a productivity
+scalar. In the remote productivity function, \(\psi_0\) is a scaling
+factor, while \(\phi\) and \(\nu\) are the elasticities of remote
+productivity with respect to worker skill (\(h\)) and firm efficiency
+(\(\psi\)), respectively. The parameter \(\phi\) is particularly
+important as it governs whether skill and firm technology are
+complements (\(\phi > 0\)) or substitutes (\(\phi < 0\)) in remote
+production.
+
+These functional forms allow us to analytically characterize the
+thresholds that govern the optimal work arrangement. The upper
+threshold, \(\overline{\psi}(h)\), which separates hybrid from
+full-remote work, is strictly decreasing in worker skill whenever skill
+and technology are complements (\(\phi > 0\)). This provides the
+intuitive result that higher-skilled workers require a lower level of
+firm efficiency to make full remote work optimal.
+
+The shape of the lower threshold, \(\underline{\psi}(h)\), is richer, as
+it is determined by a tension between the rising opportunity cost of
+remote work (the loss of a more productive worker from the office) and
+the skill-remote interaction effect. The nature of this trade-off
+depends critically on the skill-remote elasticity, \(\phi\):
+
+\begin{itemize}
+\item
+  \textbf{When skill and technology are complements (\(\phi > 0\)):} The
+  lower threshold has an \textbf{inverted U-shape}. For low-skill
+  workers, the rising opportunity cost dominates, making the threshold
+  increase with skill. For high-skill workers, the powerful
+  complementarity effect dominates, making the threshold decrease with
+  skill. This implies that middle-skill workers face the highest
+  efficiency requirement to be offered a hybrid arrangement.
+\item
+  \textbf{When skill and technology are weak substitutes
+  (\(-1 < \phi < 0\)):} The lower threshold is \textbf{strictly
+  increasing}. As a worker's skill increases, they become both more
+  valuable in the office (higher opportunity cost) and relatively less
+  effective remotely (due to substitutability). Both forces push in the
+  same direction, requiring a progressively higher level of firm
+  efficiency to justify a hybrid offer.
+\item
+  \textbf{When skill and technology are strong substitutes
+  (\(\phi < -1\)):} The lower threshold has a \textbf{U-shape}. For
+  low-skill workers, the strong substitutability effect is dominant,
+  causing the threshold to fall with skill. For high-skill workers, the
+  opportunity cost effect eventually dominates again, causing the
+  threshold to rise. This implies that middle-skill workers are the
+  \emph{most} likely to receive a hybrid offer.
+\end{itemize}
+
+This rich set of possibilities highlights the flexibility of the
+framework in capturing diverse sorting patterns. The full mathematical
+derivation of these cases and the formulas are presented in
+Section~\ref{sec-appendix-g-cd}
+
+\textbf{Matching and Vacancy Costs:}
+
+\begin{itemize}
+\tightlist
+\item
+  We assume a standard Cobb-Douglas matching function, which exhibits
+  constant returns to scale. \[
+  M(L, V) = \gamma_{0} L^{\gamma_{1}} V^{1-\gamma_{1}}
+  \] where \(\gamma_0 > 0\) is matching efficiency and
+  \(\gamma_1 \in (0,1)\) is the elasticity of matches with respect to
+  unemployment.
+\end{itemize}
 
 \subsubsection{Firm's Vacancy Posting
 Problem}\label{firms-vacancy-posting-problem}
@@ -618,16 +660,387 @@ from {Home}.''} Workign Paper. \url{https://doi.org/10.3386/w30866}.
 
 \section{Appendix}\label{appendix}
 
+\subsection{Derivation of the Optimal Work
+Arrangement}\label{sec-appendix-g-cd}
+
+This appendix derives the optimal remote work policy,
+\(\alpha^*(h, \psi)\), and analyzes the properties of the threshold
+functions that partition the labor market into distinct work arrangement
+regimes.
+
+\subsubsection{The Maximization Problem}\label{the-maximization-problem}
+
+Under the assumption of efficient bargaining, the firm and worker choose
+the remote work share \(\alpha \in\) to maximize the total joint flow
+value of the match. With quasi-linear utility, this simplifies to
+maximizing the sum of output \(Y(\alpha)\) minus the worker's in-office
+disutility \(c(1-\alpha)\): \[
+\max_{\alpha \in [0,1]} \quad \Big\{Y(\alpha \mid h, \psi) - c(1-\alpha)\Big\}
+\] To solve this problem, we use the functional forms specified in the
+main text:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Production Function:}
+  \(Y(\alpha \mid h, \psi) = A(h) \cdot \left[(1 - \alpha) + \alpha \cdot g(h, \psi)\right]\)
+\item
+  \textbf{Baseline Productivity:} \(A(h) = A_1 h\)
+\item
+  \textbf{Relative Remote Productivity:}
+  \(g(h, \psi) = \psi_0 h^{\phi} \psi^{\nu}\)
+\item
+  \textbf{In-Office Cost Function:}
+  \(c(1-\alpha) = c_0 \frac{(1-\alpha)^{1+\chi}}{1+\chi}\)
+\end{itemize}
+
+The First-Order Condition (FOC) is found by differentiating the joint
+surplus \(S(\alpha)\) with respect to \(\alpha\) and setting it to zero.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Derivative of Output:}
+  \(\frac{dY}{d\alpha} = A_1 h (g(h, \psi) - 1)\)
+\item
+  \textbf{Derivative of Cost:}
+  \(\frac{d}{d\alpha} \left( -c(1-\alpha) \right) = - \left( c_0(1-\alpha)^\chi \cdot (-1) \right) = c_0(1-\alpha)^\chi\)
+\end{itemize}
+
+The FOC is therefore: \[
+A_1 h (g(h, \psi) - 1) + c_0(1-\alpha)^{\chi} = 0
+\] Rearranging this gives the fundamental equation for an interior
+solution: \[
+A_1 h (1 - g(h, \psi)) = c_0(1-\alpha)^{\chi}
+\] For an interior solution to exist, the left-hand side must be
+positive, which requires \(1 - g(h, \psi) > 0\), or \(g(h, \psi) < 1\).
+This means remote work must be less productive than in-person work for a
+hybrid arrangement to be optimal.
+
+\subsubsection{Optimal Policy and
+Thresholds}\label{optimal-policy-and-thresholds}
+
+\textbf{Interior Solution}
+
+Solving the FOC for the interior solution
+\(\alpha_{\text{interior}} \in (0,1)\): \[
+\alpha_{\text{interior}}(h, \psi) = 1 - \left[ \frac{A_1 h \left( 1 - g(h, \psi) \right)}{c_0} \right]^{\frac{1}{\chi}} = 1 - \left[ \frac{A_1 h \left( 1 - \psi_0 h^\phi \psi^\nu \right)}{c_0} \right]^{\frac{1}{\chi}}
+\]
+
+\textbf{Threshold Derivations}
+
+The boundaries of the hybrid region are determined by analyzing the
+derivative of the surplus, \(\frac{d(Y-c)}{d\alpha}\), at the corners
+\(\alpha=0\) and \(\alpha=1\).
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Upper Threshold, \(\overline{\psi}(h)\):} The boundary for
+  full remote work (\(\alpha^*=1\)) is where
+
+  \begin{align*}
+  A_1 h (g(h, \overline{\psi}(h)) - 1) + c_0(1-1)^\chi &= 0 \\
+  A_1 h (g(h, \overline{\psi}(h)) - 1) &= 0 \\
+  \implies \overline{\psi}(h) &= \psi_0^{-1/\nu} h^{-\phi/\nu}
+  \end{align*}
+\item
+  \textbf{Lower Threshold, \(\underline{\psi}(h)\):} The boundary for
+  full in-person work (\(\alpha^*=0\)) is where
+
+  \begin{align*}
+  A_1 h (g(h, \underline{\psi}(h)) - 1) + c_0(1-0)^\chi &= 0 \\
+  A_1 h (g(h, \underline{\psi}(h)) - 1) &= -c_0 \\
+  g(h, \underline{\psi}(h)) &= 1 - \frac{c_0}{A_1 h} \\
+  \psi_0 h^\phi [\underline{\psi}(h)]^\nu &= 1 - \frac{c_0}{A_1 h} \\
+  \implies \underline{\psi}(h) &= \left( \frac{1}{\psi_0 h^\phi} \left( 1 - \frac{c_0}{A_1 h} \right) \right)^{1/\nu}\\
+  \implies \underline{\psi}(h) & = \overline{\psi}(h)\ \left( 1 - \frac{c_0}{A_1 h} \right)^{1/\nu}
+  \end{align*}
+\end{enumerate}
+
+\subsubsection{Monotonicity and
+Properties}\label{monotonicity-and-properties}
+
+\textbf{Monotonicity of the Thresholds}
+
+\begin{itemize}
+\item
+  \textbf{Upper Threshold \(\overline{\psi}(h)\):} \[
+  \frac{\partial \overline{\psi}(h)}{\partial h} = \psi_0^{-1/\nu} \left(-\frac{\phi}{\nu}\right) h^{-\frac{\phi}{\nu}-1}
+  \] Assuming skill-remote complementarity (\(\phi > 0\)), the upper
+  threshold is \textbf{strictly decreasing} in worker skill.
+  Higher-skilled workers require a lower level of firm efficiency to
+  make full remote work optimal.
+\item
+  \textbf{Lower Threshold \(\underline{\psi}(h)\):} The shape of this
+  corrected threshold is now more complex, let
+  \(f(h) = \frac{1}{\psi_0} \left( h^{-\phi} - \frac{c_0}{A_1}h^{-\phi-1} \right)\),
+  so that \(\underline{\psi}(h) = [f(h)]^{1/\nu}\). The monotonicity is
+  determined by the sign of \(f'(h)\): \[
+  f'(h) = \frac{1}{\psi_0} \left( -\phi h^{-\phi-1} + \frac{c_0(\phi+1)}{A_1}h^{-\phi-2} \right) = \frac{h^{-\phi-2}}{\psi_0} \left( -\phi h + \frac{c_0(\phi+1)}{A_1} \right)
+  \] Setting the term in the parenthesis to zero gives the critical
+  point \(\hat{h}\): \[
+  \hat{h} = \frac{c_0}{A_1} \frac{\phi+1}{\phi} = \frac{c_0}{A_1} \left(1 + \frac{1}{\phi}\right)
+  \] The shape of the threshold now depends critically on the value of
+  the skill-remote elasticity \(\phi\). Consider the term: \[
+  T(h) = -\phi h + \frac{c_0(\phi+1)}{A_1}
+  \] The sign of \(\frac{\partial\underline{\psi}(h)}{\partial h}\) is
+  the same as the sign of \(T(h)\). This term captures the tension
+  between two economic forces:
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \textbf{The Skill-Remote Interaction Effect (\(-\phi h\)):} This
+    term reflects how a worker's skill directly alters their
+    productivity in a remote setting. Its effect depends critically on
+    the sign of \(\phi\).
+  \item
+    \textbf{The Opportunity Cost Effect (\(\frac{c_0(\phi+1)}{A_1}\)):}
+    This term reflects the cost of forgoing a worker's full baseline
+    productivity (\(A_1 h\)) by having them work remotely. The firm must
+    be compensated for this loss by the worker's increased effectiveness
+    or willingness to accept a lower wage (captured by \(c_0\)).
+  \end{enumerate}
+
+  Before analyzing the cases, let's define our key terms based on the
+  cross-partial derivative of the remote productivity function,
+  \(g(h, \psi) = \psi_0 h^\phi \psi^\nu\): \[
+  \frac{\partial^2 g}{\partial h \partial \psi} = \psi_0 \phi \nu h^{\phi-1} \psi^{\nu-1}
+  \] The sign of this expression is determined entirely by the sign of
+  \(\phi\).
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Complementarity (\(\phi > 0\)):} Worker skill and firm
+    remote-efficiency are complements. An increase in firm efficiency
+    (\(\psi\)) raises the marginal productivity of worker skill (\(h\))
+    in remote work, and vice-versa.
+  \item
+    \textbf{Substitutability (\(\phi < 0\)):} Worker skill and firm
+    remote-efficiency are substitutes. An increase in firm efficiency
+    \emph{lowers} the marginal productivity of worker skill in remote
+    work. This can be thought of as a situation where the firm's
+    technology is so effective that it makes the worker's innate skill
+    less relevant for remote tasks.
+  \end{itemize}
+\item
+  \textbf{Case 1: Strong Complementarity (\(\phi > 0\)):} The lower
+  threshold \(\underline{\psi}(h)\) has an \textbf{inverted U-shape},
+  peaking at \(\hat{h} = \frac{c_0}{A_1}(1 + \frac{1}{\phi})\).
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Economic Intuition:} This is the most intuitive case. When
+    skill and firm technology are complements, the threshold's shape is
+    driven by a trade-off that changes with the skill level.
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \textbf{For Low-Skill Workers (\(h < \hat{h}\)):} At low skill
+      levels, the complementarity effect (\(h^\phi\)) is weak and the
+      worker's baseline productivity (\(A_1 h\)) is low. As skill \(h\)
+      increases from a low base, the \textbf{opportunity cost effect}
+      dominates. The loss of baseline productivity from not being in the
+      office grows faster than the gain from the weak complementarity.
+      To justify offering even a small amount of remote work, the firm
+      requires progressively higher remote efficiency (\(\psi\)).
+      Therefore, the threshold \(\underline{\psi}(h)\) is
+      \textbf{increasing}.
+    \item
+      \textbf{For High-Skill Workers (\(h > \hat{h}\)):} At high skill
+      levels, the \textbf{skill-remote interaction effect} becomes
+      dominant. The complementarity is now powerful; a small increase in
+      \(h\) makes the worker significantly more effective with the
+      firm's remote technology. This strong gain in remote productivity
+      now outweighs the linear increase in opportunity cost. The firm is
+      willing to offer a hybrid arrangement even with a lower level of
+      its own remote efficiency (\(\psi\)) because the worker's high
+      skill compensates for it. Therefore, the threshold
+      \(\underline{\psi}(h)\) is \textbf{decreasing}.
+    \end{itemize}
+  \end{itemize}
+\item
+  \textbf{Case 2: Weak Substitutability (\(-1 < \phi < 0\)):} The lower
+  threshold \(\underline{\psi}(h)\) is \textbf{strictly increasing}.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Economic Intuition:} In this regime, worker skill and firm
+    technology are substitutes. An increase in worker skill has two
+    negative consequences for the firm's incentive to offer remote work:
+
+    \begin{enumerate}
+    \def\labelenumi{\arabic{enumi}.}
+    \tightlist
+    \item
+      The \textbf{opportunity cost} of not having the worker in the
+      office (\(A_1 h\)) increases, making in-person work more valuable.
+    \item
+      The \textbf{relative remote productivity} (\(h^\phi\)) actually
+      \emph{decreases} as \(h\) rises, because \(\phi\) is negative. The
+      worker becomes comparatively worse at remote work as their skill
+      increases.
+    \end{enumerate}
+  \item
+    Both economic forces push in the same direction. As a worker's skill
+    increases, they become simultaneously more valuable in the office
+    and less effective remotely. To overcome this ``double penalty'' and
+    still find it optimal to offer a hybrid arrangement, the firm must
+    possess a substantially higher level of its own remote efficiency
+    (\(\psi\)). Consequently, the minimum required efficiency,
+    \(\underline{\psi}(h)\), must be \textbf{strictly increasing} with
+    worker skill.
+  \end{itemize}
+\end{itemize}
+
+\textbf{Case 3: Strong Substitutability (\(\phi < -1\))} The lower
+threshold \(\underline{\psi}(h)\) is \textbf{U-shaped}, with a minimum
+at \(\hat{h} = \frac{c_0}{A_1}(1 + \frac{1}{\phi})\).
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Economic Intuition:} This is the most complex case. While
+  skill and technology are still substitutes, the relationship is so
+  strong that it reverses the pattern seen in \textbf{Case 2}.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{For Low-Skill Workers (\(h < \hat{h}\)):} At very low skill
+    levels, the \textbf{strong substitutability} dominates. An increase
+    in skill \(h\) makes the worker so much relatively worse at remote
+    work (the \(h^\phi\) term with \(\phi < -1\) falls very rapidly)
+    that this effect outweighs the rising opportunity cost. To
+    compensate for this sharp decline in relative remote fitness, the
+    firm needs less of its own efficiency (\(\psi\)) to be indifferent,
+    as the trade-off is already heavily skewed toward in-person work.
+    The threshold \(\underline{\psi}(h)\) is \textbf{decreasing}.
+  \item
+    \textbf{For High-Skill Workers (\(h > \hat{h}\)):} As skill becomes
+    sufficiently high, the logic from Case 2 takes over. The
+    \textbf{opportunity cost effect} begins to dominate again. The loss
+    of a highly productive worker from the office becomes the primary
+    concern for the firm. Even though the worker is a substitute for
+    technology, their high baseline productivity makes keeping them in
+    the office very attractive. To entice the firm to offer a hybrid
+    arrangement, the firm's own remote efficiency (\(\psi\)) must be
+    increasingly high. Therefore, the threshold \(\underline{\psi}(h)\)
+    is \textbf{increasing}. Of course. This is an excellent next step,
+    as the size of the hybrid region is a key outcome of the model that
+    determines how many worker-firm pairs can even consider a non-corner
+    solution.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{\texorpdfstring{\textbf{Size and Properties of the Hybrid
+Region}}{Size and Properties of the Hybrid Region}}\label{size-and-properties-of-the-hybrid-region}
+
+The existence of a hybrid work arrangement is possible for a worker of
+skill \(h\) only if there is a non-empty range of firm efficiencies
+\(\psi\) such that \(\underline{\psi}(h) < \psi < \overline{\psi}(h)\).
+We define the size of this hybrid region as the width of this interval:
+\[
+\Delta\psi(h) = \overline{\psi}(h) - \underline{\psi}(h) = \left( \psi_0^{-1/\nu} h^{-\phi/\nu} \right) \left[ 1 - \left( 1 - \frac{c_0}{A_1 h} \right)^{1/\nu} \right]
+\] This region is well-defined for all \(h\) such that
+\(1 - \frac{c_0}{A_1 h} > 0\), which requires \(h > c_0/A_1\). For skill
+levels below this minimum, no remote work is ever optimal.
+
+\textbf{Analysis of the Hybrid Region's Size}
+
+To understand how the range of hybrid opportunities changes with worker
+skill, we analyze the derivative \(\frac{d(\Delta\psi(h))}{dh}\). The
+behavior depends critically on the nature of the skill-remote
+interaction, governed by \(\phi\).
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Case 1: Strong Complementarity (\(\phi > 0\)):} The size of
+  the hybrid region, \(\Delta\psi(h)\), is \textbf{strictly decreasing}
+  in worker skill \(h\).
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Economic Intuition:} When skill and firm technology are
+    complements, higher-skilled workers are pushed towards the
+    full-remote corner solution more rapidly than they are pulled away
+    from the full-in-person corner.
+  \end{itemize}
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \textbf{Upper Threshold Effect:} The upper threshold
+    \(\overline{\psi}(h)\) is decreasing in \(h\). As a worker's skill
+    increases, their high remote productivity means they require a
+    progressively lower level of firm efficiency to make full remote
+    work optimal. This effect shrinks the hybrid region from above.
+  \item
+    \textbf{Threshold Gap Effect:} The term in the brackets,
+    \(\left[ 1 - \left( 1 - \frac{c_0}{A_1 h} \right)^{1/\nu} \right]\),
+    represents the gap between the thresholds as a fraction of the upper
+    threshold. This gap also shrinks as \(h\) increases. Intuitively, as
+    a worker's baseline productivity \(A_1 h\) rises, the cost of being
+    in the office (\(c_0\)) becomes smaller in relative terms, meaning
+    the lower threshold moves closer to the upper threshold.
+  \end{enumerate}
+\item
+  \textbf{Case 2: Substitutability (\(\phi < 0\)):} The monotonicity of
+  the hybrid region's size, \(\Delta\psi(h)\), is \textbf{ambiguous} and
+  depends on the specific parameter values.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Economic Intuition:} When skill and technology are
+    substitutes, two competing economic forces are at play:
+
+    \begin{enumerate}
+    \def\labelenumi{\arabic{enumi}.}
+    \tightlist
+    \item
+      \textbf{Upper Threshold Effect (Widening):} The upper threshold
+      \(\overline{\psi}(h)\) is now \emph{increasing} in \(h\). As a
+      worker's skill increases, their relative remote productivity
+      (\(h^\phi\)) falls. This makes it \emph{harder} for them to
+      qualify for the full-remote regime, which pushes the upper
+      boundary outwards and tends to \textbf{widen} the hybrid region.
+    \item
+      \textbf{Threshold Gap Effect (Narrowing):} The relative gap
+      between the thresholds continues to shrink as \(h\) increases, for
+      the same reason as in the complementarity case (the relative
+      importance of \(c_0\) diminishes). This effect tends to
+      \textbf{narrow} the hybrid region.
+    \end{enumerate}
+  \end{itemize}
+\end{itemize}
+
 \subsection{Market Tightness Equilibrium
 Derivation}\label{sec-appendix-cobb-douglas}
 
 We assume a standard Cobb-Douglas matching function, which exhibits
 constant returns to scale. \[
 M(L, V) = \gamma_{0} L^{\gamma_{1}} V^{1-\gamma_{1}}
-\] This function yields the following probabilities: *
-\textbf{Job-Filling Rate:}
-\(q(\theta) = \gamma_{0} \theta^{-\gamma_{1}}\) * \textbf{Job-Finding
-Rate:} \(p(\theta) = \gamma_{0} \theta^{1-\gamma_{1}}\)
+\] This function yields the following probabilities:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Job-Filling Rate:}
+  \(q(\theta) = \gamma_{0} \theta^{-\gamma_{1}}\)
+\item
+  \textbf{Job-Finding Rate:}
+  \(p(\theta) = \gamma_{0} \theta^{1-\gamma_{1}}\)
+\end{itemize}
 
 \textbf{Optimal Vacancy Posting}
 

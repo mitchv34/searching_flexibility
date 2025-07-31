@@ -5,6 +5,7 @@ $$
 M(L, V) = \gamma_{0} L^{\gamma_{1}} V^{1-\gamma_{1}}
 $$
 This function yields the following probabilities:
+
 *   **Job-Filling Rate:** $q(\theta) = \gamma_{0} \theta^{-\gamma_{1}}$
 *   **Job-Finding Rate:** $p(\theta) = \gamma_{0} \theta^{1-\gamma_{1}}$
 

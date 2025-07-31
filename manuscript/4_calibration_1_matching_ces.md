@@ -1,6 +1,6 @@
 **Matching and Vacancy Costs:**
-The matching process and the cost of creating jobs are specified as follows:
-- **Matching Function:** We assume a  Constant Elasticity of Substitution (CES) matching function  matching function, which exhibits constant returns to scale, given by:
+
+- We assume a  Constant Elasticity of Substitution (CES) matching function  matching function, which exhibits constant returns to scale, given by:
 $$
 M(L, V) = (L^{-\gamma} + V^{-\gamma})^{-1/\gamma}
 $$

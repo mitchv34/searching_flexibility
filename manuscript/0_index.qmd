@@ -102,5 +102,7 @@ This is an example reference: [@aksoy2023]
 
 ## Appendix
 <!-- Section including additional material or supplementary information -->
-<!-- Derivation of the Optimal Remote Work Policy for the General Case -->
+<!-- Derivation of the Optimal Remote Work Policy -->
+{{< include "A_2_derivations_g_func_cobb_douglas.md" >}}
+<!-- Derivation of the Equilibrium Market Tightness-->
 {{< include "A_1_calibration_equilibrium_theta_cobb_douglas.md" >}}

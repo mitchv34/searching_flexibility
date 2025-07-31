@@ -1,6 +1,6 @@
 **Matching and Vacancy Costs:**
-The matching process and the cost of creating jobs are specified as follows:
-- **Matching Function:** We assume a standard Cobb-Douglas matching function, which exhibits constant returns to scale.
+
+- We assume a standard Cobb-Douglas matching function, which exhibits constant returns to scale.
 $$
 M(L, V) = \gamma_{0} L^{\gamma_{1}} V^{1-\gamma_{1}}
 $$ 
