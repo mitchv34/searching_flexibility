@@ -1,0 +1,106 @@
+---
+title: "The Value of Flexibility: Teleworkability, Sorting, and the Work‑From‑Home Wage Gap"
+date: last-modified	
+date-format: long
+author: 
+  - name: "Mitchell Valdes-Bobes"
+    id: mv
+    email: valdsbobes@wisc.edu
+    affiliation: 
+      - name: University of Wisconsin-Madison
+        city: Madison
+        state: WI
+        url: https://econ.wisc.edu/
+  - name: "Anna Lukianova"
+    id: al
+    email: lukianova@wisc.edu
+    affiliation: 
+      - name: University of Wisconsin-Madison
+        city: Madison
+        state: WI
+        url: https://econ.wisc.edu/
+resource-path: [".."]
+abstract: >
+    - [ ] Update abstract.
+bibliography: references.bib
+bibliographystyle: chicago-fullnote
+crossref:
+  appendix-title: "Appendix"
+  appendix-delim: "."
+format: 
+  pdf:
+    keep-tex: true
+    toc: false
+    number-sections: true
+    fontsize: 11pt
+    fontfamily: lmodern
+    geometry:
+      - margin=1in
+      - top=0.9in
+      - bottom=0.9in
+    linestretch: 1.5
+    latex-engine: pdflatex
+    include-in-header: 
+      text: |
+        \usepackage{amsmath}
+        \usepackage{amsthm}
+        \usepackage{amssymb}
+        \usepackage{amsfonts} 
+        \usepackage{booktabs}
+        \usepackage{setspace}
+        \usepackage{graphicx}
+        \usepackage{algorithm}
+        \usepackage[noend]{algpseudocode}
+        % Define math operators if needed
+        \DeclareMathOperator*{\argmax}{arg\,max}
+        \DeclareMathOperator*{\Exp}{\mathbb{E}} % Expectation operator
+        \newcommand{\sym}[1]{\ensuremath{^{#1}}}
+fig-dpi: 320
+editor:
+    render-on-save: true
+---
+
+
+## Introduction
+- [ ] Update introduction.
+
+## Empirical Motivation: Remote Work, Wages, and Skills
+- [ ] Update empirical motivation.
+
+<!-- Section including the theoretical model of remote work -->
+## Model
+{{< include "3_model.md" >}}
+
+## Calibration
+{{< include "4_calibration.md" >}}
+
+\newpage
+## Results
+
+
+## Conclusion
+- [ ] Update conclusion.
+This is an example reference: [@aksoy2023]
+
+## References {.unnumbered}
+<!-- Bibliography -->
+::: {#refs}
+<!-- Add some sample citations or remove this section if no references yet -->
+
+:::
+
+\newpage
+
+\setcounter{section}{0}
+\renewcommand{\thesection}{\Alph{section}}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+## Appendix
+<!-- Section including additional material or supplementary information -->
+<!-- Derivation of the Optimal Remote Work Policy for the General Case -->
+{{< include "A_1_calibration_equilibrium_theta_cobb_douglas.md" >}}

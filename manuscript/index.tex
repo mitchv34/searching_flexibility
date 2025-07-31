@@ -1,0 +1,486 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  11pt,
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+
+\usepackage{amsmath,amssymb}
+\usepackage{setspace}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage[]{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in,top=0.9in,bottom=0.9in]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{5}
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+% Define math operators if needed
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\Exp}{\mathbb{E}} % Expectation operator
+\newcommand{\sym}[1]{\ensuremath{^{#1}}}
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+
+\usepackage{bookmark}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={The Value of Flexibility: Teleworkability, Sorting, and the Work‑From‑Home Wage Gap},
+  pdfauthor={Mitchell Valdes-Bobes; Anna Lukianova},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{The Value of Flexibility: Teleworkability, Sorting, and the
+Work‑From‑Home Wage Gap}
+\author{Mitchell Valdes-Bobes \and Anna Lukianova}
+\date{July 31, 2025}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Update abstract.
+\end{itemize}
+\end{abstract}
+
+
+\setstretch{1.5}
+\section{Introduction}\label{introduction}
+
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Update introduction.
+\end{itemize}
+
+\section{Empirical Motivation: Remote Work, Wages, and
+Skills}\label{empirical-motivation-remote-work-wages-and-skills}
+
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Update empirical motivation.
+\end{itemize}
+
+\section{Model}\label{model}
+
+This section develops a search and matching model of the labor market
+with two-sided heterogeneity and endogenous remote work arrangements.
+The model builds on the canonical
+\textcolor{red}{ADD MAIN MODEL CITATION} framework, extended to include
+heterogeneity in worker skills and firm capacity for remote work. This
+framework allows us to analyze how sorting patterns, wage differentials,
+and aggregate labor market outcomes are shaped by the trade-offs between
+productivity and the non-pecuniary benefits of remote work.
+
+\subsection{Environment}\label{environment}
+
+The economy is populated by a continuum of infinitely lived workers and
+a continuum of firms. Time is discrete and the horizon is infinite. Both
+workers and firms are risk-neutral and discount the future at a common
+rate \(\beta\).
+
+\subsubsection{Agents}\label{agents}
+
+\textbf{Workers} are indexed by their skill level, \(h \in \mathcal{H}\)
+, which is exogenously distributed according to the cumulative
+distribution function \(F_h(h)\)
+\textcolor{red}{I NEED TO THINK ABOUT THIS MAYBE I DO UNIFORM ON THIS SIDE OF THE MARKET AND PRODUCTIVITY IS BASED ON RANK}.
+Workers derive utility from their wage, \(w\), and the fraction of time
+they work remotely, \(\alpha \in\). The instantaneous utility function
+is given by \(u(w, \alpha)\). We assume utility is quasi-linear to
+ensure that the choice of \(\alpha\) is independent of the wage
+transfer, which simplifies the bargaining process. Specifically, we
+adopt the functional form: \[u(w, \alpha) = w - c(1-\alpha)\] where
+\(c(1-\alpha)\) represents the disutility from working in the office for
+a fraction \(1-\alpha\) of the time.
+\textcolor{red}{ADD PROPERTIES OF COST FUNCTION}
+
+\textbf{Firms} are indexed by their remote work efficiency,
+\(\psi \in \Psi\), which is exogenously distributed according to the
+cumulative distribution function \(F_\psi(\psi)\). Firms produce a
+single homogeneous good. The cost of posting \(v\) vacancies is given by
+an increasing and convex function \(c(v)\).
+
+\textbf{Production Technology:} output is generated by a match between a
+worker of skill \(h\) and a firm with remote efficiency \(\psi\). The
+production function depends on the share of remote work, \(\alpha\):
+\[Y(\alpha \mid h, \psi) = A(h) \cdot \left[(1 - \alpha) + \alpha \cdot g(h, \psi)\right]\]
+where \(A(h)\) is the baseline productivity of a worker with skill
+\(h\), and \(g(h, \psi)\) is the productivity of remote work relative to
+in-person work, which is normalized to one. We assume \(A'(h) > 0\), so
+higher-skilled workers are more productive.
+
+The relative productivity of remote work, \(g(h, \psi)\), is a key
+feature of the model, capturing complementarities between worker skill
+and firm technology. We assume \(g_\psi(h, \psi) \geq 0\) and
+\(g_h(h, \psi) \geq 0\), meaning remote work is more effective in firms
+with higher remote efficiency and for higher-skilled workers. The sign
+of the cross-partial derivative, \(g_{h\psi}\), will determine the
+nature of sorting in the market.
+
+\subsubsection{Searching and Matching}\label{searching-and-matching}
+
+The labor market is characterized by search frictions. Let \(u(h)\) be
+the measure of unemployed workers of skill \(h\), and \(v(\psi)\) be the
+number of vacancies posted by firms of type \(\psi\). The aggregate
+measures of unemployed workers and vacancies are given respectively by:
+\[L = \int u(h) dF_h(h) \quad  \text{and} \quad V = \int v(\psi) dF_\psi(\psi)\]
+Meetings between unemployed workers and vacancies are governed by a
+constant returns to scale matching function, \(M(L, V)\). The rate at
+which an unemployed worker contacts a vacancy is
+\(p(\theta) = M(L,V)/L\), and the rate at which a vacancy is filled is
+\(q(\theta) = M(L,V)/V\), where \(\theta = V/L\) is the labor market
+tightness. The probability that a searching worker meets a firm of a
+specific type \(\psi\) is given by the proportion of vacancies of that
+type, \(v(\psi)/V\).
+
+\subsection{Value Functions and
+Bargaining}\label{value-functions-and-bargaining}
+
+We now define the value functions for workers and firms and describe the
+bargaining process that determines wages and work arrangements.
+
+\subsubsection{Value of Unemployment and
+Vacancies}\label{value-of-unemployment-and-vacancies}
+
+An unemployed worker of skill \(h\) receives unemployment benefits
+\(b(h)\) and searches for a job. The value of being unemployed,
+\(U(h)\), is described by the following Bellman equation:
+\[U(h) = b(h) + \beta \mathbb{E} \left[ \max\{W(h, \psi), U(h)\} \right].\]
+where \(W(h, \psi)\) is the value to a worker of being employed in a
+match with a firm of type \(\psi\). The expectation is taken over the
+distribution of vacancies the worker might encounter. Assuming workers
+get a share \(\xi\) of the match surplus, \(S(h, \psi)\), through Nash
+bargaining, we have: \[W(h, \psi) = U(h) + \xi S(h, \psi).\]The value of
+unemployment can then be written as:
+\[U(h) = b(h) + \beta \left[ U(h) + p(\theta) \xi \int S(h, \psi)^+ d\Gamma_v(\psi) \right]\]
+where \(\Gamma_v(\psi)\) is the endogenous distribution of vacancies and
+\(S(h, \psi)^+ = \max\{S(h, \psi), 0\}\). Solving for \(U(h)\) yields:
+\[U(h) = \frac{b(h) + \beta p(\theta) \xi \int S(h, \psi)^+ d\Gamma_v(\psi)}{1 - \beta}\]
+The value of a vacant position is zero due to a free-entry condition,
+which will be detailed in the vacancy creation section.
+
+\subsubsection{Value of a Match and Surplus
+Sharing}\label{value-of-a-match-and-surplus-sharing}
+
+A match between a worker \(h\) and a firm \(\psi\) generates a flow of
+output and utility. Matches are subject to an exogenous destruction
+shock with probability \(\delta\). We assume efficient bargaining: the
+firm and worker first choose the remote work share \(\alpha\) to
+maximize the joint value of the match, and then use the wage \(w\) to
+divide the resulting surplus.
+
+Given the quasi-linear utility, the total flow value generated by a
+match is the sum of output net of the worker's disutility from in-office
+work: \(Y(\alpha \mid h, \psi) - c(1-\alpha)\). The total surplus of the
+match, \(S(h, \psi)\), is the difference between the value of the match,
+\(J(h, \psi)\), and the worker's outside option, \(U(h)\). The surplus
+evolves according to the Bellman equation:
+\[S(h, \psi) = s(h, \psi) + \beta(1-\delta)S(h, \psi) - \beta p(\theta) \xi \int S(h, \psi')^+ d\gamma_v(\psi')\]
+where \(s(h, \psi)\) is the flow surplus, defined as the maximized joint
+value net of the worker's flow value of unemployment:
+\[s(h, \psi) = \max_{\alpha \in} \left\{ Y(\alpha \mid h, \psi) - c(1-\alpha) \right\} - b(h)\]
+Solving for the total match surplus gives:
+\[S(h, \psi) = \frac{s(h, \psi) - \beta p(\theta) \xi \int S(h, \psi')^+ d\gamma_v(\psi')}{1 - \beta(1-\delta)}\]
+This equation highlights that the value of a match depends not only on
+its own flow surplus but also on the worker's expected future gains from
+searching while unemployed.
+
+\subsection{Equilibrium}\label{equilibrium}
+
+An equilibrium in this economy consists of a set of value functions
+(\(U(h)\), \(S(h, \psi)\)), policy functions for remote work
+(\(\alpha^*(h, \psi)\)) and wages (\(w^*(h, \psi)\)), vacancy posting
+decisions (\(v(\psi)\)), and a distribution of unemployed workers
+(\(u(h)\)) and employed workers (\(n(h, \psi)\)), such that: 1. The
+policy functions \(\alpha^*(h, \psi)\) and \(w^*(h, \psi)\) are
+determined by efficient bargaining. 2. Firms' vacancy creation decisions
+\(v(\psi)\) are optimal. 3. The labor market is in a steady state, where
+the flows of workers into and out of unemployment are balanced.
+
+\subsubsection{Optimal Work Arrangements and
+Wages}\label{optimal-work-arrangements-and-wages}
+
+The optimal remote work share, \(\alpha^*(h, \psi)\), is chosen to
+maximize the flow surplus. The first-order condition for an interior
+solution is \(Y'(\alpha) = c'(\alpha)\). This condition equates the
+marginal gain in output from an additional unit of in-person work to the
+marginal disutility for the worker. Analyzing this condition at the
+boundaries \(\alpha=0\) and \(\alpha=1\) defines two skill-dependent
+thresholds for firm efficiency, \(\underline{\psi}(h)\) and
+\(\overline{\psi}(h)\), which partition the market into three regimes:
+\[\alpha^*(h, \psi) = \begin{cases} 0 & \text{if } \psi \leq \underline{\psi}(h) \quad \text{(Full In-Person)} \\ \alpha_{\text{interior}}(h, \psi) & \text{if } \underline{\psi}(h) < \psi < \overline{\psi}(h) \quad \text{(Hybrid)} \\ 1 & \text{if } \psi \geq \overline{\psi}(h) \quad \text{(Full Remote)} \end{cases}\]
+
+Under the assumption of efficient bargaining, the remote work share,
+\(\alpha^*(h, \psi)\), is chosen to maximize the total joint value of
+the match. The wage, \(w\), is then determined as a purely
+distributional transfer to ensure that the total surplus,
+\(S(h, \psi)\), is divided according to the exogenously given bargaining
+powers, \(\xi\) for the worker and \(1-\xi\) for the firm.
+
+The wage is set to deliver the worker their promised lifetime value from
+the match, \(W(h, \psi)\). This value is composed of their outside
+option, the value of unemployment \(U(h)\), plus their share of the
+total match surplus.
+
+With the optimal physical arrangement \(\alpha^*(h, \psi)\) determined,
+we can solve for the wage \(w^*(h, \psi)\) that supports this
+equilibrium. The wage must be set such that the worker's value from the
+match equals their outside option plus their bargained share of the
+surplus. This implies that the wage must deliver the required utility
+flow and compensate for any in-office disutility. \[
+w^*(h, \psi) = \underbrace{\left( W(h, \psi) - \beta \mathbb{E}[W'] \right)}_{\text{Required utility flow}} \quad + \underbrace{c(\alpha^*(h, \psi))}_{\text{Compensation for in-office work}}
+\]
+
+\subsubsection{Vacancy Creation}\label{vacancy-creation}
+
+Firms post vacancies up to the point where the marginal cost of posting
+equals the expected marginal benefit. The expected benefit is the
+probability of filling a vacancy, \(q(\theta)\), multiplied by the
+firm's share of the expected surplus from a new match. The free-entry
+condition is therefore:
+\[c'(v(\psi)) = q(\theta) (1-\xi) \int S(h, \psi)^+ \frac{u(h)}{L} dF_h(h)\]
+This condition determines the number of vacancies \(v(\psi)\) for each
+firm type, which in turn determines the aggregate market tightness
+\(\theta\) and the distributions of job-finding and job-filling
+probabilities.
+
+\subsubsection{Steady-State Flows}\label{steady-state-flows}
+
+In a steady-state equilibrium, the mass of workers of each type and in
+each state (employed or unemployed) is constant. This requires that the
+flow of workers out of unemployment equals the flow into unemployment.
+The flow out of unemployment for workers of skill \(h\) is:
+\[p(\theta) u(h) \int \mathbb{1}_{\{S(h, \psi) > 0\}} d\Gamma_v(\psi).\]It
+is the product of the mass of unemployed workers of skill \(h\) , and
+their effective job-finding rate, which is the probability of meeting
+any firm \(p(\theta)\) , multiplied by the probability that a meeting
+results in a mutually agreeable match (i.e., one with positive surplus,
+\(S(h, \psi)>0\)). The flow into unemployment is the sum of all job
+destructions: \[\delta \int n(h, \psi) dF_\psi(\psi).\] The steady-state
+condition (Beveridge curve) is given by equating the aggregate flows:
+\[\delta \iint n(h, \psi) dF_\psi(\psi) dF_h(h) = p(\theta) \int u(h) \left( \int \mathbb{1}_{\{S(h, \psi) > 0\}} d\gamma_v(\psi) \right) dF_h(h)\]
+The equilibrium is a fixed point where firms' vacancy decisions are
+optimal given expected surpluses, and these surpluses are consistent
+with the hiring probabilities that result from those same vacancy
+decisions.
+
+\newpage
+
+\section{Calibration}\label{calibration}
+
+\newpage
+
+\section{Results}\label{results}
+
+\section{Conclusion}\label{conclusion}
+
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Update conclusion. This is an example reference: (Aksoy et al. 2023)
+\end{itemize}
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-aksoy2023}
+Aksoy, Cevat Giray, Jose Maria Barrero, Nicholas Bloom, Steven Davis,
+Mathias Dolls, and Pablo Zarate. 2023. {``Time {Savings When Working}
+from {Home}.''} Workign Paper. \url{https://doi.org/10.3386/w30866}.
+
+\end{CSLReferences}
+
+\newpage
+
+\setcounter{section}{0}
+\renewcommand{\thesection}{\Alph{section}}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+\section{Appendix}\label{appendix}
+
+
+
+
+\end{document}
