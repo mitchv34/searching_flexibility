@@ -1,0 +1,4 @@
+*   **Production Function:** The baseline productivity, $A(h)$, is assumed to be linear in worker skill, while the relative productivity of remote work, $g(h, \psi)$, is specified as a semi-logarithmic function to capture complementarities with diminishing returns.
+    $$A(h) = A_1 h$$
+    $$g(h, \psi) = \psi_0 h^\phi \psi^\nu$$
+    Here, $A_1$ is a general productivity scalar. In the remote productivity function, $\psi_{0}$ acts as a scaling factor or baseline efficiency. The parameters $\phi$ and $\nu$ are the elasticities of remote productivity with respect to worker skill ($h$) and firm efficiency ($\psi$), respectively. This multiplicative form naturally embeds a complementarity between skill and firm efficiency, meaning the marginal productivity of a worker's skill in a remote setting is higher at a firm with greater remote efficiency, and vice-versa.

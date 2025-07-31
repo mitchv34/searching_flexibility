@@ -439,9 +439,147 @@ optimal given expected surpluses, and these surpluses are consistent
 with the hiring probabilities that result from those same vacancy
 decisions.
 
-\newpage
-
 \section{Calibration}\label{calibration}
+
+\subsection{Quantitative Specification and
+Parameterization}\label{quantitative-specification-and-parameterization}
+
+To take the model to the data and analyze its quantitative implications,
+we must specify functional forms for the model's key components and
+assign numerical values to the resulting parameters. We divide the
+parameters into two groups: those set externally based on standard
+values in the literature, and those calibrated internally to match key
+moments of the U.S. labor market data.
+
+\subsubsection{Functional Forms}\label{functional-forms}
+
+\textcolor{red}{NEED TO SETTLE ON ONE FUNCTIONAL FORM FOR THE $g(h, \psi)$ FUNCTION}
+
+\textbf{Production and Cost Functions:} We adopt specific functional
+forms for the production and worker cost functions to derive an
+analytical solution for the optimal work arrangement, \(\alpha^*\).
+
+\begin{itemize}
+\item
+  \textbf{In-Office Cost Function:} The worker's disutility from
+  in-office work is assumed to be a convex function of the time spent in
+  the office, \((1-\alpha)\).
+  \[c(1-\alpha) = c_0 \frac{(1-\alpha)^{1+\chi}}{1+\chi}\] The parameter
+  \(c_0 > 0\) scales the overall disutility, and the curvature parameter
+  \(\chi > 0\) ensures that the marginal disutility of in-office time is
+  increasing, a standard feature that helps ensure well-behaved interior
+  solutions for \(\alpha\).
+\item
+  \textbf{Production Function:} The baseline productivity, \(A(h)\), is
+  assumed to be linear in worker skill, while the relative productivity
+  of remote work, \(g(h, \psi)\), is specified as a semi-logarithmic
+  function to capture complementarities with diminishing returns.
+  \[A(h) = A_1 h\] \[g(h, \psi) = \psi_0 h^\phi \psi^\nu\] Here, \(A_1\)
+  is a general productivity scalar. In the remote productivity function,
+  \(\psi_{0}\) acts as a scaling factor or baseline efficiency. The
+  parameters \(\phi\) and \(\nu\) are the elasticities of remote
+  productivity with respect to worker skill (\(h\)) and firm efficiency
+  (\(\psi\)), respectively. This multiplicative form naturally embeds a
+  complementarity between skill and firm efficiency, meaning the
+  marginal productivity of a worker's skill in a remote setting is
+  higher at a firm with greater remote efficiency, and vice-versa.
+\item
+  \textbf{Production Function:} The baseline productivity, \(A(h)\), is
+  assumed to be linear in worker skill, while the relative productivity
+  of remote work, \(g(h, \psi)\), is specified as a semi-logarithmic
+  function to capture complementarities with diminishing returns.
+  \[A(h) = A_1 h\] \[g(h, \psi) = \nu\psi - \psi_0 + \phi\log(h)\] Here,
+  \(A_1\) is a general productivity scalar, \(\nu\) scales the impact of
+  firm efficiency, \(\psi_0\) is a baseline friction for remote work,
+  and \(\phi\) governs the skill-remote complementarity.
+\end{itemize}
+
+\textbf{Matching and Vacancy Costs:} The matching process and the cost
+of creating jobs are specified as follows: - \textbf{Matching Function:}
+We assume a standard Cobb-Douglas matching function, which exhibits
+constant returns to scale. \[
+M(L, V) = \gamma_{0} L^{\gamma_{1}} V^{1-\gamma_{1}}
+\] where \(\gamma_0 > 0\) is matching efficiency and
+\(\gamma_1 \in (0,1)\) is the elasticity of matches with respect to
+unemployment.
+
+\subsubsection{Firm's Vacancy Posting
+Problem}\label{firms-vacancy-posting-problem}
+
+A firm of type \(\psi\) chooses the number of vacancies \(v\) to post to
+maximize its expected profit. The profit function is the expected
+benefit minus the total cost: \[
+\Pi(v(\psi)) = q B(\psi)  v - c(v)
+\] where: * \(B(\psi) = (1-\xi)\mathbb{E}_h[S(h,\psi)^{+}]\) is the
+firm's expected benefit \emph{per filled vacancy}. * \textbf{Vacancy
+Cost Function:} The cost of posting vacancies is assumed to be a convex
+function, implying a rising marginal cost to posting.
+\[c(v) = \frac{\kappa_{0} v^{1+\kappa_{1}}}{1+\kappa_{1}}\] where
+\(\kappa_{0} > 0\) is a cost scaling parameter and \(\kappa_{1} > 0\)
+ensures convexity.
+
+The firm's first-order condition (FOC) for profit maximization is
+\(\Pi'(v) = 0\), which implies that the marginal benefit must equal the
+marginal cost: \[
+\Pi'(v) = 0 \quad \implies \quad q B(\psi) = c'(v) \quad \implies \quad q B(\psi) = \kappa_{0} v(\psi)^{\kappa_{1}}
+\] This condition allows us to derive an equilibrium condition for
+\(\theta\). Details of this derivation are provided in
+Section~\ref{sec-appendix-cobb-douglas}.
+
+\subsubsection{Calibration}\label{calibration-1}
+
+We choose the parameter values to align the model's steady state with
+key features of the pre-pandemic U.S. labor market. The model is
+calibrated at a monthly frequency. The parameters are summarized in
+Table 1.
+
+\textbf{Externally Set Parameters:} Several parameters are set to
+standard values from the literature. The discount factor \(\beta\) is
+set to 0.996, corresponding to a 5\% annual real interest rate. The
+elasticity of the matching function, \(\eta\), is set to 0.5, a common
+value in the search and matching literature (Petrongolo and Pissarides,
+2001).
+
+\textbf{Internally Calibrated Parameters:} The remaining parameters are
+calibrated jointly to match a set of moments from the data.
+
+\textcolor{red}{EXAMPLE TEXT} ``The parameters of the production
+function (\(A_1, \nu, \psi_0, \phi\)) and the in-office cost function
+(\(c_0, \chi\)) are chosen to match the average labor productivity, the
+observed share of workers in remote/hybrid arrangements, and the
+estimated compensating wage differential for remote work from survey
+evidence (e.g., Barrero et al., 2023a). The vacancy cost parameters
+(\(c_v, \gamma\)) and matching efficiency (\(M_0\)) are disciplined by
+the average labor market tightness (\(\theta\)), the job-filling rate
+(\(q\)), and the elasticity of vacancies to productivity
+shocks\ldots{}''
+
+\textcolor{red}{EXAMPLE TABLE}
+
+\begin{table}[h!]
+\centering
+\caption{Parameter Values}
+
+\begin{tabular}{@{}llcl@{}}
+\toprule
+\textbf{Parameter} & \textbf{Description} & \textbf{Value} & \textbf{Target/Source} \\
+\midrule
+\multicolumn{4}{l}{\textit{Preferences \& Technology}} \\
+$\beta$ & Discount Factor & 0.996 & 5\% annual interest rate \\
+$\chi$ & Curvature of in-office cost & 1.5 & Internally calibrated \\
+$c_0$ & In-office cost scale & 0.25 & Match compensating differential \\
+$A_1$ & Productivity scale & 1.0 & Normalization \\
+$\phi$ & Skill-remote complementarity & 0.1 & Match skill premium \\
+... & ... & ... & ... \\
+\addlinespace % Adds a bit of vertical space for separation
+\multicolumn{4}{l}{\textit{Search \& Matching}} \\
+$\eta$ & Matching elasticity & 0.5 & Petrongolo \& Pissarides (2001) \\
+$\delta$ & Exogenous separation rate & 0.025 & Match avg. job duration \\
+$\xi$ & Worker bargaining power & 0.5 & Shimer (2005) \\
+... & ... & ... & ... \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \newpage
 
@@ -479,6 +617,48 @@ from {Home}.''} Workign Paper. \url{https://doi.org/10.3386/w30866}.
 \renewcommand{\thefigure}{A\arabic{figure}}
 
 \section{Appendix}\label{appendix}
+
+\subsection{Market Tightness Equilibrium
+Derivation}\label{sec-appendix-cobb-douglas}
+
+We assume a standard Cobb-Douglas matching function, which exhibits
+constant returns to scale. \[
+M(L, V) = \gamma_{0} L^{\gamma_{1}} V^{1-\gamma_{1}}
+\] This function yields the following probabilities: *
+\textbf{Job-Filling Rate:}
+\(q(\theta) = \gamma_{0} \theta^{-\gamma_{1}}\) * \textbf{Job-Finding
+Rate:} \(p(\theta) = \gamma_{0} \theta^{1-\gamma_{1}}\)
+
+\textbf{Optimal Vacancy Posting}
+
+We begin with the firm's FOC and solve for the optimal number of
+vacancies \(v(\psi)\): \[
+q B(\psi) = \kappa_{0} v(\psi)^{\kappa_{1}} \implies v(\psi) = \left( \frac{B(\psi)}{\kappa_{0}} q \right)^{1/\kappa_{1}}
+\] Substituting the Cobb-Douglas job-filling rate,
+\(q(\theta) = \gamma_{0} \theta^{-\gamma_{1}}\), gives the expression
+for \(v(\psi)\) as a function of market tightness \(\theta\) and the
+firm's expected benefit \(B(\psi)\): \[
+v(\psi) = \left( \frac{B(\psi)}{\kappa_{0}} \frac{\gamma_{0}}{\theta^{\gamma_{1}}} \right)^{1/\kappa_{1}}
+\]
+
+\textbf{Equilibrium Market Tightness}
+
+The aggregate number of vacancies, \(V\), is found by integrating
+\(v(\psi)\) across all firm types: \[
+V = \int v(\psi) dF_{\psi}(\psi) = \int \left( \frac{\gamma_0 B(\psi)}{\kappa_0 \theta^{\gamma_1}} \right)^{1/\kappa_1} dF_{\psi}(\psi)
+\] We can factor out the terms that do not depend on the firm type
+\(\psi\): \[
+V = \left( \frac{\gamma_0}{\kappa_0 \theta^{\gamma_1}} \right)^{1/\kappa_1} \int [B(\psi)]^{1/\kappa_1} dF_{\psi}(\psi) = \frac{1}{\theta^{\gamma_1/\kappa_1}} \left( \frac{\gamma_0}{\kappa_0} \right)^{1/\kappa_1} \int [B(\psi)]^{1/\kappa_1} dF_{\psi}(\psi)
+\] To find the equilibrium, we substitute the definition of market
+tightness, \(V = \theta L\), into the left-hand side: \[
+\theta L = \frac{1}{\theta^{\gamma_1/\kappa_1}} \left( \frac{\gamma_0}{\kappa_0} \right)^{1/\kappa_1} \int [B(\psi)]^{1/\kappa_1} dF_{\psi}(\psi)
+\] Now, we solve for \(\theta\) by grouping all \(\theta\) terms on the
+left: \[
+\theta^{1 + \gamma_1/\kappa_1} L = \left( \frac{\gamma_0}{\kappa_0} \right)^{1/\kappa_1} \int [B(\psi)]^{1/\kappa_1} dF_{\psi}(\psi)
+\] Finally, isolating \(\theta\) yields the closed-form solution for
+equilibrium market tightness: \[
+\theta = \left( \frac{1}{L} \left( \frac{\gamma_0}{\kappa_0} \right)^{1/\kappa_1} \int [B(\psi)]^{1/\kappa_1} dF_{\psi}(\psi) \right)^{\frac{\kappa_1}{\kappa_1 + \gamma_1}}
+\]
 
 
 
