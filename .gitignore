@@ -10,6 +10,9 @@ data/processed/
 # symbolic links to processed data files
 data/processed
 
+# symbolic links to output data files
+data/output
+
 ##  history folder (previous versions of project files)
 .history/
 
