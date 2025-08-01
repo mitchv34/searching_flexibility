@@ -7,6 +7,8 @@ data/raw/
 
 ## Intermediate processed data files
 data/processed/
+# symbolic links to processed data files
+data/processed
 
 ##  history folder (previous versions of project files)
 .history/
