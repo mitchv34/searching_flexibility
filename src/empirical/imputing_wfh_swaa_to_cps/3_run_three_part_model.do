@@ -24,7 +24,9 @@ Date: July 2025
 global project_root "/project/high_tech_ind/WFH/searching_flexibility/"
 global data_path "$project_root/data"
 global code_path "$project_root/src"
-global output_path "$project_root/output"
+global estimates_path "$data_path/results/estimates"
+global processed_path "$data_path/processed"
+global figures_path "$project_root/figures"
 
 clear all
 set more off
@@ -33,15 +35,14 @@ set linesize 120
 // Change to project directory
 cd "$project_root"
 
-// Change to project directory
-cd "$project_root"
-
-// Create output directory if it doesn't exist
-capture mkdir "$output_path"
+// Create output directories if they don't exist
+capture mkdir "$estimates_path"
+capture mkdir "$processed_path"
+capture mkdir "$figures_path"
 
 // Create log file
 capture log close _all
-capture log using "$output_path/wfh_three_part_model_log.log", replace
+capture log using "output/wfh_three_part_model_log.log", replace
 
 display "{hline 80}"
 display "WFH IMPUTATION - THREE-PART MODEL IMPLEMENTATION"
@@ -227,7 +228,7 @@ display "STEP 5: Loading ACS data and generating predictions..."
 
 // Load ACS data
 clear
-import delimited "$data_path/processed/cps_prepared_for_stata.csv", clear
+import delimited "$data_path/processed/acs_prepared_for_stata.csv", clear
 
 // Display basic info about prediction dataset
 display ""
@@ -406,25 +407,25 @@ format imputation_date %td
 label variable imputation_date "Date of imputation"
 
 // Save in Stata format
-save "$output_path/cps_with_imputed_wfh_three_part.dta", replace
-display "✓ Saved: $output_path/cps_with_imputed_wfh_three_part.dta"
+save "$processed_path/acs_with_imputed_wfh_three_part.dta", replace
+display "✓ Saved: $processed_path/acs_with_imputed_wfh_three_part.dta"
 
 // Save in CSV format  
-// export delimited "$output_path/cps_with_imputed_wfh_three_part.csv", replace
-// display "✓ Saved: $output_path/cps_with_imputed_wfh_three_part.csv"
+// export delimited "$processed_path/acs_with_imputed_wfh_three_part.csv", replace
+// display "✓ Saved: $processed_path/acs_with_imputed_wfh_three_part.csv"
 
 // Save the model estimates
 estimates restore model_hurdle
-estimates save "$output_path/wfh_model_hurdle.ster", replace
-display "✓ Saved: $output_path/wfh_model_hurdle.ster"
+estimates save "$estimates_path/wfh_model_hurdle.ster", replace
+display "✓ Saved: $estimates_path/wfh_model_hurdle.ster"
 
 estimates restore model_top_corner  
-estimates save "$output_path/wfh_model_top_corner.ster", replace
-display "✓ Saved: $output_path/wfh_model_top_corner.ster"
+estimates save "$estimates_path/wfh_model_top_corner.ster", replace
+display "✓ Saved: $estimates_path/wfh_model_top_corner.ster"
 
 estimates restore model_interior
-estimates save "$output_path/wfh_model_interior.ster", replace  
-display "✓ Saved: $output_path/wfh_model_interior.ster"
+estimates save "$estimates_path/wfh_model_interior.ster", replace  
+display "✓ Saved: $estimates_path/wfh_model_interior.ster"
 
 /*
 ==============================================================================
@@ -446,12 +447,12 @@ display "• Hybrid workers (0 < alpha < 1): " `hybrid' " (" %4.1f `hybrid'/_N*1
 
 display ""
 display "OUTPUT FILES CREATED:"
-display "• $output_path/cps_with_imputed_wfh_three_part.dta (main output)"
-display "• $output_path/cps_with_imputed_wfh_three_part.csv (CSV version)"
-display "• $output_path/wfh_model_hurdle.ster (hurdle model estimates)"
-display "• $output_path/wfh_model_top_corner.ster (top corner model estimates)"
-display "• $output_path/wfh_model_interior.ster (interior model estimates)"
-display "• $output_path/wfh_three_part_model_log.log (detailed log file)"
+display "• $processed_path/acs_with_imputed_wfh_three_part.dta (main output)"
+display "• $processed_path/acs_with_imputed_wfh_three_part.csv (CSV version)"
+display "• $estimates_path/wfh_model_hurdle.ster (hurdle model estimates)"
+display "• $estimates_path/wfh_model_top_corner.ster (top corner model estimates)"
+display "• $estimates_path/wfh_model_interior.ster (interior model estimates)"
+display "• output/wfh_three_part_model_log.log (detailed log file)"
 
 display ""
 display "The three-part model approach provides a more realistic imputation"
@@ -483,8 +484,8 @@ histogram alpha_final, ///
     note("Mass points at 0 and 1 show fully in-person and fully remote workers") ///
     scheme(s1color)
     
-graph export "$output_path/alpha_final_histogram.png", replace width(800) height(600)
-display "✓ Saved: $output_path/alpha_final_histogram.png"
+graph export "$figures_path/alpha_final_histogram.png", replace width(800) height(600)
+display "✓ Saved: $figures_path/alpha_final_histogram.png"
 
 // Create a more detailed histogram focusing on the interior (0,1)
 histogram alpha_final if alpha_final > 0 & alpha_final < 1, ///
@@ -496,8 +497,8 @@ histogram alpha_final if alpha_final > 0 & alpha_final < 1, ///
     note("Distribution among hybrid workers only") ///
     scheme(s1color)
     
-graph export "$output_path/alpha_final_hybrid_only.png", replace width(800) height(600)
-display "✓ Saved: $output_path/alpha_final_hybrid_only.png"
+graph export "$figures_path/alpha_final_hybrid_only.png", replace width(800) height(600)
+display "✓ Saved: $figures_path/alpha_final_hybrid_only.png"
 
 // Create a bar chart showing the three categories
 gen wfh_category = "Fully In-Person" if alpha_final == 0
@@ -516,8 +517,8 @@ graph bar pct, over(wfh_category, sort(count) descending) ///
     note("Based on imputed WFH shares from three-part model") ///
     scheme(s1color)
     
-graph export "$output_path/wfh_categories_bar.png", replace width(800) height(600)
-display "✓ Saved: $output_path/wfh_categories_bar.png"
+graph export "$figures_path/wfh_categories_bar.png", replace width(800) height(600)
+display "✓ Saved: $figures_path/wfh_categories_bar.png"
 restore
 
 // Summary statistics table
@@ -847,8 +848,8 @@ graph bar pct_train pct_imputed, over(wfh_category, sort(pct_imputed) descending
     note("Training data weighted with SWAA weights; Imputed data weighted with ACS weights (if available)") ///
     scheme(s1color)
     
-graph export "output/wfh_categories_comparison_bar.png", replace width(1000) height(700)
-display "✓ Saved: output/wfh_categories_comparison_bar.png"
+graph export "$figures_path/wfh_categories_comparison_bar.png", replace width(1000) height(700)
+display "✓ Saved: $figures_path/wfh_categories_comparison_bar.png"
 
 // Display comparison table
 display ""
@@ -888,8 +889,8 @@ graph bar pct, over(wfh_category, sort(count) descending) ///
     note("Based on imputed WFH shares from three-part model") ///
     scheme(s1color)
     
-graph export "output/wfh_categories_bar.png", replace width(800) height(600)
-display "✓ Saved: output/wfh_categories_bar.png"
+graph export "$figures_path/wfh_categories_bar.png", replace width(800) height(600)
+display "✓ Saved: $figures_path/wfh_categories_bar.png"
 restore
 
 // Clean up temporary variables

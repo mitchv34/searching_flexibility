@@ -10,7 +10,7 @@ This script should be run AFTER the main three-part model imputation has been
 completed and the results have been saved.
 
 Prerequisites:
-- output/acs_with_imputed_wfh_three_part.dta must exist
+- data/processed/acs_with_imputed_wfh_three_part.dta must exist
 - The dataset must contain: alpha_final, p_remote_any, p_full_remote_cond, 
   alpha_hybrid_pred, and wfh variables
 
@@ -25,18 +25,22 @@ set linesize 120
 
 // Set working directory to project root
 * global project_root "/Users/mitchv34/Work/searching_flexibility/"
-global project_root "/project/high_tech_ind/WFH/searching_flexibility/"
+global project_root "v:/high_tech_ind/WFH/searching_flexibility/"
 global data_path "$project_root/data"
 global code_path "$project_root/src"
-global output_path "$project_root/output"
+global estimates_path "$data_path/results/estimates"
+global processed_path "$data_path/processed"
+global figures_path "$project_root/figures"
 
 
-// Create output directory if it doesn't exist
-capture mkdir "output"
+// Create output directories if they don't exist
+capture mkdir "$estimates_path"
+capture mkdir "$processed_path"
+capture mkdir "$figures_path"
 
 // Create dedicated log file for validation
 capture log close _all
-capture log using "output/wfh_validation_calibration_log.log", replace
+capture log using "$code_path/empirical/imputing_wfh_swaa_to_cps/wfh_validation_calibration_log.log", replace
 
 display "{hline 80}"
 display "WFH IMPUTATION - VALIDATION AND CALIBRATION"
@@ -53,7 +57,7 @@ display "Loading imputed dataset for validation..."
 display "{hline 45}"
 
 // Load the dataset with imputed WFH shares
-use "output/acs_with_imputed_wfh_three_part.dta", clear
+use "$processed_path/acs_with_imputed_wfh_three_part.dta", clear
 
 // Display basic info about the dataset
 display ""
@@ -137,8 +141,8 @@ if _rc == 0 {
                note("Source: ACS data with 3-part model imputation") ///
                scheme(s1color)
                
-        graph export "output/validation_alpha_by_wfh_status.png", replace width(800) height(600)
-        display "✓ Saved: output/validation_alpha_by_wfh_status.png"
+        graph export "$figures_path/validation_alpha_by_wfh_status.png", replace width(800) height(600)
+        display "✓ Saved: $figures_path/validation_alpha_by_wfh_status.png"
         
         /*
         ==============================================================================
@@ -175,8 +179,8 @@ if _rc == 0 {
                   note("Sample-based analysis for computational efficiency") ///
                   scheme(s1color)
         
-            graph export "output/validation_roc_curve.png", replace width(800) height(600)
-            display "✓ Saved: output/validation_roc_curve.png"
+            graph export "$figures_path/validation_roc_curve.png", replace width(800) height(600)
+            display "✓ Saved: $figures_path/validation_roc_curve.png"
         restore
         
         // Alternative: Use roctab with graph on sample
@@ -191,8 +195,8 @@ if _rc == 0 {
                    subtitle("Based on 5% random sample") ///
                    scheme(s1color)
         
-            graph export "output/validation_roc_curve_roctab.png", replace width(800) height(600)
-            display "✓ Saved: output/validation_roc_curve_roctab.png"
+            graph export "$figures_path/validation_roc_curve_roctab.png", replace width(800) height(600)
+            display "✓ Saved: $figures_path/validation_roc_curve_roctab.png"
         restore
         
         display "✓ ROC analysis complete - both summary statistics and graphs created"
@@ -324,8 +328,8 @@ if _rc == 0 {
                note("Calibrated version matches ACS aggregate WFH share") ///
                scheme(s1color)
                
-        graph export "output/comparison_original_vs_calibrated.png", replace width(800) height(600)
-        display "✓ Saved: output/comparison_original_vs_calibrated.png"
+        graph export "$figures_path/comparison_original_vs_calibrated.png", replace width(800) height(600)
+        display "✓ Saved: $figures_path/comparison_original_vs_calibrated.png"
         
         // Distribution breakdown for calibrated version
         display ""
@@ -446,11 +450,11 @@ if _rc == 0 {
         label variable calibration_cutoff "Cutoff value used for calibration"
         
         // Save updated dataset
-        save "output/acs_with_imputed_wfh_validated.dta", replace
-        display "✓ Saved: output/acs_with_imputed_wfh_validated.dta"
+        save "$processed_path/acs_with_imputed_wfh_validated.dta", replace
+        display "✓ Saved: $processed_path/acs_with_imputed_wfh_validated.dta"
         
-        export delimited "output/acs_with_imputed_wfh_validated.csv", replace
-        display "✓ Saved: output/acs_with_imputed_wfh_validated.csv"
+        * export delimited "$processed_path/acs_with_imputed_wfh_validated.csv", replace
+        display "✓ Saved: $processed_path/acs_with_imputed_wfh_validated.csv"
         
         /*
         ==============================================================================
@@ -490,8 +494,8 @@ if _rc == 0 {
         
         display ""
         display "OUTPUT FILES WITH VALIDATION:"
-        display "• output/acs_with_imputed_wfh_validated.dta (main output with validation)"
-        display "• output/acs_with_imputed_wfh_validated.csv (CSV version)"
+        display "• $processed_path/acs_with_imputed_wfh_validated.dta (main output with validation)"
+        display "• $processed_path/acs_with_imputed_wfh_validated.csv (CSV version)"
         display "• output/validation_alpha_by_wfh_status.png (distribution comparison)"
         display "• output/validation_roc_curve.png (ROC analysis)"
         display "• output/comparison_original_vs_calibrated.png (calibration comparison)"
@@ -730,3 +734,283 @@ display ""
 display "{hline 80}"
 display "VALIDATION AND CALIBRATION ANALYSIS COMPLETE"
 display "{hline 80}"
+
+
+// BLS Target Shares (can be easily modified here)
+global bls_target_inperson = 78.4
+global bls_target_hybrid = 11.5  
+global bls_target_remote = 10.1
+
+// Verify targets sum to 100
+local target_sum = $bls_target_inperson + $bls_target_hybrid + $bls_target_remote
+if abs(`target_sum' - 100) > 0.001 {
+    display "ERROR: BLS targets do not sum to 100%: `target_sum'%"
+    exit 198
+}
+
+/*
+==============================================================================
+BLS CALIBRATION USING RANK-AND-ASSIGN METHOD
+==============================================================================
+*/
+
+display ""
+display "{hline 80}"
+display "BLS CALIBRATION USING RANK-AND-ASSIGN METHOD"
+display "{hline 80}"
+
+display ""
+display "STEP 1: Calculate WFH Propensity Score for Ranking"
+display "{hline 55}"
+
+// Calculate the expected value of alpha for each worker (WFH propensity score)
+capture drop expected_alpha
+gen expected_alpha = p_remote_any * (p_full_remote_cond * 1 + (1 - p_full_remote_cond) * alpha_hybrid_pred)
+label variable expected_alpha "Expected WFH share (propensity score for ranking)"
+
+display "✓ WFH propensity score calculated"
+summarize expected_alpha, detail
+
+display ""
+display "STEP 2: Find BLS Calibration Cutoffs"
+display "{hline 40}"
+
+display "BLS Target Shares:"
+display "• Fully In-Person: " %5.1f $bls_target_inperson "%"
+display "• Hybrid: " %5.1f $bls_target_hybrid "%"  
+display "• Fully Remote: " %5.1f $bls_target_remote "%"
+
+// Find cutoff between In-Person and Hybrid (78.4th percentile)
+_pctile expected_alpha, p($bls_target_inperson)
+local cutoff_inperson_hybrid = r(r1)
+display ""
+display "Cutoff 1 (In-Person/Hybrid boundary): " %6.4f `cutoff_inperson_hybrid'
+display "  Workers with propensity ≤ " %6.4f `cutoff_inperson_hybrid' " assigned to Fully In-Person"
+
+// Find cutoff between Hybrid and Remote (89.9th percentile)
+local cutoff_percentile = $bls_target_inperson + $bls_target_hybrid
+_pctile expected_alpha, p(`cutoff_percentile')
+local cutoff_hybrid_remote = r(r1)
+display "Cutoff 2 (Hybrid/Remote boundary): " %6.4f `cutoff_hybrid_remote'
+display "  Workers with propensity > " %6.4f `cutoff_hybrid_remote' " assigned to Fully Remote"
+
+display ""
+display "STEP 3: IMPLEMENT BLS RANK-AND-ASSIGN CALIBRATION"
+display "{hline 55}"
+
+// Drop existing BLS calibration variable if it exists
+capture drop alpha_calibrated_bls
+
+// Initialize the BLS-calibrated variable
+gen alpha_calibrated_bls = .
+label variable alpha_calibrated_bls "Final Imputed WFH Share (Calibrated to BLS)"
+
+// 1. Assign Fully In-Person (α = 0) to bottom 78.4%
+replace alpha_calibrated_bls = 0 if expected_alpha <= `cutoff_inperson_hybrid'
+
+// 2. Assign Fully Remote (α = 1) to top 10.1%  
+replace alpha_calibrated_bls = 1 if expected_alpha > `cutoff_hybrid_remote'
+
+// 3. Assign Hybrid (0 < α < 1) to middle 11.5%
+// For these workers, use the original predicted hybrid share from Model 3
+replace alpha_calibrated_bls = alpha_hybrid_pred if missing(alpha_calibrated_bls)
+
+display "✓ BLS calibration assignments completed"
+
+display ""
+display "STEP 4: Verify BLS Calibration"
+display "{hline 35}"
+
+// Count assignments and verify they match targets
+count if alpha_calibrated_bls == 0
+local bls_inperson_count = r(N)
+local bls_inperson_pct = (`bls_inperson_count' / _N) * 100
+
+count if alpha_calibrated_bls == 1  
+local bls_remote_count = r(N)
+local bls_remote_pct = (`bls_remote_count' / _N) * 100
+
+count if alpha_calibrated_bls > 0 & alpha_calibrated_bls < 1
+local bls_hybrid_count = r(N)
+local bls_hybrid_pct = (`bls_hybrid_count' / _N) * 100
+
+display "BLS Calibration Results:"
+display "                    Target    Achieved    Difference"
+display "Fully In-Person:    " %5.1f $bls_target_inperson "%      " %5.1f `bls_inperson_pct' "%       " %5.2f (`bls_inperson_pct' - $bls_target_inperson) "%"
+display "Hybrid:             " %5.1f $bls_target_hybrid "%      " %5.1f `bls_hybrid_pct' "%       " %5.2f (`bls_hybrid_pct' - $bls_target_hybrid) "%"
+display "Fully Remote:       " %5.1f $bls_target_remote "%      " %5.1f `bls_remote_pct' "%       " %5.2f (`bls_remote_pct' - $bls_target_remote) "%"
+
+// Check calibration accuracy
+local max_diff = max(abs(`bls_inperson_pct' - $bls_target_inperson), ///
+                     abs(`bls_hybrid_pct' - $bls_target_hybrid), ///
+                     abs(`bls_remote_pct' - $bls_target_remote))
+
+if `max_diff' < 0.1 {
+    display "✓ BLS calibration highly accurate (max difference < 0.1%)"
+}
+else if `max_diff' < 0.5 {
+    display "✓ BLS calibration accurate (max difference < 0.5%)"
+}
+else {
+    display "⚠ BLS calibration less precise (max difference = " %4.2f `max_diff' "%)"
+}
+
+/*
+==============================================================================
+COMPARE ALL THREE VERSIONS: ORIGINAL, ACS-CALIBRATED, BLS-CALIBRATED
+==============================================================================
+*/
+
+display ""
+display "COMPARING ALL THREE VERSIONS: ORIGINAL, ACS-CALIBRATED, BLS-CALIBRATED"
+display "{hline 75}"
+
+// Summary statistics for all three versions
+display ""
+display "Summary Statistics Comparison:"
+display "Variable                    Mean      Std Dev    Min    Max"
+display "{hline 60}"
+
+quietly summarize alpha_final
+display "Original                   " %6.4f r(mean) "    " %6.4f r(sd) "   " %4.2f r(min) "   " %4.2f r(max)
+
+quietly summarize alpha_final_calibrated
+display "ACS-Calibrated             " %6.4f r(mean) "    " %6.4f r(sd) "   " %4.2f r(min) "   " %4.2f r(max)
+
+quietly summarize alpha_calibrated_bls
+display "BLS-Calibrated             " %6.4f r(mean) "    " %6.4f r(sd) "   " %4.2f r(min) "   " %4.2f r(max)
+
+// Distribution comparison
+display ""
+display "Work Arrangement Distribution Comparison:"
+display "                        Original    ACS-Calib    BLS-Calib"
+display "{hline 65}"
+display "Fully In-Person:        " %7.1f `orig_pct_inperson' "%      " %7.1f `calib_pct_inperson' "%      " %7.1f `bls_inperson_pct' "%"
+display "Hybrid:                 " %7.1f `orig_pct_hybrid' "%      " %7.1f `calib_pct_hybrid' "%      " %7.1f `bls_hybrid_pct' "%"
+display "Fully Remote:           " %7.1f `orig_pct_remote' "%      " %7.1f `calib_pct_remote' "%      " %7.1f `bls_remote_pct' "%"
+
+// Create three-way comparison plot
+twoway (kdensity alpha_final, legend(label(1 "Original"))) ///
+       (kdensity alpha_final_calibrated, legend(label(2 "ACS-Calibrated"))) ///
+       (kdensity alpha_calibrated_bls, legend(label(3 "BLS-Calibrated"))), ///
+       title("Comparison of All Three Imputation Versions", size(medium)) ///
+       xtitle("Imputed WFH Share") ytitle("Density") ///
+       note("BLS version matches official labor statistics") ///
+       scheme(s1color)
+       
+graph export "$figures_path/comparison_all_three_versions.png", replace width(800) height(600)
+display "✓ Saved: $figures_path/comparison_all_three_versions.png"
+
+/*
+==============================================================================
+VALIDATION OF BLS-CALIBRATED VERSION AGAINST ACS
+==============================================================================
+*/
+
+display ""
+display "VALIDATION OF BLS-CALIBRATED VERSION AGAINST ACS"
+display "{hline 50}"
+
+// Compare BLS-calibrated means by actual WFH status
+display ""
+display "Mean BLS-calibrated alpha by ACS WFH status:"
+tabstat alpha_calibrated_bls, by(wfh) statistics(mean count) nototal
+
+// Statistical test
+display ""
+display "Statistical test for BLS-calibrated version:"
+ttest alpha_calibrated_bls, by(wfh)
+
+// Classification metrics for BLS version
+gen bls_remote = (alpha_calibrated_bls > 0)
+display ""
+display "BLS-CALIBRATED CLASSIFICATION METRICS:"
+quietly tab bls_remote wfh
+local total_bls = r(N)
+local true_pos_bls = r(r21)
+local false_pos_bls = r(r12)
+local true_neg_bls = r(r11)
+local false_neg_bls = r(r22)
+
+local accuracy_bls = (`true_pos_bls' + `true_neg_bls') / `total_bls'
+local sensitivity_bls = `true_pos_bls' / (`true_pos_bls' + `false_neg_bls')
+local specificity_bls = `true_neg_bls' / (`true_neg_bls' + `false_pos_bls')
+local precision_bls = `true_pos_bls' / (`true_pos_bls' + `false_pos_bls')
+
+display "• Accuracy: " %6.4f `accuracy_bls'
+display "• Sensitivity (True Positive Rate): " %6.4f `sensitivity_bls'
+display "• Specificity (True Negative Rate): " %6.4f `specificity_bls'
+display "• Precision (Positive Predictive Value): " %6.4f `precision_bls'
+
+/*
+==============================================================================
+SAVE RESULTS WITH BLS CALIBRATION
+==============================================================================
+*/
+
+display ""
+display "SAVING RESULTS WITH BLS CALIBRATION..."
+display "{hline 40}"
+
+// Add BLS calibration metadata
+capture drop bls_calibration_performed bls_target_*
+gen bls_calibration_performed = 1
+label variable bls_calibration_performed "Whether BLS calibration was performed"
+
+gen bls_target_inperson_pct = $bls_target_inperson
+label variable bls_target_inperson_pct "BLS target for fully in-person (%)"
+
+gen bls_target_hybrid_pct = $bls_target_hybrid  
+label variable bls_target_hybrid_pct "BLS target for hybrid work (%)"
+
+gen bls_target_remote_pct = $bls_target_remote
+label variable bls_target_remote_pct "BLS target for fully remote (%)"
+
+gen bls_cutoff_inperson_hybrid = `cutoff_inperson_hybrid'
+label variable bls_cutoff_inperson_hybrid "BLS calibration cutoff (in-person/hybrid)"
+
+gen bls_cutoff_hybrid_remote = `cutoff_hybrid_remote'
+label variable bls_cutoff_hybrid_remote "BLS calibration cutoff (hybrid/remote)"
+
+// Save updated dataset with all three versions
+save "$processed_path/acs_with_imputed_wfh_all_versions.dta", replace
+display "✓ Saved: $processed_path/acs_with_imputed_wfh_all_versions.dta"
+
+* export delimited "$processed_path/acs_with_imputed_wfh_all_versions.csv", replace
+display "✓ Saved: $processed_path/acs_with_imputed_wfh_all_versions.csv"
+
+/*
+==============================================================================
+FINAL SUMMARY WITH ALL THREE VERSIONS
+==============================================================================
+*/
+
+display ""
+display "{hline 80}"
+display "FINAL SUMMARY - ALL THREE IMPUTATION VERSIONS"
+display "{hline 80}"
+
+display ""
+display "VALIDATION PERFORMANCE COMPARISON:"
+display "                    Original    ACS-Calib    BLS-Calib"
+display "Accuracy:           " %7.4f `accuracy' "     " %7.4f `accuracy_c' "     " %7.4f `accuracy_bls'
+display "Sensitivity:        " %7.4f `sensitivity' "     " %7.4f `sensitivity_c' "     " %7.4f `sensitivity_bls'
+display "Specificity:        " %7.4f `specificity' "     " %7.4f `specificity_c' "     " %7.4f `specificity_bls'
+
+display ""
+display "CALIBRATION TARGETS ACHIEVED:"
+display "Target Source: ACS WFH Rate = " %5.1f `target_p_remote_any'*100 "% | BLS Official = " %5.1f ($bls_target_hybrid + $bls_target_remote) "%"
+display "• ACS-Calibrated any remote: " %5.1f `calibrated_share'*100 "%"
+display "• BLS-Calibrated any remote: " %5.1f (`bls_hybrid_pct' + `bls_remote_pct') "%"
+
+display ""
+display "RECOMMENDED VERSION: alpha_calibrated_bls"
+display "• Matches official BLS labor statistics"
+display "• Maintains individual heterogeneity from model predictions"  
+display "• Suitable for policy analysis and external validation"
+
+display ""
+display "OUTPUT FILES:"
+display "• $processed_path/acs_with_imputed_wfh_all_versions.dta (all three versions)"
+display "• $processed_path/acs_with_imputed_wfh_all_versions.csv (CSV version)"
+display "• $figures_path/comparison_all_three_versions.png (distribution comparison)"

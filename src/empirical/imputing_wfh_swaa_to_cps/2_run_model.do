@@ -11,7 +11,7 @@ This Stata script implements Phase 3 of the WFH imputation methodology:
 Following the methodology outlined in doc/imputing_wfh_swaa_to_cps.md
 ACS preprocessing documented in doc/acs_processing_polar.md
 
-Author: Generated for WFH Imputation Project
+Author: Mitchell Valdes-Bobes
 Date: July 2025
 ==============================================================================
 */
@@ -21,7 +21,9 @@ Date: July 2025
 global project_root "/project/high_tech_ind/WFH/searching_flexibility/"
 global data_path "$project_root/data"
 global code_path "$project_root/src"
-global output_path "$project_root/output"
+global estimates_path "$data_path/results/estimates"
+global processed_path "$data_path/processed"
+global figures_path "$project_root/figures"
 
 clear all
 set more off
@@ -33,12 +35,14 @@ cd "$project_root"
 // Change to project directory
 cd "$project_root"
 
-// Create output directory if it doesn't exist
-capture mkdir "$output_path"
+// Create output directories if they don't exist
+capture mkdir "$estimates_path"
+capture mkdir "$processed_path" 
+capture mkdir "$figures_path"
 
 // Create log file
 capture log close _all
-capture log using "$output_path/wfh_imputation_log.log", replace
+capture log using "$code_path/empirical/imputing_wfh_swaa_to_cps/wfh_imputation_log.log", replace
 
 display "{hline 80}"
 display "WFH IMPUTATION - ECONOMETRIC MODELING & IMPUTATION"
@@ -134,7 +138,7 @@ display "Model Estimation Results:"
 estimates replay wfh_model
 
 // Save model estimates
-estimates save "$output_path/wfh_model_estimates", replace
+estimates save "$estimates_path/wfh_model_estimates", replace
 
 /*
 ==============================================================================
@@ -243,15 +247,15 @@ quietly duplicates report unique_person_id
 display r(unique_N)
 
 // Save as Stata data file with unique identifier preserved
-save "$output_path/acs_with_imputed_wfh.dta", replace
+save "$processed_path/acs_with_imputed_wfh.dta", replace
 
 // Also save as CSV for broader compatibility
-export delimited "$output_path/acs_with_imputed_wfh.csv", replace
+* export delimited "$processed_path/acs_with_imputed_wfh.csv", replace
 
 display ""
 display "Final dataset saved successfully!"
-display "Stata file: $output_path/acs_with_imputed_wfh.dta"
-display "CSV file: $output_path/acs_with_imputed_wfh.csv"
+display "Stata file: $processed_path/acs_with_imputed_wfh.dta"
+display "CSV file: $processed_path/acs_with_imputed_wfh.csv"
 display "Both files contain unique_person_id for merging back to original ACS data"
 
 /*
@@ -360,16 +364,16 @@ display ""
 display "Summary:"
 display "- Model estimated on SWAA data"
 display "- Predictions generated for ACS data (preprocessed via Polars)"
-display "- Final dataset: output/acs_with_imputed_wfh.dta"
+display "- Final dataset: data/processed/acs_with_imputed_wfh.dta"
 display "- Sample size: " _N
 display "- Mean WFH share: " %6.4f `mean_alpha'
 display "- Unique identifier preserved for merging: unique_person_id"
 display ""
 display "Files created:"
-display "- $output_path/wfh_model_estimates.ster (model estimates)"
-display "- $output_path/acs_with_imputed_wfh.dta (main output with unique_person_id)"
-display "- $output_path/acs_with_imputed_wfh.csv (CSV version with unique_person_id)"
-display "- $output_path/wfh_imputation_log.log (this log)"
+display "- $estimates_path/wfh_model_estimates.ster (model estimates)"
+display "- $processed_path/acs_with_imputed_wfh.dta (main output with unique_person_id)"
+display "- $processed_path/acs_with_imputed_wfh.csv (CSV version with unique_person_id)"
+display "- $code_path/empirical/imputing_wfh_swaa_to_cps/wfh_imputation_log.log (this log)"
 display ""
 display "NOTE: Use unique_person_id to merge imputed WFH shares back to original ACS data"
 display "ACS preprocessing documented in doc/acs_processing_polar.md"
