@@ -18,12 +18,20 @@ Date: July 2025
 ================================================================================
 """
 
+# Activate the project environment
+using Pkg
+Pkg.activate(@__DIR__)
+
+# Ensure all packages are installed
+println("Installing/updating required packages...")
+Pkg.instantiate()
+
 using CairoMakie, CSV, DataFrames, StatsBase, Statistics, Distributions
 using Colors, ColorSchemes, LaTeXStrings, KernelDensity, ROCAnalysis
 using GLM, Printf, Dates, StatFiles, Random, Trapz
 
-# Set up paths (consistent with Stata scripts)
-const PROJECT_ROOT = "/project/high_tech_ind/WFH/searching_flexibility"
+# Set up paths (use local directory structure)
+const PROJECT_ROOT = @__DIR__  # Use the script's directory as project root
 const DATA_PATH = joinpath(PROJECT_ROOT, "data")
 const PROCESSED_PATH = joinpath(DATA_PATH, "processed")
 const OUTPUT_PATH = joinpath(PROJECT_ROOT, "output")
