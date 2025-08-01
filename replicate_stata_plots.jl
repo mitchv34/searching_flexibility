@@ -103,7 +103,7 @@ println("-"^50)
 
 # Load ACS data with three-part model predictions (primary data source)
 println("Loading ACS data with three-part model predictions...")
-acs_three_part = DataFrame(load(joinpath(OUTPUT_PATH, "acs_with_imputed_wfh_three_part.dta")))
+acs_three_part = DataFrame(load(joinpath(PROCESSED_PATH, "acs_with_imputed_wfh_three_part.dta")))
 println("✓ Loaded acs_with_imputed_wfh_three_part.dta: $(nrow(acs_three_part)) observations")
 
 # Load ACS data with simple fractional logit predictions (optional)
