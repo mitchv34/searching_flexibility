@@ -290,7 +290,7 @@ Now, we substitute $V = \theta L$ into the left-hand side to impose the equilibr
 $$\theta L = (\theta^{\gamma} + 1)^{-1/(\gamma\kappa_1)} \int \left( \frac{B(\psi)}{\kappa_{0}} \right)^{1/\kappa_{1}} dF_{\psi}(\psi)$$
 To solve for $\theta$, we group all terms involving $\theta$ on one side:
 $$\theta (\theta^{\gamma} + 1)^{1/(\gamma\kappa_1)} = \frac{1}{L} \int \left( \frac{B(\psi)}{\kappa_{0}} \right)^{1/\kappa_{1}} dF_{\psi}(\psi)$$
-This final equation implicitly defines the equilibrium market tightness $\theta$. Unlike the Cobb-Douglas case, we cannot isolate $\theta$ to find a clean, closed-form solution. The equilibrium $\theta$ is the value that solves this equation.
+This final equation implicitly defines the equilibrium market tightness $\theta`. Unlike the Cobb-Douglas case, we cannot isolate $\theta$ to find a clean, closed-form solution. The equilibrium $\theta$ is the value that solves this equation.
 ## Algorithm: Solving for Equilibrium
 
 ### **Phase 0: Setup and Discretization**
@@ -407,7 +407,7 @@ If an offer is rejected, both players wait one period. The expected value of con
 1.  **When the Worker Proposes (with probability $\xi$):**
     The worker wants to maximize their own value, $W$. To secure the firm's acceptance, they must offer the firm a contract that delivers at least its continuation value, $\beta (1 - \delta) \Pi (h, \psi)$. The worker's optimal proposal will give the firm exactly this value. The worker's value from this proposal is the remainder of the total value created by the match, $J(h, \psi) = W(h, \psi) + \Pi(h, \psi)$.
     $$
-    \text{Worker's value when proposing} = J(h, \psi) - \beta(1-\delta)\Pi(h, \psi)
+    \text{Worker's value when proposing} = J(h, \psi) - \beta(1-\delta)\Pi(h, ψ)
     $$
 
 2.  **When the Firm Proposes (with probability $1-\xi$):**
@@ -453,7 +453,7 @@ This means the worker receives a fraction $\xi$ of the total surplus, and the fi
 
 The outcome of the bargaining game is that the worker's net gain from the match is a share $\xi$ of the total match surplus $S(h, \psi)$.
 $$
-W(h, \psi) - U(h) = \xi S(h, \psi)
+W(h, ψ) - U(h) = \xi S(h, \psi)
 $$
 This provides the microfoundation for the bargaining solution used in the main body of the paper:
 $$
@@ -472,17 +472,17 @@ The equilibrium wage $w^*(h, \psi)$ is the wage that, given the efficient remote
 	* The firm's vacancy remains unfilled, and it gains nothing. Its disagreement payoff is **$d_F = 0$**.
 
 **Maximization Problem:**
-The generalized Nash bargaining solution is the pair of lifetime values $(W^*, \Pi^*)$ that solves the following problem:
+The generalized Nash bargaining solution is the pair of lifetime values $(W^*, \Pi^*)` that solves the following problem:
 $$
 \max_{W, \Pi} \quad (W - d_W)^\xi (\Pi - d_F)^{1-\xi}
 $$
-subject to the feasibility constraint $W + \Pi = J(h, \psi)$. Substituting our specific disagreement points gives:
+subject to the feasibility constraint $W + \Pi = J(h, \psi)`. Substituting our specific disagreement points gives:
 $$
 \max_{W, \Pi} \quad (W - U(h))^\xi (\Pi - 0)^{1-\xi} \quad \text{s.t.} \quad W + \Pi = J(h, \psi)
 $$
 
 **Solving the Maximization Problem**
-We use substitution. From the constraint, express the firm's value as $\Pi = J(h, \psi) - W$. The problem becomes:
+We use substitution. From the constraint, express the firm's value as $\Pi = J(h, \psi) - W`. The problem becomes:
 $$
 \max_{W} \quad (W - U(h))^\xi (J(h, \psi) - W)^{1-\xi}
 $$
@@ -494,7 +494,8 @@ $$
 Take the first-order condition with respect to $W$ and set it to zero:
 $$
 \frac{\partial \mathcal{L}}{\partial W} = 0 \quad \implies \quad \frac{\xi}{W - U} = \frac{1-\xi}{J - W} \quad \implies \quad 
-\xi (J - W) = (1-\xi) (W - U) \quad \implies \quad \xi J = W - U + \xi U
+\xi (J - W) = (1-\xi) (W - U) \quad \implies \quad 
+\xi J = W - U + \xi U
 $$
 Solving for $W$:
 $$
@@ -508,11 +509,9 @@ W^* - U(h) &= [\xi J(h, \psi) + (1-\xi)U(h)] - U(h) \\
 &= \xi J(h, \psi) + U(h) - \xi U(h) - U(h) \\
 &= \xi J(h, \psi) - \xi U(h) \\
 &= \xi [J(h, \psi) - U(h)] \\
+\end{align*}$$
 
-\end{align*}
-$$
-
-By definition, $J(h, \psi) - U(h)$ is the total match surplus, $S(h, \psi)$. Therefore, we have:
+By definition, $J(h, \psi) - U(h)$ is the total match surplus, $S(h, \psi)`. Therefore, we have:
 $$
 \underbrace{W^* - U(h)}_{\text{Worker's Share of Surplus}} = \xi \cdot \underbrace{S(h, \psi)}_{\text{Total Surplus}}
 $$
@@ -680,7 +679,7 @@ With the model's internal logic set, we now use the remaining parameters to ensu
 			- **What this shows:** It directly demonstrates that the wage premium is driven by the fact that remote workers are, on average, more skilled within that same occupation.
 ### **Phase 2: Select Parameters and Design Experiments**
 
-#### **Proposed Experiment 1: The Role of $h$-$\psi$ Complementarity**
+#### Proposed Experiment 1: The Role of $h$-$\psi$ Complementarity
 
 **Objective:** To understand how the degree of complementarity between worker skill ($h$) and firm remote efficiency ($\psi$) shapes labor market outcomes, including sorting patterns, work arrangements, wage inequality, and unemployment.
 
@@ -697,7 +696,7 @@ With the model's internal logic set, we now use the remaining parameters to ensu
     - $\nu = 2$: A "High Complementarity" case.
         
 2. **Implement the Counterfactual Loop:** For each value of $\nu$ in your chosen range:  
-    1. **Keep Deep Parameters Fixed:** Hold all Phase 1 and most Phase 2 parameters constant $(\beta, \delta, \gamma_1, \xi, A_{1}, c_{0}, \chi, \phi)$. Note that $\phi$ is fixed because it was determined by $c_0$, $A_1$, and $h_{min}$, none of which are changing.  
+    1. **Keep Deep Parameters Fixed:** Hold all Phase 1 and most Phase 2 parameters constant $(\beta, \delta, \gamma_1, \xi, A_{1}, c_{0}, \chi, \phi)`. Note that $\phi$ is fixed because it was determined by $c_0$, $A_1$, and $h_{min}$, none of which are changing.  
     2. **Re-Calibrate $\psi_0$:** Use your target point condition to solve for a new $\psi_0$ that corresponds to the current $\nu$. This ensures that for every $\nu$, the $\underline{\psi}(h)$ curve still starts at the same point $(h_{min}, \psi_{max})$. This isolates the effect of $\nu$ on the curvature and slope of the thresholds, not their starting point.  
     3. **Re-Calibrate $\kappa_0$:** With the new $\nu$ and $\psi_0$, the overall surplus in the economy will change. To make the results comparable, re-calibrate the vacancy cost level $\kappa_{0}$ to ensure the aggregate unemployment rate remains at the target of 5%. This is crucial: it means you are comparing economies with different internal structures but the **same overall level of labor market slack**.  
     4. **Solve and Store Results:** Solve the full model and store all key outcomes (sorting measures, inequality measures, work arrangement shares, etc.).
@@ -727,3 +726,25 @@ With the model's internal logic set, we now use the remaining parameters to ensu
         
 
 By structuring the experiment this way, you can tell a powerful story about how the fundamental nature of production technology (ν) drives sorting, inequality, and the future of work in your model's economy.
+
+#### Additional Counterfactuals
+
+- Vary Bargaining Power ξ  
+  • ξ ∈ [0.2,0.8], re‐calibrate κ₀ for 5% unemployment.  
+  • Metrics: Spearman ρ, Gini, regime shares.
+
+- Preference Shock: c₀ and χ  
+  • Increase/decrease c₀ or χ by ±20%.  
+  • Re‐solve model; track α*, w* and hybrid region size Δψ(h).
+
+- Matching Elasticity γ₁  
+  • Sweep γ₁ ∈ [0.3,0.7], adjust ξ via Hosios condition.  
+  • Examine changes in θ, p, q and vacancy distribution v(ψ).
+
+- Skill Distribution F_h(h)  
+  • Replace baseline F_h with more right‐skewed or bimodal distributions.  
+  • Assess how sorting and wage premia respond to demographic shifts.
+
+- Sectoral Technology Shock  
+  • Apply a one‐time increase to ψ for a subset of firms/sectors.  
+  • Simulate transitional dynamics in remote‐work shares and wages.

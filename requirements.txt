@@ -12,3 +12,6 @@ seaborn>=0.11.0
 # Optional: For Jupyter notebook development
 jupyter>=1.0.0
 ipykernel>=6.0.0
+
+# For FRED data fallback
+pandas_datareader>=0.10.0

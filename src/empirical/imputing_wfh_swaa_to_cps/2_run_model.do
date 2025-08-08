@@ -214,8 +214,8 @@ count if missing(alpha)
 // Display distribution of predictions
 display ""
 display "Distribution of Predicted WFH Shares:"
-histogram alpha, frequency title("Distribution of Predicted WFH Shares") ///
-    xlabel(0(0.1)1) ylabel(, format(%9.0fc))
+* histogram alpha, frequency title("Distribution of Predicted WFH Shares") ///
+*     xlabel(0(0.1)1) ylabel(, format(%9.0fc))
 
 /*
 ==============================================================================
