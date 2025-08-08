@@ -114,8 +114,8 @@ These parameters are identified by the overall wage distribution.
 
 | Moment             | 2019 Target | 2024 Target |
 | :----------------- | :---------- | :---------- |
-| Mean(log wage)     | [Value]     | [Value]     |
-| Variance(log wage) | [Value]     | [Value]     |
+| Mean(log wage)     | [Value]     | 2.94        |
+| Variance(log wage) | [Value]     | 0.20        |
 
 ## **In-Office Cost ($c_0, \chi$)**
 
@@ -136,13 +136,13 @@ These parameters are identified by the price and quantity of remote work.
 
 | Variable                  | 2019 Coef.         | 2024 Coef.         |
 | :------------------------ | :----------------- | :----------------- |
-| Hybrid Dummy              | [Value]            | [Value]            |
-|                           | (*std. err.*)      | (*std. err.*)      |
-| In-Person Dummy           | **[Target Value]** | **[Target Value]** |
-|                           | (*std. err.*)      | (*std. err.*)      |
+| Hybrid Dummy              | [Value]            | 0.07               |
+|                           | (*std. err.*)      | (0.01)             |
+| In-Person Dummy           | **[Target Value]** | **-0.02**          |
+|                           | (*std. err.*)      | (0.01)             |
 | Controls ($\mathbf{X}_i$) | Yes                | Yes                |
-| Observations              | [N]                | [N]                |
-| R-squared                 | [R²]               | [R²]               |
+| Observations              | [N]                | 46053              |
+| R-squared                 | [R²]               | 0.35               |
 
 
 
@@ -157,9 +157,9 @@ These parameters are identified by the price and quantity of remote work.
 
 | Arrangement | 2019 Target | 2024 Target |
 | :--- | :--- | :--- |
-| Fully Remote | [Value] | [Value] |
-| Hybrid | **[Target Value]** | **[Target Value]** |
-| Fully In-Person | [Value] | [Value] |
+| Fully Remote | [Value] | 10.88% |
+| Hybrid | **[Target Value]** | **11.94%** |
+| Fully In-Person | [Value] | 77.18% |
 
 
 
@@ -181,7 +181,7 @@ These parameters are identified by aggregate productivity and the conditional wa
 
 | Moment | 2019 Target | 2024 Target |
 | :--- | :--- | :--- |
-| Avg. Real Output per Hour | [Value] | [Value] |
+| Avg. Real Output per Hour | 103.64 | 114.81 |
 
 *   **Moment for $\nu$:** The slope of the wage-efficiency profile.
 *   **Data Source:** The firm-level dataset linking workers to firms with a measure of $\psi$.
@@ -198,11 +198,11 @@ These parameters are identified by aggregate productivity and the conditional wa
 
 | Variable | 2019 Coef. | 2024 Coef. |
 | :--- | :--- | :--- |
-| Firm Efficiency ($\psi_f$) | **[Target Value]** | **[Target Value]** |
-| | (*std. err.*) | (*std. err.*) |
+| Firm Efficiency ($\psi_f$) | **[Target Value]** | **0.45** |
+| | (*std. err.*) | (0.05) |
 | Controls ($\mathbf{X}_i$) | Yes | Yes |
-| Observations | [N] | [N] |
-| R-squared | [R²] | [R²] |
+| Observations | [N] | 3368 |
+| R-squared | [R²] | 0.08 |
 
 
 
@@ -221,11 +221,11 @@ These parameters are identified by aggregate productivity and the conditional wa
 
 | Variable | 2019 Coef. | 2024 Coef. |
 | :--- | :--- | :--- |
-| High-$\psi$ Dummy | **[Target Value]** | **[Target Value]** |
-| | (*std. err.*) | (*std. err.*) |
+| High-$\psi$ Dummy | **[Target Value]** | **0.24** |
+| | (*std. err.*) | (0.03) |
 | Controls ($\mathbf{X}_i$) | Yes | Yes |
-| Observations | [N] | [N] |
-| R-squared | [R²] | [R²] |
+| Observations | [N] | 1755 |
+| R-squared | [R²] | 0.09 |
 
 
 
@@ -247,7 +247,13 @@ These parameters are identified by aggregate productivity and the conditional wa
 
 | Moment | 2019 Target | 2024 Target |
 | :--- | :--- | :--- |
-| Wage Variance Ratio | [Value] | [Value] |
+| Wage Variance Ratio | [Value] | 1.12 |
+
+**Table 7b (Alternative φ Moment): Difference in Average Remote Share (α) Across ψ Quantiles**
+
+| Moment | 2019 Target | 2024 Target |
+| :--- | :--- | :--- |
+| E[α | ψ Top Quartile] − E[α | ψ Bottom Quartile] | [Value] | 21.72% |
 
 
 
@@ -261,15 +267,15 @@ The following table consolidates all the empirical targets for the internally es
 
 | Parameter(s) | Moment Description                                         | 2019 Target | 2024 Target |
 | :----------- | :--------------------------------------------------------- | :---------- | :---------- |
-| $a_h, b_h$   | Mean of log wages                                          | [Value]     | [Value]     |
-| $a_h, b_h$   | Variance of log wages                                      | [Value]     | [Value]     |
-| $c_0$        | Compensating Wage Differential (In-Person vs. Remote)      | [Value]     | [Value]     |
-| $\chi$       | Share of Workforce in Hybrid Arrangements                  | [Value]     | [Value]     |
-| $A_1$        | Average Real Output per Hour                               | [Value]     | [Value]     |
-| $\nu$        | Slope of Wage-Efficiency Profile (for remote/hybrid)       | [Value]     | [Value]     |
-| $\psi_0$     | Wage Premium for High-$\psi$ Firms (for remote/hybrid)        | [Value]     | [Value]     |
-| $\phi$       | Ratio of Conditional Wage Variances (High-$\psi$ vs. Low-$\psi$) | [Value]     | [Value]     |
-| $\kappa_0$   | Labor Market Tightness (V/U Ratio)                         | 1.192       | 1.151       |
+| $a_h, b_h$   | Mean of log wages                                          | [Value]     | 2.94        |
+| $a_h, b_h$   | Variance of log wages                                      | [Value]     | 0.20        |
+| $c_0$        | Compensating Wage Differential (In-Person vs. Remote)      | [Value]     | -0.02       |
+| $\chi$       | Share of Workforce in Hybrid Arrangements                  | [Value]     | 11.94%      |
+| $A_1$        | Average Real Output per Hour                               | 103.64      | 114.81      |
+| $\nu$        | Slope of Wage-Efficiency Profile (for remote/hybrid)       | [Value]     | 0.45        |
+| $\psi_0$     | Wage Premium for High-$\psi$ Firms (for remote/hybrid)        | [Value]     | 0.24        |
+| $\phi$       | Ratio of Conditional Wage Variances (High-$\psi$ vs. Low-$\psi$) | [Value]     | 1.12        |
+| $\kappa_0$   | Labor Market Tightness (V/U Ratio)                         | 1.19        | 1.15        |
 ***
 # Rigorous Justification
 
