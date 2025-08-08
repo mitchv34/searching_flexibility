@@ -130,19 +130,19 @@ if _rc == 0 {
         ==============================================================================
         */
         
-        display ""
-        display "VALIDATION STEP 2: Creating distribution plots by WFH status..."
+        * display ""
+        * display "VALIDATION STEP 2: Creating distribution plots by WFH status..."
         
-        // Kernel density plot
-        twoway (kdensity alpha_final if wfh==0, legend(label(1 "Did Not WFH (wfh=0)"))) ///
-               (kdensity alpha_final if wfh==1, legend(label(2 "Did WFH (wfh=1)"))), ///
-               title("Distribution of Imputed WFH Share by Actual WFH Status", size(medium)) ///
-               xtitle("Imputed WFH Share (alpha_final)") ytitle("Density") ///
-               note("Source: ACS data with 3-part model imputation") ///
-               scheme(s1color)
-               
-        graph export "$figures_path/validation_alpha_by_wfh_status.png", replace width(800) height(600)
-        display "✓ Saved: $figures_path/validation_alpha_by_wfh_status.png"
+        * // Kernel density plot
+        * twoway (kdensity alpha_final if wfh==0, legend(label(1 "Did Not WFH (wfh=0)"))) ///
+        *        (kdensity alpha_final if wfh==1, legend(label(2 "Did WFH (wfh=1)"))), ///
+        *        title("Distribution of Imputed WFH Share by Actual WFH Status", size(medium)) ///
+        *        xtitle("Imputed WFH Share (alpha_final)") ytitle("Density") ///
+        *        note("Source: ACS data with 3-part model imputation") ///
+        *        scheme(s1color)
+        *        
+        * graph export "$figures_path/validation_alpha_by_wfh_status.png", replace width(800) height(600)
+        * display "✓ Saved: $figures_path/validation_alpha_by_wfh_status.png"
         
         /*
         ==============================================================================
@@ -165,41 +165,41 @@ if _rc == 0 {
         display "✓ Finished ROC analysis on sample - AUC: " %6.4f `auc_sample'
         
         // Create ROC graph using a random sample (faster)
-        display ""
-        display "Creating ROC curve graph using 10% random sample..."
-        preserve
-            // Use 10% random sample for graphing
-            sample 10
-            display "Sample size for ROC graph: " _N " observations"
-            
-            // Create ROC graph using logistic regression
-            quietly logistic wfh p_remote_any
-            lroc, title("ROC Curve: Predicting Actual WFH from Model Probabilities") ///
-                  subtitle("Based on 10% random sample of ACS data") ///
-                  note("Sample-based analysis for computational efficiency") ///
-                  scheme(s1color)
-        
-            graph export "$figures_path/validation_roc_curve.png", replace width(800) height(600)
-            display "✓ Saved: $figures_path/validation_roc_curve.png"
-        restore
+        * display ""
+        * display "Creating ROC curve graph using 10% random sample..."
+        * preserve
+        *     // Use 10% random sample for graphing
+        *     sample 10
+        *     display "Sample size for ROC graph: " _N " observations"
+        *     
+        *     // Create ROC graph using logistic regression
+        *     quietly logistic wfh p_remote_any
+        *     lroc, title("ROC Curve: Predicting Actual WFH from Model Probabilities") ///
+        *           subtitle("Based on 10% random sample of ACS data") ///
+        *           note("Sample-based analysis for computational efficiency") ///
+        *           scheme(s1color)
+        * 
+        *     graph export "$figures_path/validation_roc_curve.png", replace width(800) height(600)
+        *     display "✓ Saved: $figures_path/validation_roc_curve.png"
+        * restore
         
         // Alternative: Use roctab with graph on sample
-        display ""
-        display "Creating additional ROC analysis with graph using sample..."
-        preserve
-            sample 5  // Use 5% sample for roctab graph
-            display "Sample size for roctab graph: " _N " observations"
-            
-            roctab wfh p_remote_any, graph ///
-                   title("ROC Analysis: Model Predictions vs Actual WFH") ///
-                   subtitle("Based on 5% random sample") ///
-                   scheme(s1color)
+        * display ""
+        * display "Creating additional ROC analysis with graph using sample..."
+        * preserve
+        *     sample 5  // Use 5% sample for roctab graph
+        *     display "Sample size for roctab graph: " _N " observations"
+        *     
+        *     roctab wfh p_remote_any, graph ///
+        *            title("ROC Analysis: Model Predictions vs Actual WFH") ///
+        *            subtitle("Based on 5% random sample") ///
+        *            scheme(s1color)
+        * 
+        *     graph export "$figures_path/validation_roc_curve_roctab.png", replace width(800) height(600)
+        *     display "✓ Saved: $figures_path/validation_roc_curve_roctab.png"
+        * restore
         
-            graph export "$figures_path/validation_roc_curve_roctab.png", replace width(800) height(600)
-            display "✓ Saved: $figures_path/validation_roc_curve_roctab.png"
-        restore
-        
-        display "✓ ROC analysis complete - both summary statistics and graphs created"
+        * display "✓ ROC analysis complete - both summary statistics and graphs created"
         
         /*
         ==============================================================================
@@ -321,15 +321,15 @@ if _rc == 0 {
         display "WFH = 1    |    " %8.4f `orig_mean_1' "   |     " %8.4f `calib_mean_1'
         
         // Create comparison plot
-        twoway (kdensity alpha_final, legend(label(1 "Original Imputation"))) ///
-               (kdensity alpha_final_calibrated, legend(label(2 "Calibrated Imputation"))), ///
-               title("Comparison of Original vs Calibrated Imputations", size(medium)) ///
-               xtitle("Imputed WFH Share") ytitle("Density") ///
-               note("Calibrated version matches ACS aggregate WFH share") ///
-               scheme(s1color)
-               
-        graph export "$figures_path/comparison_original_vs_calibrated.png", replace width(800) height(600)
-        display "✓ Saved: $figures_path/comparison_original_vs_calibrated.png"
+        * twoway (kdensity alpha_final, legend(label(1 "Original Imputation"))) ///
+        *        (kdensity alpha_final_calibrated, legend(label(2 "Calibrated Imputation"))), ///
+        *        title("Comparison of Original vs Calibrated Imputations", size(medium)) ///
+        *        xtitle("Imputed WFH Share") ytitle("Density") ///
+        *        note("Calibrated version matches ACS aggregate WFH share") ///
+        *        scheme(s1color)
+        *        
+        * graph export "$figures_path/comparison_original_vs_calibrated.png", replace width(800) height(600)
+        * display "✓ Saved: $figures_path/comparison_original_vs_calibrated.png"
         
         // Distribution breakdown for calibrated version
         display ""
@@ -890,16 +890,16 @@ display "Hybrid:                 " %7.1f `orig_pct_hybrid' "%      " %7.1f `cali
 display "Fully Remote:           " %7.1f `orig_pct_remote' "%      " %7.1f `calib_pct_remote' "%      " %7.1f `bls_remote_pct' "%"
 
 // Create three-way comparison plot
-twoway (kdensity alpha_final, legend(label(1 "Original"))) ///
-       (kdensity alpha_final_calibrated, legend(label(2 "ACS-Calibrated"))) ///
-       (kdensity alpha_calibrated_bls, legend(label(3 "BLS-Calibrated"))), ///
-       title("Comparison of All Three Imputation Versions", size(medium)) ///
-       xtitle("Imputed WFH Share") ytitle("Density") ///
-       note("BLS version matches official labor statistics") ///
-       scheme(s1color)
-       
-graph export "$figures_path/comparison_all_three_versions.png", replace width(800) height(600)
-display "✓ Saved: $figures_path/comparison_all_three_versions.png"
+* twoway (kdensity alpha_final, legend(label(1 "Original"))) ///
+*        (kdensity alpha_final_calibrated, legend(label(2 "ACS-Calibrated"))) ///
+*        (kdensity alpha_calibrated_bls, legend(label(3 "BLS-Calibrated"))), ///
+*        title("Comparison of All Three Imputation Versions", size(medium)) ///
+*        xtitle("Imputed WFH Share") ytitle("Density") ///
+*        note("BLS version matches official labor statistics") ///
+*        scheme(s1color)
+*        
+* graph export "$figures_path/comparison_all_three_versions.png", replace width(800) height(600)
+* display "✓ Saved: $figures_path/comparison_all_three_versions.png"
 
 /*
 ==============================================================================

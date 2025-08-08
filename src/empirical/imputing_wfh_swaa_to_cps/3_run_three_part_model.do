@@ -470,56 +470,56 @@ DISTRIBUTION PLOTS OF IMPUTED ALPHA
 ==============================================================================
 */
 
-display ""
-display "CREATING DISTRIBUTION PLOTS OF IMPUTED ALPHA..."
-display "{hline 50}"
+* display ""
+* display "CREATING DISTRIBUTION PLOTS OF IMPUTED ALPHA..."
+* display "{hline 50}"
 
-// Create histogram of alpha_final
-histogram alpha_final, ///
-    width(0.05) ///
-    frequency ///
-    title("Distribution of Imputed WFH Share (Three-Part Model)") ///
-    xtitle("Imputed WFH Share (alpha_final)") ///
-    ytitle("Frequency") ///
-    note("Mass points at 0 and 1 show fully in-person and fully remote workers") ///
-    scheme(s1color)
-    
-graph export "$figures_path/alpha_final_histogram.png", replace width(800) height(600)
-display "✓ Saved: $figures_path/alpha_final_histogram.png"
+* // Create histogram of alpha_final
+* histogram alpha_final, ///
+*     width(0.05) ///
+*     frequency ///
+*     title("Distribution of Imputed WFH Share (Three-Part Model)") ///
+*     xtitle("Imputed WFH Share (alpha_final)") ///
+*     ytitle("Frequency") ///
+*     note("Mass points at 0 and 1 show fully in-person and fully remote workers") ///
+*     scheme(s1color)
+*     
+* graph export "$figures_path/alpha_final_histogram.png", replace width(800) height(600)
+* display "✓ Saved: $figures_path/alpha_final_histogram.png"
 
-// Create a more detailed histogram focusing on the interior (0,1)
-histogram alpha_final if alpha_final > 0 & alpha_final < 1, ///
-    width(0.025) ///
-    frequency ///
-    title("Distribution of Hybrid WFH Shares (0 < alpha < 1)") ///
-    xtitle("Imputed WFH Share (alpha_final)") ///
-    ytitle("Frequency") ///
-    note("Distribution among hybrid workers only") ///
-    scheme(s1color)
-    
-graph export "$figures_path/alpha_final_hybrid_only.png", replace width(800) height(600)
-display "✓ Saved: $figures_path/alpha_final_hybrid_only.png"
+* // Create a more detailed histogram focusing on the interior (0,1)
+* histogram alpha_final if alpha_final > 0 & alpha_final < 1, ///
+*     width(0.025) ///
+*     frequency ///
+*     title("Distribution of Hybrid WFH Shares (0 < alpha < 1)") ///
+*     xtitle("Imputed WFH Share (alpha_final)") ///
+*     ytitle("Frequency") ///
+*     note("Distribution among hybrid workers only") ///
+*     scheme(s1color)
+*     
+* graph export "$figures_path/alpha_final_hybrid_only.png", replace width(800) height(600)
+* display "✓ Saved: $figures_path/alpha_final_hybrid_only.png"
 
-// Create a bar chart showing the three categories
-gen wfh_category = "Fully In-Person" if alpha_final == 0
-replace wfh_category = "Hybrid" if alpha_final > 0 & alpha_final < 1
-replace wfh_category = "Fully Remote" if alpha_final == 1
+* // Create a bar chart showing the three categories
+* gen wfh_category = "Fully In-Person" if alpha_final == 0
+* replace wfh_category = "Hybrid" if alpha_final > 0 & alpha_final < 1
+* replace wfh_category = "Fully Remote" if alpha_final == 1
 
-// Calculate percentages for the bar chart
-preserve
-contract wfh_category, freq(count) percent(pct)
-sort count
-graph bar pct, over(wfh_category, sort(count) descending) ///
-    title("Work Arrangement Distribution (Three-Part Model)") ///
-    ytitle("Percentage of Workers") ///
-    ylabel(0(10)100) ///
-    blabel(bar, format(%4.1f)) ///
-    note("Based on imputed WFH shares from three-part model") ///
-    scheme(s1color)
-    
-graph export "$figures_path/wfh_categories_bar.png", replace width(800) height(600)
-display "✓ Saved: $figures_path/wfh_categories_bar.png"
-restore
+* // Calculate percentages for the bar chart
+* preserve
+* contract wfh_category, freq(count) percent(pct)
+* sort count
+* graph bar pct, over(wfh_category, sort(count) descending) ///
+*     title("Work Arrangement Distribution (Three-Part Model)") ///
+*     ytitle("Percentage of Workers") ///
+*     ylabel(0(10)100) ///
+*     blabel(bar, format(%4.1f)) ///
+*     note("Based on imputed WFH shares from three-part model") ///
+*     scheme(s1color)
+*     
+* graph export "$figures_path/wfh_categories_bar.png", replace width(800) height(600)
+* display "✓ Saved: $figures_path/wfh_categories_bar.png"
+* restore
 
 // Summary statistics table
 display ""
@@ -539,9 +539,9 @@ display "90th percentile: " %6.3f r(r5)
 display "95th percentile: " %6.3f r(r6)
 display "99th percentile: " %6.3f r(r7)
 
-display ""
-display "DISTRIBUTION PLOTS COMPLETED"
-display "✓ All plots saved to output/ directory"
+* display ""
+* display "DISTRIBUTION PLOTS COMPLETED"
+* display "✓ All plots saved to output/ directory"
 
 display ""
 display "{hline 80}"
@@ -836,20 +836,20 @@ replace pct_train = 0 if missing(pct_train)
 replace pct_imputed = 0 if missing(pct_imputed)
 
 // Create the comparison bar chart
-graph bar pct_train pct_imputed, over(wfh_category, sort(pct_imputed) descending) ///
-    title("Work Arrangement Distribution: Training vs. Imputed Data") ///
-    subtitle("Weighted estimates using survey weights") ///
-    ytitle("Percentage of Workers") ///
-    ylabel(0(10)100) ///
-    legend(label(1 "SWAA Training Data") label(2 "ACS Imputed Data") ///
-           position(6) cols(2)) ///
-    bar(1, color(navy)) bar(2, color(maroon)) ///
-    blabel(bar, format(%4.1f) position(outside)) ///
-    note("Training data weighted with SWAA weights; Imputed data weighted with ACS weights (if available)") ///
-    scheme(s1color)
-    
-graph export "$figures_path/wfh_categories_comparison_bar.png", replace width(1000) height(700)
-display "✓ Saved: $figures_path/wfh_categories_comparison_bar.png"
+* graph bar pct_train pct_imputed, over(wfh_category, sort(pct_imputed) descending) ///
+*     title("Work Arrangement Distribution: Training vs. Imputed Data") ///
+*     subtitle("Weighted estimates using survey weights") ///
+*     ytitle("Percentage of Workers") ///
+*     ylabel(0(10)100) ///
+*     legend(label(1 "SWAA Training Data") label(2 "ACS Imputed Data") ///
+*            position(6) cols(2)) ///
+*     bar(1, color(navy)) bar(2, color(maroon)) ///
+*     blabel(bar, format(%4.1f) position(outside)) ///
+*     note("Training data weighted with SWAA weights; Imputed data weighted with ACS weights (if available)") ///
+*     scheme(s1color)
+*     
+* graph export "$figures_path/wfh_categories_comparison_bar.png", replace width(1000) height(700)
+* display "✓ Saved: $figures_path/wfh_categories_comparison_bar.png"
 
 // Display comparison table
 display ""
@@ -881,16 +881,16 @@ else {
 }
 
 sort count
-graph bar pct, over(wfh_category, sort(count) descending) ///
-    title("Work Arrangement Distribution (Three-Part Model)") ///
-    ytitle("Percentage of Workers") ///
-    ylabel(0(10)100) ///
-    blabel(bar, format(%4.1f)) ///
-    note("Based on imputed WFH shares from three-part model") ///
-    scheme(s1color)
-    
-graph export "$figures_path/wfh_categories_bar.png", replace width(800) height(600)
-display "✓ Saved: $figures_path/wfh_categories_bar.png"
+* graph bar pct, over(wfh_category, sort(count) descending) ///
+*     title("Work Arrangement Distribution (Three-Part Model)") ///
+*     ytitle("Percentage of Workers") ///
+*     ylabel(0(10)100) ///
+*     blabel(bar, format(%4.1f)) ///
+*     note("Based on imputed WFH shares from three-part model") ///
+*     scheme(s1color)
+*     
+* graph export "$figures_path/wfh_categories_bar.png", replace width(800) height(600)
+* display "✓ Saved: $figures_path/wfh_categories_bar.png"
 restore
 
 // Clean up temporary variables
