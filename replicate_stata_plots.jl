@@ -28,7 +28,7 @@ Pkg.instantiate()
 
 using CairoMakie, CSV, DataFrames, StatsBase, Statistics, Distributions
 using Colors, ColorSchemes, LaTeXStrings, KernelDensity, ROCAnalysis
-using GLM, Printf, Dates, StatFiles, Random, Trapz
+using GLM, Printf, Dates, StatFiles, Random, Trapz, LaTeXStrings
 
 # Set up paths (use local directory structure)
 const PROJECT_ROOT = @__DIR__  # Use the script's directory as project root
@@ -65,7 +65,7 @@ end
 # Helper function to create axis with consistent styling
 function create_axis!(fig, position, title, xlabel, ylabel; kwargs...)
     ax = Axis(fig[position...], 
-       title = title, 
+        title = title, 
         xlabel = xlabel, 
         ylabel = ylabel,
         # Tick parameters
@@ -87,316 +87,744 @@ function create_axis!(fig, position, title, xlabel, ylabel; kwargs...)
     return ax
 end
 
-println("="^80)
-println("WFH IMPUTATION PLOT REPLICATION - JULIA VERSION")
-println("="^80)
-println()
-
 """
 ================================================================================
-LOAD AND PREPARE DATA
+DATA LOADING FUNCTIONS
 ================================================================================
 """
 
-println("Loading and preparing data...")
-println("-"^50)
+"""
+Load and prepare all required datasets for the analysis.
 
-# Load ACS data with three-part model predictions (primary data source)
-println("Loading ACS data with three-part model predictions...")
-acs_three_part = DataFrame(load(joinpath(PROCESSED_PATH, "acs_with_imputed_wfh_three_part.dta")))
-println("✓ Loaded acs_with_imputed_wfh_three_part.dta: $(nrow(acs_three_part)) observations")
+Returns:
+- NamedTuple with all loaded datasets and extracted variables
+"""
+function load_and_prepare_data()
+    println("Loading and preparing data...")
+    println("-"^50)
 
-# Load ACS data with simple fractional logit predictions (optional)
-println("Loading ACS data with simple fractional logit predictions...")
-acs_simple = try
-    CSV.read(joinpath(PROCESSED_PATH, "acs_with_imputed_wfh.csv"), DataFrame)
-catch e
-    println("Warning: Could not load acs_with_imputed_wfh.csv - $e")
-    println("Will use three-part model data for simple model plots")
-    nothing
-end
+    # BLS Percentages for work arrangements
+    bls_percentages = [
+        78.4, # Fully In-Person
+        11.5, # Hybrid
+        10.1  # Fully Remote
+    ]
 
-if acs_simple !== nothing
-    println("✓ Loaded acs_with_imputed_wfh.csv: $(nrow(acs_simple)) observations")
-end
+    # Load ACS data with three-part model predictions (primary data source)
+    println("Loading ACS data with three-part model predictions...")
+    acs_three_part = DataFrame(load(joinpath(PROCESSED_PATH, "acs_with_imputed_wfh_three_part.dta")))
+    println("✓ Loaded acs_with_imputed_wfh_three_part.dta: $(nrow(acs_three_part)) observations")
 
-# Load SWAA training data
-println("Loading SWAA training data...")
-swaa_data = try
-    CSV.read(joinpath(PROCESSED_PATH, "swaa_prepared_for_stata.csv"), DataFrame)
-catch e
-    println("Warning: Could not load swaa_prepared_for_stata.csv - $e")
-    nothing
-end
-
-if swaa_data !== nothing
-    println("✓ Loaded swaa_prepared_for_stata.csv: $(nrow(swaa_data)) observations")
-end
-
-# Display column names to understand the data structure
-println("\nData structure:")
-println("ACS Three-part model columns: $(names(acs_three_part))")
-if acs_simple !== nothing
-    println("ACS Simple model columns: $(names(acs_simple))")
-end
-if swaa_data !== nothing
-    println("SWAA data columns: $(names(swaa_data))")
-end
-
-acs_validated = try
-    DataFrame(load(joinpath(PROCESSED_PATH, "acs_with_imputed_wfh_all_versions.dta")))
-catch e
-    println("Warning: Could not load acs_with_imputed_wfh_validated.dta - $e")
-    nothing
-end
-
-if acs_validated !== nothing
-    println("✓ Loaded acs_with_imputed_wfh_validated.dta: $(nrow(acs_validated)) observations")
-end
-
-# Extract actual predictions from loaded data
-println("\nExtracting model predictions from real data...")
-
-# Three-part model predictions (primary data - always available)
-if "alpha_final" in names(acs_three_part)
-    alpha_three_part = acs_three_part.alpha_final
-elseif "predicted_wfh_share" in names(acs_three_part)
-    alpha_three_part = acs_three_part.predicted_wfh_share
-elseif "alpha" in names(acs_three_part)
-    alpha_three_part = acs_three_part.alpha
-else
-    # Look for any column that might contain final predictions
-    pred_cols = filter(name -> occursin("final", lowercase(name)) || occursin("alpha", lowercase(name)) || occursin("pred", lowercase(name)), names(acs_three_part))
-    if !isempty(pred_cols)
-        alpha_three_part = acs_three_part[!, pred_cols[1]]
-        println("Using column '$(pred_cols[1])' for three-part model predictions")
-    else
-        error("Could not find prediction column in acs_three_part. Available columns: $(names(acs_three_part))")
+    # Load ACS data with simple fractional logit predictions (optional)
+    println("Loading ACS data with simple fractional logit predictions...")
+    acs_simple = try
+        CSV.read(joinpath(PROCESSED_PATH, "acs_with_imputed_wfh.csv"), DataFrame)
+    catch e
+        println("Warning: Could not load acs_with_imputed_wfh.csv - $e")
+        println("Will use three-part model data for simple model plots")
+        nothing
     end
+
+    if acs_simple !== nothing
+        println("✓ Loaded acs_with_imputed_wfh.csv: $(nrow(acs_simple)) observations")
+    end
+
+    # Load SWAA training data
+    println("Loading SWAA training data...")
+    swaa_data = try
+        CSV.read(joinpath(PROCESSED_PATH, "swaa_prepared_for_stata.csv"), DataFrame)
+    catch e
+        println("Warning: Could not load swaa_prepared_for_stata.csv - $e")
+        nothing
+    end
+
+    if swaa_data !== nothing
+        println("✓ Loaded swaa_prepared_for_stata.csv: $(nrow(swaa_data)) observations")
+    end
+
+    # Load validated data
+    acs_validated = try
+        DataFrame(load(joinpath(PROCESSED_PATH, "acs_with_imputed_wfh_all_versions.dta")))
+    catch e
+        println("Warning: Could not load acs_with_imputed_wfh_validated.dta - $e")
+        nothing
+    end
+
+    if acs_validated !== nothing
+        println("✓ Loaded acs_with_imputed_wfh_validated.dta: $(nrow(acs_validated)) observations")
+    end
+
+    # Display column names to understand the data structure
+    println("\nData structure:")
+    println("ACS Three-part model columns: $(names(acs_three_part))")
+    if acs_simple !== nothing
+        println("ACS Simple model columns: $(names(acs_simple))")
+    end
+    if swaa_data !== nothing
+        println("SWAA data columns: $(names(swaa_data))")
+    end
+
+    # Extract predictions and validation data
+    extracted_data = extract_model_predictions(acs_three_part, acs_simple, swaa_data, acs_validated)
+
+    return (
+        bls_percentages = bls_percentages,
+        acs_three_part = acs_three_part,
+        acs_simple = acs_simple,
+        swaa_data = swaa_data,
+        acs_validated = acs_validated,
+        extracted_data...
+    )
 end
 
-# Simple fractional logit predictions (use three-part data if CSV not available)
-if acs_simple !== nothing
-    if "predicted_wfh_share" in names(acs_simple)
-        alpha_simple = acs_simple.predicted_wfh_share
-    elseif "alpha" in names(acs_simple)
-        alpha_simple = acs_simple.alpha
-    elseif "wfh_share_pred" in names(acs_simple)
-        alpha_simple = acs_simple.wfh_share_pred
+"""
+Extract model predictions from loaded datasets.
+"""
+function extract_model_predictions(acs_three_part, acs_simple, swaa_data, acs_validated)
+    println("\nExtracting model predictions from real data...")
+
+    # Three-part model predictions (primary data - always available)
+    if "alpha_final" in names(acs_three_part)
+        alpha_three_part = acs_three_part.alpha_final
+    elseif "predicted_wfh_share" in names(acs_three_part)
+        alpha_three_part = acs_three_part.predicted_wfh_share
+    elseif "alpha" in names(acs_three_part)
+        alpha_three_part = acs_three_part.alpha
     else
-        # Look for any column that might contain predictions
-        pred_cols = filter(name -> occursin("pred", lowercase(name)) || occursin("alpha", lowercase(name)), names(acs_simple))
+        # Look for any column that might contain final predictions
+        pred_cols = filter(name -> occursin("final", lowercase(name)) || occursin("alpha", lowercase(name)) || occursin("pred", lowercase(name)), names(acs_three_part))
         if !isempty(pred_cols)
-            alpha_simple = acs_simple[!, pred_cols[1]]
-            println("Using column '$(pred_cols[1])' for simple model predictions")
+            alpha_three_part = acs_three_part[!, pred_cols[1]]
+            println("Using column '$(pred_cols[1])' for three-part model predictions")
         else
-            println("Warning: Could not find prediction column in acs_simple. Using three-part model data.")
-            alpha_simple = alpha_three_part
+            error("Could not find prediction column in acs_three_part. Available columns: $(names(acs_three_part))")
         end
     end
-else
-    # Fallback: use three-part model data for simple model plots
-    println("Using three-part model data for simple model plots (CSV not available)")
-    alpha_simple = alpha_three_part
-end
 
-# Validation data setup
-# Use a subset of the three-part model data that has WFH indicators
-n_validation = min(10000, length(alpha_three_part))
-validation_indices = 1:n_validation
-
-# Extract WFH indicator from three-part model data or SWAA data
-if "wfh" in names(acs_three_part)
-    wfh_indicator = acs_three_part.wfh[validation_indices]
-elseif "wfh_indicator" in names(acs_three_part)
-    wfh_indicator = acs_three_part.wfh_indicator[validation_indices]
-elseif "work_from_home" in names(acs_three_part)
-    wfh_indicator = acs_three_part.work_from_home[validation_indices]
-else
-    # Use SWAA data for validation if available
-    if swaa_data !== nothing && nrow(swaa_data) > 0
-        n_validation = min(n_validation, nrow(swaa_data))
-        validation_indices = 1:n_validation
-        if "wfh" in names(swaa_data)
-            wfh_indicator = swaa_data.wfh[validation_indices]
-        elseif "wfh_indicator" in names(swaa_data)
-            wfh_indicator = swaa_data.wfh_indicator[validation_indices]
+    # Simple fractional logit predictions (use three-part data if CSV not available)
+    if acs_simple !== nothing
+        if "predicted_wfh_share" in names(acs_simple)
+            alpha_simple = acs_simple.predicted_wfh_share
+        elseif "alpha" in names(acs_simple)
+            alpha_simple = acs_simple.alpha
+        elseif "wfh_share_pred" in names(acs_simple)
+            alpha_simple = acs_simple.wfh_share_pred
         else
-            wfh_cols = filter(name -> occursin("wfh", lowercase(name)), names(swaa_data))
-            if !isempty(wfh_cols)
-                wfh_indicator = swaa_data[validation_indices, wfh_cols[1]]
-                println("Using column '$(wfh_cols[1])' for WFH indicator")
+            # Look for any column that might contain predictions
+            pred_cols = filter(name -> occursin("pred", lowercase(name)) || occursin("alpha", lowercase(name)), names(acs_simple))
+            if !isempty(pred_cols)
+                alpha_simple = acs_simple[!, pred_cols[1]]
+                println("Using column '$(pred_cols[1])' for simple model predictions")
             else
-                error("Could not find WFH indicator column. Available SWAA columns: $(names(swaa_data))")
+                println("Warning: Could not find prediction column in acs_simple. Using three-part model data.")
+                alpha_simple = alpha_three_part
             end
         end
     else
-        error("Could not find WFH indicator in either dataset")
+        # Fallback: use three-part model data for simple model plots
+        println("Using three-part model data for simple model plots (CSV not available)")
+        alpha_simple = alpha_three_part
     end
+
+    # Validation data setup
+    n_validation = min(10000, length(alpha_three_part))
+    validation_indices = 1:n_validation
+
+    # Extract WFH indicator and validation data
+    wfh_indicator, alpha_validation, p_remote_any, p_full_remote_cond = extract_validation_data(
+        acs_three_part, swaa_data, validation_indices, alpha_three_part
+    )
+
+    println("✓ Data extraction completed")
+    println("  - Simple model predictions: $(length(alpha_simple)) observations")
+    println("  - Three-part model predictions: $(length(alpha_three_part)) observations") 
+    println("  - Validation data: $(length(alpha_validation)) observations")
+    println("  - WFH indicators: $(sum(wfh_indicator)) positive cases ($(round(mean(wfh_indicator)*100, digits=1))%)")
+    println()
+
+    return (
+        alpha_simple = alpha_simple,
+        alpha_three_part = alpha_three_part,
+        n_validation = n_validation,
+        validation_indices = validation_indices,
+        wfh_indicator = wfh_indicator,
+        alpha_validation = alpha_validation,
+        p_remote_any = p_remote_any,
+        p_full_remote_cond = p_full_remote_cond
+    )
 end
 
-alpha_validation = alpha_three_part[validation_indices]
+"""
+Extract validation data from datasets.
+"""
+function extract_validation_data(acs_three_part, swaa_data, validation_indices, alpha_three_part)
+    # Extract WFH indicator from three-part model data or SWAA data
+    if "wfh" in names(acs_three_part)
+        wfh_indicator = acs_three_part.wfh[validation_indices]
+    elseif "wfh_indicator" in names(acs_three_part)
+        wfh_indicator = acs_three_part.wfh_indicator[validation_indices]
+    elseif "work_from_home" in names(acs_three_part)
+        wfh_indicator = acs_three_part.work_from_home[validation_indices]
+    else
+        # Use SWAA data for validation if available
+        if swaa_data !== nothing && nrow(swaa_data) > 0
+            n_validation = min(length(validation_indices), nrow(swaa_data))
+            validation_indices = 1:n_validation
+            if "wfh" in names(swaa_data)
+                wfh_indicator = swaa_data.wfh[validation_indices]
+            elseif "wfh_indicator" in names(swaa_data)
+                wfh_indicator = swaa_data.wfh_indicator[validation_indices]
+            else
+                wfh_cols = filter(name -> occursin("wfh", lowercase(name)), names(swaa_data))
+                if !isempty(wfh_cols)
+                    wfh_indicator = swaa_data[validation_indices, wfh_cols[1]]
+                    println("Using column '$(wfh_cols[1])' for WFH indicator")
+                else
+                    error("Could not find WFH indicator column. Available SWAA columns: $(names(swaa_data))")
+                end
+            end
+        else
+            error("Could not find WFH indicator in either dataset")
+        end
+    end
 
-# Extract probabilities for ROC analysis from three-part model
-if "p_remote_any" in names(acs_three_part)
-    p_remote_any = acs_three_part.p_remote_any[validation_indices]
-elseif "prob_any_remote" in names(acs_three_part)
-    p_remote_any = acs_three_part.prob_any_remote[validation_indices]
-else
-    # If probabilities not available, use alpha values as proxy
-    p_remote_any = alpha_validation
-    println("Warning: Using alpha values as proxy for remote work probabilities")
+    alpha_validation = alpha_three_part[validation_indices]
+
+    # Extract probabilities for ROC analysis from three-part model
+    if "p_remote_any" in names(acs_three_part)
+        p_remote_any = acs_three_part.p_remote_any[validation_indices]
+    elseif "prob_any_remote" in names(acs_three_part)
+        p_remote_any = acs_three_part.prob_any_remote[validation_indices]
+    else
+        # If probabilities not available, use alpha values as proxy
+        p_remote_any = alpha_validation
+        println("Warning: Using alpha values as proxy for remote work probabilities")
+    end
+
+    if "p_full_remote_cond" in names(acs_three_part)
+        p_full_remote_cond = acs_three_part.p_full_remote_cond[validation_indices]
+    elseif "prob_full_remote_given_any" in names(acs_three_part)
+        p_full_remote_cond = acs_three_part.prob_full_remote_given_any[validation_indices]
+    else
+        # Create conditional probability from alpha values
+        p_full_remote_cond = alpha_validation
+        println("Warning: Using alpha values as proxy for conditional remote work probabilities")
+    end
+
+    return wfh_indicator, alpha_validation, p_remote_any, p_full_remote_cond
 end
-
-if "p_full_remote_cond" in names(acs_three_part)
-    p_full_remote_cond = acs_three_part.p_full_remote_cond[validation_indices]
-elseif "prob_full_remote_given_any" in names(acs_three_part)
-    p_full_remote_cond = acs_three_part.prob_full_remote_given_any[validation_indices]
-else
-    # Create conditional probability from alpha values
-    p_full_remote_cond = alpha_validation
-    println("Warning: Using alpha values as proxy for conditional remote work probabilities")
-end
-
-println("✓ Data extraction completed")
-println("  - Simple model predictions: $(length(alpha_simple)) observations")
-println("  - Three-part model predictions: $(length(alpha_three_part)) observations") 
-println("  - Validation data: $(length(alpha_validation)) observations")
-println("  - WFH indicators: $(sum(wfh_indicator)) positive cases ($(round(mean(wfh_indicator)*100, digits=1))%)")
-println()
 
 """
 ================================================================================
-REPLICATION 1: SIMPLE FRACTIONAL LOGIT MODEL PLOTS (2_run_model.do)
+FIGURE CREATION FUNCTIONS
 ================================================================================
 """
 
-println("REPLICATION 1: Simple Fractional Logit Model Plots")
-println("-"^60)
-
-# Plot 1: Distribution of Predicted WFH Shares (Simple Model)
-println("Creating: Distribution of Predicted WFH Shares (Simple Model)")
-
-fig1 = create_figure(title="Distribution of Predicted WFH Shares")
-ax1 = create_axis!(fig1, (1, 1), 
-    "Distribution of Predicted WFH Shares (Fractional Logit)",
-    "Predicted WFH Share (α)", 
-    "Frequency"
-)
-
-hist!(ax1, alpha_simple, bins=50, color=(COLORS[1], 0.7), strokewidth=1, strokecolor=:black)
-
-# Add summary statistics as text
-mean_alpha = mean(alpha_simple)
-median_alpha = median(alpha_simple)
-# text!(ax1, 0.6, maximum(ax1.finallimits[].val[2]) * 0.8, 
-#       text="Mean: $(round(mean_alpha, digits=3))\nMedian: $(round(median_alpha, digits=3))",
-#       fontsize=FONT_SIZE-4)
-
-fig1
-save(joinpath(FIGURES_PATH, "simple_model_distribution.pdf"), fig1)
-println("✓ Saved: simple_model_distribution.pdf")
-
 """
-================================================================================
-REPLICATION 2: THREE-PART MODEL PLOTS (3_run_three_part_model.do)
-================================================================================
+Create simple fractional logit model distribution plot.
 """
+function create_simple_model_plot(alpha_simple)
+    println("Creating: Distribution of Predicted WFH Shares (Simple Model)")
 
-println()
-println("REPLICATION 2: Three-Part Model Plots")
-println("-"^40)
+    fig1 = create_figure(title="Distribution of Predicted WFH Shares")
+    ax1 = create_axis!(fig1, (1, 1), 
+        "Distribution of Predicted WFH Shares (Fractional Logit)",
+        "Predicted WFH Share (α)", 
+        "Frequency"
+    )
 
-# Plot 2: Distribution of Imputed WFH Share (Three-Part Model)
-println("Creating: Distribution of Imputed WFH Share (Three-Part Model)")
+    hist!(ax1, alpha_simple, bins=50, color=(COLORS[1], 0.7), strokewidth=1, strokecolor=:black)
 
-fig2 = create_figure()
-ax2 = create_axis!(fig2, (1, 1),
-    "Distribution of Imputed WFH Share (Three-Part Model)",
-    "Imputed WFH Share (α_final)",
-    "Frequency"
-)
-
-hist!(ax2, alpha_three_part, bins=50, color=(COLORS[2], 0.7), strokewidth=1, strokecolor=:black)
-
-# Highlight mass points
-n_zero = sum(alpha_three_part .== 0.0)
-n_one = sum(alpha_three_part .== 1.0)
-# text!(ax2, 0.02, maximum(ax2.finallimits[].val[2]) * 0.9,
-#       text="Mass at 0: $(n_zero)\nMass at 1: $(n_one)",
-#       fontsize=FONT_SIZE-4)
-fig2
-save(joinpath(FIGURES_PATH, "alpha_final_histogram.pdf"), fig2)
-println("✓ Saved: alpha_final_histogram.pdf")
-
-# Plot 3: Hybrid Workers Only (0 < α < 1)
-println("Creating: Distribution of Hybrid WFH Shares")
-
-hybrid_values = alpha_three_part[(alpha_three_part .> 0.0) .& (alpha_three_part .< 1.0)]
-
-fig3 = create_figure()
-ax3 = create_axis!(fig3, (1, 1),
-    "Distribution of Hybrid WFH Shares (0 < α < 1)",
-    "Imputed WFH Share (α_final)",
-    "Frequency"
-)
-
-hist!(ax3, hybrid_values, bins=30, color=(COLORS[3], 0.7), strokewidth=1, strokecolor=:black)
-fig3
-save(joinpath(FIGURES_PATH, "alpha_final_hybrid_only.pdf"), fig3)
-println("✓ Saved: alpha_final_hybrid_only.pdf")
-
-# Plot 4: Work Arrangement Categories Bar Chart
-println("Creating: Work Arrangement Distribution Bar Chart")
-
-# Calculate category percentages
-n_fully_inperson = sum(alpha_three_part .== 0.0)
-n_hybrid = sum((alpha_three_part .> 0.0) .& (alpha_three_part .< 1.0))
-n_fully_remote = sum(alpha_three_part .== 1.0)
-total = length(alpha_three_part)
-
-categories = ["Fully In-Person", "Hybrid", "Fully Remote"]
-percentages = [n_fully_inperson/total * 100, n_hybrid/total * 100, n_fully_remote/total * 100]
-
-fig4 = create_figure(width=1000)
-ax4 = create_axis!(fig4, (1, 1),
-    "Work Arrangement Distribution Comparison",
-    "Work Arrangement",
-    "Percentage of Workers"
-)
-
-x_positions = [1, 2, 3]
-width = 0.3
-
-# Three-part model bars
-barplot!(ax4, x_positions .- width/2, percentages, 
-         width=width, color=COLORS[1], label="Three-Part Model",
-         strokewidth=1, strokecolor=:black)
-
-# BLS data bars
-barplot!(ax4, x_positions .+ width/2, bls_percentages,
-         width=width, color=COLORS[2], label="BLS Reference Data",
-         strokewidth=1, strokecolor=:black)
-
-ax4.xticks = (x_positions, categories)
-ax4.xticklabelrotation = π/4
-
-# Add percentage labels on bars
-for i in 1:3
-    text!(ax4, x_positions[i] - width/2, percentages[i] + 1, 
-          text="$(round(percentages[i], digits=1))%",
-          align=(:center, :bottom), fontsize=FONT_SIZE-4)
-    text!(ax4, x_positions[i] + width/2, bls_percentages[i] + 1,
-          text="$(round(bls_percentages[i], digits=1))%",
-          align=(:center, :bottom), fontsize=FONT_SIZE-4)
+    save(joinpath(FIGURES_PATH, "simple_model_distribution.pdf"), fig1)
+    println("✓ Saved: simple_model_distribution.pdf")
+    
+    return fig1
 end
 
-ylims!(ax4, 0, maximum([percentages; bls_percentages]) * 1.1)
+"""
+Create three-part model distribution plots.
+"""
+function create_three_part_model_plots(alpha_three_part, bls_percentages)
+    plots = []
+    
+    # Plot 2: Distribution of Imputed WFH Share (Three-Part Model)
+    println("Creating: Distribution of Imputed WFH Share (Three-Part Model)")
 
-axislegend(ax4, position=:rt)
+    fig2 = create_figure()
+    ax2 = create_axis!(fig2, (1, 1),
+        "Distribution of Imputed WFH Share (Three-Part Model)",
+        "Imputed WFH Share (α_final)",
+        "Frequency"
+    )
 
-fig4
-save(joinpath(FIGURES_PATH, "wfh_categories_bar.pdf"), fig4)
+    hist!(ax2, alpha_three_part, bins=50, color=(COLORS[2], 0.7), strokewidth=1, strokecolor=:black)
+
+    save(joinpath(FIGURES_PATH, "alpha_final_histogram.pdf"), fig2)
+    println("✓ Saved: alpha_final_histogram.pdf")
+    push!(plots, fig2)
+
+    # Plot 3: Hybrid Workers Only (0 < α < 1)
+    println("Creating: Distribution of Hybrid WFH Shares")
+
+    hybrid_values = alpha_three_part[(alpha_three_part .> 0.0) .& (alpha_three_part .< 1.0)]
+
+    fig3 = create_figure()
+    ax3 = create_axis!(fig3, (1, 1),
+        "Distribution of Hybrid WFH Shares (0 < α < 1)",
+        "Imputed WFH Share (α_final)",
+        "Frequency"
+    )
+
+    hist!(ax3, hybrid_values, bins=30, color=(COLORS[3], 0.7), strokewidth=1, strokecolor=:black)
+    save(joinpath(FIGURES_PATH, "alpha_final_hybrid_only.pdf"), fig3)
+    println("✓ Saved: alpha_final_hybrid_only.pdf")
+    push!(plots, fig3)
+
+    # Plot 4: Work Arrangement Categories Bar Chart
+    fig4 = create_work_arrangement_bar_chart(alpha_three_part, bls_percentages)
+    push!(plots, fig4)
+
+    return plots
+end
+
+"""
+Create work arrangement distribution bar chart.
+"""
+function create_work_arrangement_bar_chart(alpha_three_part, bls_percentages)
+    println("Creating: Work Arrangement Distribution Bar Chart")
+
+    # Calculate category percentages
+    n_fully_inperson = sum(alpha_three_part .== 0.0)
+    n_hybrid = sum((alpha_three_part .> 0.0) .& (alpha_three_part .< 1.0))
+    n_fully_remote = sum(alpha_three_part .== 1.0)
+    total = length(alpha_three_part)
+
+    categories = ["Fully In-Person", "Hybrid", "Fully Remote"]
+    percentages = [n_fully_inperson/total * 100, n_hybrid/total * 100, n_fully_remote/total * 100]
+
+    fig4 = create_figure(width=1000)
+    ax4 = create_axis!(fig4, (1, 1),
+        "Work Arrangement Distribution Comparison",
+        "Work Arrangement",
+        "Percentage of Workers"
+    )
+
+    x_positions = [1, 2, 3]
+    width = 0.3
+
+    # Three-part model bars
+    barplot!(ax4, x_positions .- width/2, percentages, 
+             width=width, color=COLORS[1], label="Three-Part Model",
+             strokewidth=1, strokecolor=:black)
+
+    # BLS data bars
+    barplot!(ax4, x_positions .+ width/2, bls_percentages,
+             width=width, color=COLORS[2], label="BLS Reference Data",
+             strokewidth=1, strokecolor=:black)
+
+    ax4.xticks = (x_positions, categories)
+    ax4.xticklabelrotation = π/4
+
+    # Add percentage labels on bars
+    for i in 1:3
+        text!(ax4, x_positions[i] - width/2, percentages[i] + 1, 
+              text="$(round(percentages[i], digits=1))%",
+              align=(:center, :bottom), fontsize=FONT_SIZE-4)
+        text!(ax4, x_positions[i] + width/2, bls_percentages[i] + 1,
+              text="$(round(bls_percentages[i], digits=1))%",
+              align=(:center, :bottom), fontsize=FONT_SIZE-4)
+    end
+
+    ylims!(ax4, 0, maximum([percentages; bls_percentages]) * 1.1)
+
+    axislegend(ax4, position=:rt)
+
+    save(joinpath(FIGURES_PATH, "wfh_categories_bar.pdf"), fig4)
+    println("✓ Saved: wfh_categories_bar.pdf")
+    
+    return fig4
+end
+
+"""
+Create validation plots.
+"""
+function create_validation_plots(alpha_validation, wfh_indicator, p_remote_any)
+    plots = []
+    
+    # Plot 5: Distribution by WFH Status (Kernel Density)
+    fig5 = create_wfh_status_distribution_plot(alpha_validation, wfh_indicator)
+    push!(plots, fig5)
+    
+    # Plot 6: ROC Curve Analysis
+    fig6, auc = create_roc_curve_plot(wfh_indicator, p_remote_any)
+    push!(plots, fig6)
+    
+    return plots, auc
+end
+
+"""
+Create distribution plot by WFH status.
+"""
+function create_wfh_status_distribution_plot(alpha_validation, wfh_indicator)
+    println("Creating: Distribution of Imputed WFH Share by Actual WFH Status")
+
+    fig5 = create_figure()
+    ax5 = create_axis!(fig5, (1, 1),
+        "Distribution of Imputed WFH Share by Actual WFH Status",
+        "Imputed WFH Share (α_final)",
+        "Density"
+    )
+
+    # Separate data by WFH status and skip missing values
+    alpha_no_wfh = collect(skipmissing(alpha_validation[wfh_indicator .== 0]))
+    alpha_yes_wfh = collect(skipmissing(alpha_validation[wfh_indicator .== 1]))
+
+    # Create kernel density estimates
+    kde_no_wfh = kde(alpha_no_wfh)
+    kde_yes_wfh = kde(alpha_yes_wfh)
+
+    # Plot densities
+    lines!( ax5, 
+            kde_no_wfh.x, 
+            kde_no_wfh.density / sum(kde_no_wfh.density), # Normalize density
+            color=COLORS[1], linewidth=3, label="Did Not WFH (wfh=0)")
+
+    lines!( ax5,
+            kde_yes_wfh.x,
+            kde_yes_wfh.density / sum(kde_yes_wfh.density), # Normalize density
+            color=COLORS[2], linewidth=3, label="Did WFH (wfh=1)")
+
+    axislegend(ax5, position=:rt)
+    
+    save(joinpath(FIGURES_PATH, "validation_alpha_by_wfh_status.pdf"), fig5)
+    println("✓ Saved: validation_alpha_by_wfh_status.pdf")
+    
+    return fig5
+end
+
+"""
+Create ROC curve analysis plot.
+"""
+function create_roc_curve_plot(wfh_indicator, p_remote_any)
+    println("Creating: ROC Curve Analysis")
+
+    fig6 = create_figure()
+    ax6 = create_axis!(fig6, (1, 1),
+        "ROC Curve: Predicting Actual WFH from Model Probabilities",
+        "False Positive Rate",
+        "True Positive Rate"
+    )
+
+    # Calculate ROC curve manually since we have the probabilities
+    # Use p_remote_any as predictor for wfh_indicator
+    thresholds = range(0, 1, length=100)
+    tpr_values = Float64[]
+    fpr_values = Float64[]
+
+    for threshold in thresholds
+        predicted_positive = p_remote_any .>= threshold
+        
+        tp = sum((predicted_positive .== 1) .& (wfh_indicator .== 1))
+        fp = sum((predicted_positive .== 1) .& (wfh_indicator .== 0))
+        tn = sum((predicted_positive .== 0) .& (wfh_indicator .== 0))
+        fn = sum((predicted_positive .== 0) .& (wfh_indicator .== 1))
+        
+        tpr = tp / (tp + fn)
+        fpr = fp / (fp + tn)
+        
+        push!(tpr_values, tpr)
+        push!(fpr_values, fpr)
+    end
+
+    # Plot ROC curve
+    lines!(ax6, fpr_values, tpr_values, color=COLORS[1], linewidth=3, label="Model ROC")
+
+    # Add diagonal reference line
+    lines!(ax6, [0, 1], [0, 1], color=:gray, linestyle=:dash, linewidth=2, label="Random Classifier")
+
+    # Calculate AUC using trapezoidal rule
+    auc = -trapz(fpr_values, tpr_values)  # Negative because we want area under curve
+
+    text!(ax6, 0.6, 0.2, text="AUC = $(round(auc, digits=3))", fontsize=FONT_SIZE-2)
+
+    axislegend(ax6, position=:rb)
+    xlims!(ax6, 0, 1)
+    ylims!(ax6, 0, 1)
+    
+    save(joinpath(FIGURES_PATH, "validation_roc_curve.pdf"), fig6)
+    println("✓ Saved: validation_roc_curve.pdf")
+    
+    return fig6, auc
+end
+
+"""
+Create comparison plots between training and imputed data.
+"""
+function create_comparison_plots(swaa_data, acs_three_part, acs_validated, bls_percentages)
+    plots = []
+    
+    # Plot 7: Comparison Bar Chart (Training vs. Imputed)
+    fig7 = create_training_vs_imputed_comparison(swaa_data, acs_three_part, acs_validated, bls_percentages)
+    push!(plots, fig7)
+    
+    return plots
+end
+
+"""
+Create training vs imputed data comparison bar chart.
+"""
+function create_training_vs_imputed_comparison(swaa_data, acs_three_part, acs_validated, bls_percentages)
+    println("Creating: Work Arrangement Comparison - Training vs. Imputed")
+
+    fig7 = create_figure(width=1200)
+    ax7 = create_axis!(fig7, (1, 1),
+        "Work Arrangement Distribution: Training vs. Imputed vs. BLS Data",
+        "", # Remove x-axis label
+        "Percentage of Workers"
+    )
+
+    x_positions = [1, 2, 3]
+    width = 0.18  # Reduced width to accommodate 4 bars
+    categories = ["Fully In-Person", "Hybrid", "Fully Remote"]
+
+    train_percentages = [
+        sum(swaa_data[!, :wfh_share] .== 0.0) / nrow(swaa_data) * 100,
+        sum((swaa_data[!, :wfh_share] .> 0.0) .& (swaa_data[!, :wfh_share] .< 1.0)) / nrow(swaa_data) * 100,
+        sum(swaa_data[!, :wfh_share] .== 1.0) / nrow(swaa_data) * 100
+    ]
+
+    percentages_imputed = [
+        sum(acs_three_part[!, :alpha_final] .== 0.0) / nrow(acs_three_part) * 100,
+        sum((acs_three_part[!, :alpha_final] .> 0.0) .& (acs_three_part[!, :alpha_final] .< 1.0)) / nrow(acs_three_part) * 100,
+        sum(acs_three_part[!, :alpha_final] .== 1.0) / nrow(acs_three_part) * 100
+    ]
+
+    percentages_imputed_validated = [
+        sum(acs_validated[!, :alpha_calibrated_bls] .== 0.0) / size(acs_validated, 1) * 100,
+        sum((acs_validated[!, :alpha_calibrated_bls] .> 0.0) .& (acs_validated[!, :alpha_calibrated_bls] .< 1.0)) / size(acs_validated, 1) * 100,
+        sum(acs_validated[!, :alpha_calibrated_bls] .== 1.0) / size(acs_validated, 1) * 100
+    ]
+
+    # Training data bars
+    barplot!(ax7, x_positions .- 1.5*width, train_percentages,
+             width=width, color=COLORS[1], label="SWAA Training Data",
+             strokewidth=1, strokecolor=:black)
+
+    # Imputed data bars
+    barplot!(ax7, x_positions .- 0.5*width, percentages_imputed,
+             width=width, color=COLORS[2], label="Imputed Data",
+             strokewidth=1, strokecolor=:black)
+
+    # Validated data bars
+    barplot!(ax7, x_positions .+ 0.5*width, percentages_imputed_validated,
+             width=width, color=COLORS[3], label="Imputed Targeting BLS",
+             strokewidth=1, strokecolor=:black)
+
+    # BLS data bars
+    barplot!(ax7, x_positions .+ 1.5*width, bls_percentages,
+             width=width, color=COLORS[4], label="BLS Reference Target",
+             strokewidth=1, strokecolor=:black)
+
+    # Remove x-axis tick labels
+    ax7.xticks = (x_positions, categories)
+    ax7.xticklabelrotation = 0
+    ax7.yticks = ([], [])
+
+    # Add horizontal legend at the bottom
+    Legend(fig7[2, 1], ax7, 
+           orientation=:horizontal, 
+           tellwidth=false, 
+           tellheight=true,
+           halign=:center,
+           framevisible=false)
+
+    # Add percentage labels
+    for i in 1:3
+        text!(ax7, x_positions[i] - 1.5*width, train_percentages[i] + 1,
+              text="$(round(train_percentages[i], digits=1))%",
+              align=(:center, :bottom), fontsize=FONT_SIZE-8)
+        text!(ax7, x_positions[i] - 0.5*width, percentages_imputed[i] + 1,
+              text="$(round(percentages_imputed[i], digits=1))%", 
+              align=(:center, :bottom), fontsize=FONT_SIZE-8)
+        text!(ax7, x_positions[i] + 0.5*width, percentages_imputed_validated[i] + 1,
+              text="$(round(percentages_imputed_validated[i], digits=1))%", 
+              align=(:center, :bottom), fontsize=FONT_SIZE-8)
+        text!(ax7, x_positions[i] + 1.5*width, bls_percentages[i] + 1,
+              text="$(round(bls_percentages[i], digits=1))%", 
+              align=(:center, :bottom), fontsize=FONT_SIZE-8)
+    end
+
+    ylims!(ax7, 0, maximum([train_percentages; percentages_imputed; percentages_imputed_validated; bls_percentages]) * 1.15)
+    
+    save(joinpath(FIGURES_PATH, "wfh_categories_comparison_bar.pdf"), fig7)
+    println("✓ Saved: wfh_categories_comparison_bar.pdf")
+    
+    return fig7
+end
+
+"""
+Create original vs calibrated predictions comparison.
+"""
+function create_original_vs_calibrated_plot(alpha_three_part, wfh_indicator, n_validation)
+    println("Creating: Original vs. Calibrated Predictions Comparison")
+
+    # Create synthetic calibrated data (adjusted to match validation better)
+    alpha_calibrated = copy(alpha_three_part)
+    for i in 1:min(length(alpha_calibrated), n_validation)
+        if wfh_indicator[i] == 1 && alpha_calibrated[i] == 0.0
+            # Calibrate: if they actually WFH but we predicted 0, increase prediction
+            alpha_calibrated[i] = rand(Beta(1.5, 2))
+        elseif wfh_indicator[i] == 0 && alpha_calibrated[i] > 0.3
+            # Calibrate: if they don't WFH but we predicted high, decrease prediction
+            alpha_calibrated[i] = alpha_calibrated[i] * 0.7
+        end
+    end
+
+    fig8 = create_figure()
+    ax8 = create_axis!(fig8, (1, 1),
+        "Original vs. Calibrated Predictions",
+        "WFH Share Prediction",
+        "Density"
+    )
+
+    # Create KDEs for comparison - collect non-missing values only
+    kde_original = kde(collect(skipmissing(alpha_three_part)))
+    kde_calibrated = kde(collect(skipmissing(alpha_calibrated)))
+
+    lines!(ax8, kde_original.x, kde_original.density,
+           color=COLORS[1], linewidth=3, label="Original Predictions")
+    lines!(ax8, kde_calibrated.x, kde_calibrated.density,
+           color=COLORS[2], linewidth=3, label="Calibrated Predictions")
+
+    axislegend(ax8, position=:rt)
+
+    save(joinpath(FIGURES_PATH, "comparison_original_vs_calibrated.pdf"), fig8)
+    println("✓ Saved: comparison_original_vs_calibrated.pdf")
+    
+    return fig8
+end
+
+"""
+Print summary statistics and final report.
+"""
+function print_summary_statistics(data_tuple, alpha_simple, alpha_three_part, alpha_validation, wfh_indicator, auc)
+    println()
+    println("="^80)
+    println("SUMMARY STATISTICS AND FINAL REPORT")
+    println("="^80)
+
+    println()
+    println("SIMPLE FRACTIONAL LOGIT MODEL:")
+    println("-"^35)
+    println("Mean WFH share: $(round(mean(alpha_simple), digits=4))")
+    println("Median WFH share: $(round(median(alpha_simple), digits=4))")
+    println("Std deviation: $(round(std(alpha_simple), digits=4))")
+    println("Min: $(round(minimum(alpha_simple), digits=4))")
+    println("Max: $(round(maximum(alpha_simple), digits=4))")
+
+    println()
+    println("THREE-PART MODEL:")
+    println("-"^20)
+    total = length(alpha_three_part)
+    n_fully_inperson = sum(alpha_three_part .== 0.0)
+    n_hybrid = sum((alpha_three_part .> 0.0) .& (alpha_three_part .< 1.0))
+    n_fully_remote = sum(alpha_three_part .== 1.0)
+    hybrid_values = alpha_three_part[(alpha_three_part .> 0.0) .& (alpha_three_part .< 1.0)]
+    
+    println("Total observations: $(length(alpha_three_part))")
+    println("Fully in-person (α=0): $(n_fully_inperson) ($(round(n_fully_inperson/total*100, digits=1))%)")
+    println("Hybrid (0<α<1): $(n_hybrid) ($(round(n_hybrid/total*100, digits=1))%)")
+    println("Fully remote (α=1): $(n_fully_remote) ($(round(n_fully_remote/total*100, digits=1))%)")
+    println("Mean α among hybrid workers: $(round(mean(hybrid_values), digits=4))")
+
+    println()
+    println("VALIDATION ANALYSIS:")
+    println("-"^20)
+    println("Sample size: $(length(alpha_validation))")
+    println("Workers reporting WFH: $(sum(wfh_indicator)) ($(round(sum(wfh_indicator)/length(wfh_indicator)*100, digits=1))%)")
+    println("Mean α for WFH=0: $(round(mean(alpha_validation[wfh_indicator .== 0]), digits=4))")
+    println("Mean α for WFH=1: $(round(mean(alpha_validation[wfh_indicator .== 1]), digits=4))")
+    println("ROC AUC: $(round(auc, digits=3))")
+
+    println()
+    println("FILES CREATED:")
+    println("-"^15)
+    created_files = [
+        "simple_model_distribution.pdf",
+        "alpha_final_histogram.pdf", 
+        "alpha_final_hybrid_only.pdf",
+        "wfh_categories_bar.pdf",
+        "validation_alpha_by_wfh_status.pdf",
+        "validation_roc_curve.pdf",
+        "wfh_categories_comparison_bar.pdf",
+        "comparison_original_vs_calibrated.pdf"
+    ]
+
+    for file in created_files
+        println("✓ $(joinpath(FIGURES_PATH, file))")
+    end
+
+    println()
+    println("="^80)
+    println("PLOT REPLICATION COMPLETED SUCCESSFULLY!")
+    println("="^80)
+    println()
+    println("All plots have been replicated in Julia and saved as PDF files.")
+    println("The plots use the same color scheme and styling as ModelPlotting.jl")
+    println("and should be visually comparable to the original Stata outputs.")
+    println()
+    println("To view the plots, check the figures/ directory:")
+    println("ls $(FIGURES_PATH)/*.pdf")
+end
+
+"""
+================================================================================
+MAIN EXECUTION FUNCTION
+================================================================================
+"""
+
+# function main()
+    println("="^80)
+    println("WFH IMPUTATION PLOT REPLICATION - JULIA VERSION")
+    println("="^80)
+    println()
+
+    # Load and prepare all data
+    data = load_and_prepare_data()
+
+    println()
+    println("REPLICATION 1: Simple Fractional Logit Model Plots")
+    println("-"^60)
+    fig1 = create_simple_model_plot(data.alpha_simple)
+
+    println()
+    println("REPLICATION 2: Three-Part Model Plots")
+    println("-"^40)
+    three_part_plots = create_three_part_model_plots(data.alpha_three_part, data.bls_percentages)
+
+    println()
+    println("REPLICATION 3: Validation Plots")
+    println("-"^35)
+    validation_plots, auc = create_validation_plots(data.alpha_validation, data.wfh_indicator, data.p_remote_any)
+
+    println()
+    println("COMPARISON PLOTS: Training vs. Imputed Data")
+    println("-"^45)
+    comparison_plots = create_comparison_plots(data.swaa_data, data.acs_three_part, data.acs_validated, data.bls_percentages)
+
+    println()
+    println("ADDITIONAL ANALYSIS: Original vs. Calibrated Predictions")
+    println("-"^55)
+    fig8 = create_original_vs_calibrated_plot(data.alpha_three_part, data.wfh_indicator, data.n_validation)
+
+    # Print summary statistics
+    print_summary_statistics(data, data.alpha_simple, data.alpha_three_part, data.alpha_validation, data.wfh_indicator, auc)
+# end
+
+# Execute main function if script is run directly
+if abspath(PROGRAM_FILE) == @__FILE__
+    main()
+end
 println("✓ Saved: wfh_categories_bar.pdf")
 
 """
@@ -622,9 +1050,9 @@ ax8 = create_axis!(fig8, (1, 1),
     "Density"
 )
 
-# Create KDEs for comparison
-kde_original = kde(alpha_three_part)
-kde_calibrated = kde(alpha_calibrated)
+# Create KDEs for comparison - collect non-missing values only
+kde_original = kde(collect(skipmissing(alpha_three_part)))
+kde_calibrated = kde(collect(skipmissing(alpha_calibrated)))
 
 lines!(ax8, kde_original.x, kde_original.density,
        color=COLORS[1], linewidth=3, label="Original Predictions")
