@@ -1,4 +1,6 @@
 *.DS_Store
+# Api Keys 
+api_keys.json
 
 # Folders to exclude
 
